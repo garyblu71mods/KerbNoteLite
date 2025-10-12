@@ -1,89 +1,61 @@
-# KerbNote Lite — Free Module  
-**Version:** 1.0  
-**Author:** GaryBlu71  
-**License:** MIT (see LICENSE.txt)
+# KerbNote Lite
+
+> Modular notepad + calculator for KSP — minimal GUI, orbital clarity, zero distractions.
+
+KerbNote Lite is designed for players who plan, log, and execute with precision.  
+No automation. No dependencies. Just modular control — the Blu71 way.
 
 ---
 
-##  Overview
+###  GUI Previews
 
-KerbNote Lite is a lightweight notepad with built-in calculator logic, designed for Kerbal Space Program mod environments.  
-It features a minimalist GUI with no tabs, no menus, and no dependencies.  
-Fully Unity-compatible and drop-in ready.
+**v1.0 Notes — Mission Checklist**  
+![v1.0 Notes](Previews/v1.0%20Notes.png)  
+Literal notepad interface — user-defined content.
 
----
+**v1.0 Calc — Manual Input**  
+![v1.0 Calc](Previews/v1.0%20Calc.png)  
+Basic calculator logic with range reference and red button.
 
-##  Contents
-
-- `KerbNoteLite.dll` — main module  
-- `/Textures/kerbnote_gui.png` — default GUI skin  
-- `/texture_pack/vaos/`, `/green/`, `/stock/` — optional texture variants  
-- `README.md` — this file  
-- `LICENSE.txt` — MIT license
+**v1.1 Notes + Tabs — GUI Upgrade Preview**  
+![v1.1 Notes + Tabs](Previews/v1.1%20notes%20+tabs.png)  
+Tabbed interface preview for upcoming v1.1 — layout remains clean and focused.
 
 ---
 
-##  Texture Variants
+###  Features
 
-KerbNote Lite supports manual texture swapping.  
-To change the GUI style:
-
-1. Open the `texture_pack/` folder  
-2. Choose a variant: `vaos`, `green`, or `stock`  
-3. Copy contents into `/Textures/`, replacing existing files  
-4. Launch the game — no code changes required
-
-All variants are rollback-ready. No shared folders, no symbolic links.
+- Drop-in DLL for Unity/KSP environments  
+- Minimalist GUI — no menus, no automation  
+- Built-in calculator logic (manual input only)  
+- Texture variants: `stock`, `vaos`, `green` — swap manually  
+- No dependencies, no installer  
+- Packaged with `README.md`, `LICENSE.txt`, and optional previews
 
 ---
 
-##  Installation
+### 🛠️ Manual Texture Swapping
 
-1. Unzip the package  
-2. Drop all contents into your `GameData/` folder  
-3. Launch KSP — KerbNote Lite will auto-load
+To change GUI style:
 
-No installer. No config files. No dependencies.
+1. Go to `/Textures/`
+2. Replace contents with files from:
+   - `/texture_pack/vaos/`
+   - `/texture_pack/green/`
+   - `/texture_pack/stock/`
+3. Restart game
 
----
-
-##  Features
-
-- Minimalist notepad overlay  
-- Built-in calculator logic  
-- Unity-compatible GUI  
-- Texture-swappable design  
-- No background processes  
-- Zero social overhead
+Rollback anytime by restoring original folder.
 
 ---
 
-##  Compatibility
+###  Coming in v1.1
 
-- Tested in KSP 1.12.x  
-- Compatible with Windows builds  
-- No known conflicts with other mods
-
----
-
-##  Support & Upgrades
-
-This is the **Lite version**.  
-Advanced features (tabbed GUI, font scaling, dark industrial skin) planned for `v1.1`.
-
-Follow updates on:
-- [GitHub Releases](https://github.com/garyblu71mods/KerbNoteLite/releases)  
-- [Gumroad](https://gumroad.com/garyblu71mods)  
-- [KSP Technical Forums](https://forum.kerbalspaceprogram.com)
+- Tabbed GUI (optional layout)  
+- Font scaling presets  
+- New texture variants 
+- Additional previews and documentation
 
 ---
 
-##  Philosophy
-
-KerbNote Lite follows the Blu71 modular philosophy:  
-- Manual control over assets  
-- Rollback-ready texture swaps  
-- No automation, no ambiguity  
-- Literal execution, zero embellishment
-
----
+Made by Blu71 — for players who prefer control over clutter.
