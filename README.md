@@ -10,15 +10,15 @@ No automation. No dependencies. Just modular control — the Blu71 way.
 ###  GUI Previews
 
 **v1.0 Notes — Mission Checklist**  
-![v1.0 Notes](Previews/v1.0%20Notes.png)  
+![v1.0 Notes](v1.0%20Notes.png)  
 Literal notepad interface — user-defined content.
 
 **v1.0 Calc — Manual Input**  
-![v1.0 Calc](Previews/v1.0%20Calc.png)  
+![v1.0 Calc](v1.0%20Calc.png)  
 Basic calculator logic with range reference and red button.
 
 **v1.1 Notes + Tabs — GUI Upgrade Preview**  
-![v1.1 Notes + Tabs](Previews/v1.1%20notes%20+tabs.png)  
+![v1.1 Notes + Tabs](v1.1%20notes%20+tabs.png)  
 Tabbed interface preview for upcoming v1.1 — layout remains clean and focused.
 
 ---
