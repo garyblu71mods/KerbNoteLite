@@ -1,0 +1,19 @@
+KerbNote Lite — License  
+Version: 1.0  
+Author: GaryBlu71 
+
+ License Terms:
+
+This module is provided free of charge under the following conditions:
+
+1. You may use, modify, and redistribute this module for personal or educational purposes.
+2. Commercial redistribution, resale, or bundling with paid content is prohibited without written permission.
+3. All redistributed versions must retain the original author credit: GaryBlu71.
+4. No warranty is provided. Use at your own risk.
+5. This module is rollback-ready. Removal does not affect your system or game installation.
+
+ Notes:
+- This license applies only to KerbNote Lite v1.0.
+- Pro and Ultra versions may include separate licensing terms.
+
+Contact: Garyblu71.mods@gmail.com
