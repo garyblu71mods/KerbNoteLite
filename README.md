@@ -20,7 +20,11 @@ Basic calculator logic with range reference and red button.
 **v1.1 Notes + Tabs — GUI Upgrade Preview**  
 ![v1.1 Notes + Tabs](v1.1%20notes%20+tabs.png)  
 Tabbed interface preview for upcoming v1.1 — layout remains clean and focused.
+###  v1.1 Preview — Green Skin with Tabs
 
+**v1.1 Notes + Tabs — Green Variant**  
+![v1.1 Notes + Tabs — Green](v1.1%20notes%20%2Btabs%20green.png)  
+Tabbed layout preview using the `green` skin — clean, high-contrast interface for science-focused missions.
 ---
 
 ###  Features
