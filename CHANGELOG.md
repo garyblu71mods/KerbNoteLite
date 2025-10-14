@@ -4,7 +4,7 @@
 
 ## [v1.0] — Initial Release (2025-10-12)
 
-- `KerbNoteLite.dll`: lightweight notepad with built-in calculator logic
+- `KerbNote_V1.0.dll`: lightweight notepad with built-in calculator logic
 - Minimalist GUI: no tabs, no menus, no config files
 - Unity-compatible, drop-in ready for KSP environments
 - Texture variants:
