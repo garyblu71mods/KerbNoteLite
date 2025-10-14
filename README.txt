@@ -1,11 +1,13 @@
-KerbNote Lite — Free Module  
+KerbNote_v1.0 — Free Module  
 Version: 1.0  
 Author: GaryBlu71 
 
  Contents:
-- KerbNoteLite.dll
-- /Textures/kerbnote_gui.png
+- KerbNote_V1.0.dll
+- /Textures
+- /texture_pack
 - README.txt
+- LICENSE.txt
 
  Features:
 - Lightweight notepad with built-in calculation
