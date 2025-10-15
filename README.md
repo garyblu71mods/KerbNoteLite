@@ -15,7 +15,7 @@ Literal notepad interface — user-defined content.
 
 **v1.0 Calc — Manual Input**  
 ![v1.0 Calc](v1.0%20Calc.png)  
-Basic calculator logic with range reference and red button.
+Basic calculator logic with range reference.
 
 **v1.1 Notes + Tabs — GUI Upgrade Preview**  
 ![v1.1 Notes + Tabs](v1.1%20notes%20+tabs.png)  
