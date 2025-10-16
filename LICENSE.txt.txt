@@ -13,7 +13,7 @@ This module is provided free of charge under the following conditions:
 5. This module is rollback-ready. Removal does not affect your system or game installation.
 
  Notes:
-- This license applies only to KerbNote Lite v1.0.
+- This license applies only to KerbNote Lite v1.1.
 - Pro and Ultra versions may include separate licensing terms.
 
 Contact: Garyblu71.mods@gmail.com
