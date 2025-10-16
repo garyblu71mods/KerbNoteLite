@@ -63,3 +63,13 @@ Rollback anytime by restoring original folder.
 ---
 
 Made by Blu71 — for players who prefer control over clutter.
+
+---
+
+###  Support
+
+If you enjoy KerbNote Lite and want to support future development:
+
+- [PayPal.me/GaryBlu71](https://paypal.me/GaryBlu71) — one-time tip
+
+Your support helps keep the mod modular, rollback-ready, and clean.
