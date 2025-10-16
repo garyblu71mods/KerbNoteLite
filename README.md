@@ -17,14 +17,17 @@ Literal notepad interface — user-defined content.
 ![v1.0 Calc](v1.0%20Calc.png)  
 Basic calculator logic with range reference.
 
-**v1.1 Notes + Tabs — GUI Upgrade Preview**  
+**v1.1 Notes + Tabs — GUI Upgrade**  
 ![v1.1 Notes + Tabs](v1.1%20notes%20+tabs.png)  
-Tabbed interface preview for upcoming v1.1 — layout remains clean and focused.
-###  v1.1 Preview — Green Skin with Tabs
+Tabbed interface introduced in v1.1 — layout remains clean and focused.
+
+###  v1.1 — Green Skin with Tabs
 
 **v1.1 Notes + Tabs — Green Variant**  
 ![v1.1 Notes + Tabs — Green](v1.1%20notes%20%2Btabs%20green.png)  
-Tabbed layout preview using the `green` skin — clean, high-contrast interface for science-focused missions.
+Tabbed layout using the `green` skin — clean, high-contrast interface for science-focused missions.
+
+
 ---
 
 ###  Features
@@ -38,7 +41,7 @@ Tabbed layout preview using the `green` skin — clean, high-contrast interface 
 
 ---
 
-### 🛠️ Manual Texture Swapping
+###  Manual Texture Swapping
 
 To change GUI style:
 
@@ -53,12 +56,12 @@ Rollback anytime by restoring original folder.
 
 ---
 
-###  Coming in v1.1
+### 🚀 What's new in v1.1:
+- Tabbed note system (create, switch, rearrange)
+- GUI layout improvements
+- Calculator presets coming soon
 
-- Tabbed GUI (optional layout)  
-- Font scaling presets  
-- New texture variants 
-- Additional previews and documentation
+Rollback-ready, no dependencies. Compatible with KSP 1.12.x
 
 ---
 
