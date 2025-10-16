@@ -1,9 +1,15 @@
+
 KerbNote Lite — Free Module
 Version: 1.1
 Author: GaryBlu71
 
  Contents:
 - KerbNote_V1.1.dll
+
+
+ Contents:
+- KerbNote_V1.0.dll
+ c2003f4091471732877d4276f87fb17d51b71e84
 - /Textures
 - /texture_pack
 - README.txt
@@ -38,4 +44,7 @@ No registry entries, no persistent data.
 - Pro and Ultra tiers offer expanded GUI and orbital logic.
 - Feedback welcome — especially on tab behavior, calculator ideas, and theme preferences 
 
+
 Branding: GaryBlu71 — modular, technical, clean
+
+
