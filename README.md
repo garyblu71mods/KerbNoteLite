@@ -10,16 +10,21 @@ No automation. No dependencies. Just modular control — the Blu71 way.
 ###  GUI Previews
 
 ![Tabbed GUI](screenshot50.png)  
+
+Mission info, resources, and control interface visible. Tabbed layout tested in field conditions.
+
 ![Mun Mission Objectives](screenshot52.png)  
+
+Resource panel and mission details open. GUI remains stable under Mun conditions.
+
 ![GUI Calculator Entry](screenshot57.png)
 
-**v1.1 Notes + Tabs — GUI Upgrade**  
+Calculations performed in the VAB to optimize lander desig.
+
 ![v1.1 Notes + Tabs](v1.1%20notes%20+tabs.png)  
+
 Tabbed interface introduced in v1.1 — layout remains clean and focused.
 
-###  v1.1 — Green Skin with Tabs
-
-**v1.1 Notes + Tabs — Green Variant**  
 ![v1.1 Notes + Tabs — Green](v1.1%20notes%20%2Btabs%20green.png)  
 Tabbed layout using the `green` skin — clean, high-contrast interface for science-focused missions.
 
