@@ -1,3 +1,12 @@
+How to Download the Correct Version
+To install this mod properly:
+- Do not use the green “Code → Download ZIP” button — it downloads the entire source code, not the installable version.
+- Instead, go to the Releases page https://github.com/garyblu71mods/KerbNoteLite/releases/tag/v1.1
+- Download the file named KerbCalcProjekt.zip (or similar).
+- Extract the ZIP and place the KerbCalcProjekt/ folder directly into your GameData/ directory.
+ That’s it — you’re ready to launch!
+
+
 # KerbNote Lite
 
 > Modular notepad + calculator for KSP — minimal GUI, orbital clarity, zero distractions.
