@@ -78,6 +78,33 @@ Rollback-ready, no dependencies. Compatible with KSP 1.12.x
 Made by Blu71 — for players who prefer control over clutter.
 
 ---
+ ### What’s new in v1.2 (Alpha)
+Tactical alarm panel, mininote overlay, and editor upgrades — modular, rollback-ready, and fully testable.
+
+Alarm Panel
+Monitor vessel states and trigger alerts based on:
+- Target celestial body (e.g. Mun, Duna)
+- Situation: orbiting, docked, landed, suborbital, etc.
+Alarm Methods (choose at least one):
+- 📝 Mininote — translucent popup on KSP screen
+- 🎙️ Kerbal voice — audio alert: “Auwww!”
+- 🕒 Time control — auto slowdown to x1 warp
+Mininote Overlay
+- Click-through note on screen
+- Mouse hover increases opacity
+- [x] to close, Edit to jump to full note
+- Non-blocking — does not interfere with gameplay
+Editor Improvements
+- Ctrl+Z undo support
+- Tab name editing now supports Enter to confirm
+Texture Status
+-  Green skin fully supported
+-  Vaos and Stock skins currently missing 2 textures — patch incoming shortly to restore full compatibilit
+📸 GUI Previews — v1.2
+
+https://youtu.be/es_yzetdrr4?si=8XI8dubBzcizWI3j
+
+---
 
 ###  Support
 
