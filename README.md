@@ -60,7 +60,7 @@ Choose at least one:
 ### Mininote Overlay  
 - Click-through note on screen  
 - Mouse hover increases opacity  
-- [x] to close, Edit to jump to full note  
+- "x" to close, Edit to jump to full note  
 - Non-blocking — does not interfere with gameplay
 
 ### Editor Improvements  
