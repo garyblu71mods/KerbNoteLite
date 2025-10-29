@@ -1,3 +1,5 @@
+ **Newest version:** [v1.2-alpha — Tactical Alarm Overlay]
+
 [![KerbNote Lite v1.2 — Alarm Panel Demo](https://img.youtube.com/vi/es_yzetdrr4/hqdefault.jpg)](https://youtu.be/es_yzetdrr4)
 
 >  Watch the demo video for KerbNote Lite v1.2-alpha — alarm panel, vessel triggers, mininote overlay, and editor upgrades.
