@@ -1,3 +1,7 @@
+[![KerbNote Lite v1.2 — Alarm Panel Demo](https://img.youtube.com/vi/es_yzetdrr4/hqdefault.jpg)](https://youtu.be/es_yzetdrr4)
+
+>  Watch the demo video for KerbNote Lite v1.2-alpha — alarm panel, vessel triggers, mininote overlay, and editor upgrades.
+
 ##  How to Download the Correct Version
 
 To install this mod properly:
@@ -103,7 +107,7 @@ Editor Improvements
 Texture Status
 -  Green skin fully supported
 -  Vaos and Stock skins currently missing 2 textures — patch incoming shortly to restore full compatibilit
--  
+ 
 ## 🎥 Demo Video
 
 [![KerbNote Lite v1.2 — Alarm Panel Demo](https://img.youtube.com/vi/es_yzetdrr4/hqdefault.jpg)](https://youtu.be/es_yzetdrr4)
