@@ -102,7 +102,7 @@ Texture Status
 -  Vaos and Stock skins currently missing 2 textures — patch incoming shortly to restore full compatibilit
 📸 GUI Previews — v1.2
 
-https://youtu.be/es_yzetdrr4?si=8XI8dubBzcizWI3j
+[![KerbNote Lite v1.2 — Alarm Panel Demo](https://img.youtube.com/vi/[TWOJ_LINK](https://youtu.be/es_yzetdrr4?si=8XI8dubBzcizWI3j)/hqdefault.jpg)](https://youtu.be/[TWOJ_LINK](https://youtu.be/es_yzetdrr4?si=8XI8dubBzcizWI3j))
 
 ---
 
