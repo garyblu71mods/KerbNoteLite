@@ -100,10 +100,12 @@ Editor Improvements
 Texture Status
 -  Green skin fully supported
 -  Vaos and Stock skins currently missing 2 textures — patch incoming shortly to restore full compatibilit
-📸 GUI Previews — v1.2
+-  
+## 🎥 Demo Video
 
-[![KerbNote Lite v1.2 — Alarm Panel Demo](https://img.youtube.com/vi/](https://youtu.be/es_yzetdrr4?si=8XI8dubBzcizWI3j)/hqdefault.jpg)](https://youtu.be/(https://youtu.be/es_yzetdrr4?si=8XI8dubBzcizWI3j))
+[![KerbNote Lite v1.2 — Alarm Panel Demo](https://img.youtube.com/vi/es_yzetdrr4/hqdefault.jpg)](https://youtu.be/es_yzetdrr4)
 
+> Click the image above to watch the KerbNote Lite v1.2 demo — alarm panel, vessel triggers, mininote overlay, and editor upgrades.
 ---
 
 ###  Support
