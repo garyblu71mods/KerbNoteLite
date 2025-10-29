@@ -14,7 +14,7 @@ To install this mod properly:
 
 That’s it — you’re ready to launch!
 
-# KerbNote Lite
+# KerbNote Lite v1.1
 
 > Modular notepad + calculator for KSP — minimal GUI, orbital clarity, zero distractions.
 
