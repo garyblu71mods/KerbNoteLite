@@ -1,126 +1,135 @@
- **Newest version:** [v1.2-alpha — Tactical Alarm Overlay]
+# KerbNote Lite
 
-[![KerbNote Lite v1.2 — Alarm Panel Demo](https://img.youtube.com/vi/es_yzetdrr4/hqdefault.jpg)](https://youtu.be/es_yzetdrr4)
+**Newest version:** [v1.2-alpha — Tactical Alarm Overlay](https://github.com/garyblu71mods/KerbNoteLite/releases/tag/v1.2-alpha)
 
->  Watch the demo video for KerbNote Lite v1.2-alpha — alarm panel, vessel triggers, mininote overlay, and editor upgrades.
+[KerbNote Lite v1.2 — Alarm Panel Demo](https://youtu.be/es_yzetdrr4)
 
-##  How to Download the Correct Version
+Watch the demo video for KerbNote Lite v1.2 — alarm panel, vessel triggers, mininote overlay, and editor upgrades.
+
+---
+
+## How to Download the Correct Version
 
 To install this mod properly:
 
--  Do **not** use the green “Code → Download ZIP” button — it downloads the entire source code, not the installable version.
--  Instead, download the **latest release**:  
-  -> [KerbNote Lite v1.2-alpha — Tactical Alarm Overlay (latest version)](https://github.com/garyblu71mods/KerbNoteLite/releases/tag/v1.2-alpha)
+- Do not use the green “Code → Download ZIP” button — it downloads the entire source code, not the installable version.
+- Instead, download the latest release:  
+  [KerbNote Lite v1.2-alpha — Tactical Alarm Overlay (latest version)](https://github.com/garyblu71mods/KerbNoteLite/releases/tag/v1.2-alpha)
 - Download the file named `KerbNoteLite_v1.2-alpha.zip` (or similar).
 - Extract the ZIP and place the `KerbCalcProjekt/` folder directly into your `GameData/` directory.
 
 That’s it — you’re ready to launch!
 
-# KerbNote Lite v1.1
+---
 
-> Modular notepad + calculator for KSP — minimal GUI, orbital clarity, zero distractions.
+## Alarm Panel — Visual Stages (v1.2-alpha)
 
-KerbNote Lite is designed for players who plan, log, and execute with precision.  
-No automation. No dependencies. Just modular control — the Blu71 way.
+Screenshots showing each stage of the tactical alarm system:
+
+### Alarm Setup  
+![Alarm Setup](alarm_set.png)
+
+### Vessel Situation  
+![Vessel Situation](situation.png)
+
+### Target Body Selection  
+![Target Body](body.png)
+
+### Mininote Overlay  
+![Mininote Overlay](mininote.png)
 
 ---
 
-###  GUI Previews
+## What’s New in v1.2 (Alpha)
+
+Tactical alarm panel, mininote overlay, and editor upgrades — modular, rollback-ready, and fully testable.
+
+### Alarm Panel  
+Monitor vessel states and trigger alerts based on:
+- Target celestial body (e.g. Mun, Duna)
+- Situation: orbiting, docked, landed, suborbital, etc.
+
+### Alarm Methods  
+Choose at least one:
+- Mininote — translucent popup on KSP screen
+- Kerbal voice — audio alert: “Auwww!”
+- Time control — auto slowdown to x1 warp
+
+### Mininote Overlay  
+- Click-through note on screen  
+- Mouse hover increases opacity  
+- [x] to close, Edit to jump to full note  
+- Non-blocking — does not interfere with gameplay
+
+### Editor Improvements  
+- Ctrl+Z undo support  
+- Tab name editing now supports Enter to confirm
+
+### Texture Status  
+- Green skin fully supported  
+- Vaos and Stock skins currently missing 2 textures — patch incoming shortly
+
+---
+
+# KerbNote Lite v1.1
+
+Modular notepad + calculator for KSP — minimal GUI, orbital clarity, zero distractions.
+
+---
+
+## GUI Previews
 
 ![Tabbed GUI](screenshot50.png)  
-
 Mission info, resources, and control interface visible. Tabbed layout tested in field conditions.
 
 ![Mun Mission Objectives](screenshot52.png)  
-
 Resource panel and mission details open. GUI remains stable under Mun conditions.
 
-![GUI Calculator Entry](screenshot57.png)
-
-Calculations performed in the VAB to optimize lander desig.
+![GUI Calculator Entry](screenshot57.png)  
+Calculations performed in the VAB to optimize lander design.
 
 ![v1.1 Notes + Tabs](v1.1%20notes%20+tabs.png)  
-
 Tabbed interface introduced in v1.1 — layout remains clean and focused.
 
 ![v1.1 Notes + Tabs — Green](v1.1%20notes%20%2Btabs%20green.png)  
-Tabbed layout using the `green` skin — clean, high-contrast interface for science-focused missions.
-
+Tabbed layout using the green skin — clean, high-contrast interface for science-focused missions.
 
 ---
 
-###  Features
+## Features
 
 - Drop-in DLL for Unity/KSP environments  
 - Minimalist GUI — no menus, no automation  
 - Built-in calculator logic (manual input only)  
-- Texture variants: `stock`, `vaos`, `green` — swap manually  
+- Texture variants: stock, vaos, green — swap manually (when available)  
 - No dependencies, no installer  
-- Packaged with `README.md`, `LICENSE.txt`, and optional previews
+- Packaged with README.md, LICENSE.txt, and optional previews
 
 ---
 
-###  Manual Texture Swapping
+## Compatibility
 
-To change GUI style:
-
-1. Go to `/Textures/`
-2. Replace contents with files from:
-   - `/texture_pack/vaos/`
-   - `/texture_pack/green/`
-   - `/texture_pack/stock/`
-3. Restart game
-
-Rollback anytime by restoring original folder.
+- Compatible with KSP 1.12.x  
+- No external dependencies  
+- Rollback-ready — all features modular and optional
 
 ---
 
-### 🚀 What's new in v1.1:
-- Tabbed note system (create, switch, rearrange)
-- GUI layout improvements
-- Calculator presets coming soon
+## License
 
-Rollback-ready, no dependencies. Compatible with KSP 1.12.x
+KerbNote Lite is released under the [MIT License](LICENSE.txt).  
+You may use, modify, and distribute the mod freely, with attribution.
+
+---
+
+## Support
+
+If you enjoy KerbNote Lite and want to support future development:
+
+[PayPal.me/GaryBlu71](https://paypal.me/GaryBlu71) — one-time tip
+
+Your support helps keep the mod modular, rollback-ready, and clean.
 
 ---
 
 Made by Blu71 — for players who prefer control over clutter.
-
----
- ### What’s new in v1.2 (Alpha)
-Tactical alarm panel, mininote overlay, and editor upgrades — modular, rollback-ready, and fully testable.
-
-Alarm Panel
-Monitor vessel states and trigger alerts based on:
-- Target celestial body (e.g. Mun, Duna)
-- Situation: orbiting, docked, landed, suborbital, etc.
-Alarm Methods (choose at least one):
-- 📝 Mininote — translucent popup on KSP screen
-- 🎙️ Kerbal voice — audio alert: “Auwww!”
-- 🕒 Time control — auto slowdown to x1 warp
-Mininote Overlay
-- Click-through note on screen
-- Mouse hover increases opacity
-- [x] to close, Edit to jump to full note
-- Non-blocking — does not interfere with gameplay
-Editor Improvements
-- Ctrl+Z undo support
-- Tab name editing now supports Enter to confirm
-Texture Status
--  Green skin fully supported
--  Vaos and Stock skins currently missing 2 textures — patch incoming shortly to restore full compatibilit
- 
-## 🎥 Demo Video
-
-[![KerbNote Lite v1.2 — Alarm Panel Demo](https://img.youtube.com/vi/es_yzetdrr4/hqdefault.jpg)](https://youtu.be/es_yzetdrr4)
-
-> Click the image above to watch the KerbNote Lite v1.2 demo — alarm panel, vessel triggers, mininote overlay, and editor upgrades.
----
-
-###  Support
-
-If you enjoy KerbNote Lite and want to support future development:
-
-- [PayPal.me/GaryBlu71](https://paypal.me/GaryBlu71) — one-time tip
-
-Your support helps keep the mod modular, rollback-ready, and clean.
