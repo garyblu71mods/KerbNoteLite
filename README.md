@@ -2,7 +2,7 @@
 
 **Newest version:** [v1.2-alpha — Tactical Alarm Overlay](https://github.com/garyblu71mods/KerbNoteLite/releases/tag/v1.2-alpha)
 
-[KerbNote Lite v1.2 — Alarm Panel Demo](https://youtu.be/es_yzetdrr4)
+[KerbNote Lite v1.2 — Alarm Panel Demo] [![KerbNote Lite v1.2 — Alarm Panel Demo](https://img.youtube.com/vi/es_yzetdrr4/hqdefault.jpg)](https://youtu.be/es_yzetdrr4)
 
 Watch the demo video for KerbNote Lite v1.2 — alarm panel, vessel triggers, mininote overlay, and editor upgrades.
 
@@ -26,17 +26,19 @@ That’s it — you’re ready to launch!
 
 Screenshots showing each stage of the tactical alarm system:
 
-### Alarm Setup  
-![Alarm Setup](alarm_set.png)
+### Target Body Selection  
+![Target Body](body.png)
 
 ### Vessel Situation  
 ![Vessel Situation](situation.png)
 
-### Target Body Selection  
-![Target Body](body.png)
+### Alarm Setup  
+![Alarm Setup](alarm_set.png)
 
-### Mininote Overlay  
-![Mininote Overlay](mininote.png)
+
+
+
+
 
 ---
 
