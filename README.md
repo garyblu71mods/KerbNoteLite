@@ -1,6 +1,26 @@
 # KerbNote Lite
+---
+#  KerbNote Lite v1.2.1 — Latest Release
 
-**Newest version:** [v1.2-alpha — Tactical Alarm Overlay](https://github.com/garyblu71mods/KerbNoteLite/releases/tag/v1.2-alpha)
+**Now with per-save notes, skin switching, and MiniNote improvements!**  
+Released: November 2025  
+[Download on GitHub Releases](https://github.com/garyblu71mods/KerbNoteLite/releases)
+
+##  What's New in v1.2.1
+- Per-save note detection and switching
+- Skin switching with live MiniNote updates
+- MiniNote always stays on top, with permanent opacity toggle
+- Alarm panel repositioned to avoid toolbar
+- UI polish, tab texture states, and more
+
+
+
+---
+
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/garyblu71mods/KerbNoteLite)
+
+
+**Version:** [v1.2-alpha — Tactical Alarm Overlay](https://github.com/garyblu71mods/KerbNoteLite/releases/tag/v1.2-alpha)
 
 [KerbNote Lite v1.2 — Alarm Panel Demo] [![KerbNote Lite v1.2 — Alarm Panel Demo](https://img.youtube.com/vi/es_yzetdrr4/hqdefault.jpg)](https://youtu.be/es_yzetdrr4)
 
