@@ -67,63 +67,6 @@ KerbNoteLite is a comprehensive note-taking and alarm system mod for Kerbal Spac
 4. Use **Ctrl+Z** to undo changes
 5. Click the **AAA** button below the note to change zoom level
 
-### Using the Settings Panel
-A collapsible **Settings** panel is available at the bottom of the KerbNote window. Click the **Settings** bar to expand/collapse it.
-
-#### Notes Option
-- **Purpose**: Switch between different game saves
-- **How it works**:
-  1. Click **Notes** button in the Settings panel
-  2. Select a save from the list (up to 5 visible, scroll for more)
-  3. The mod will load notes and alarms specific to that save
-  4. Each save has its own separate notes and alarm configurations
-  5. Click **Back** to return to Settings menu
-
-**Features:**
-- Automatically creates note files for each save with default green skin
-- Moves orphaned files (from deleted saves) to `DelatedSaves` folder
-- Ensures data integrity across save games
-
-#### Skin Option
-- **Purpose**: Change the visual theme of the KerbNote interface
-- **How it works**:
-  1. Click **Skin** button in the Settings panel
-  2. Browse available skin packs (up to 5 visible, scroll for more)
-  3. Select a skin to apply it immediately
-  4. The skin choice is saved in your notes header
-  5. Click **Back** to return to Settings menu
-
-**Available skins** are located in:
-```
-GameData/KerbCalcProject/texture_pack/[SkinName]/Textures/
-```
-
-**Skin affects:**
-- Window backgrounds and textures
-- Button styles (tabs, hover, click states)
-- Note area appearance
-- Mini-note visual style
-- Overall color scheme
-
-#### About/Help Option
-- **Purpose**: View documentation and help information
-- **How it works**:
-  1. Click **About/Help** button in the Settings panel
-  2. A modal window appears with markdown-formatted help text
-  3. Scroll through the content using the scroll bar
-  4. Click **X** button to close
-
-**Help file** is loaded from:
-```
-GameData/KerbCalcProject/About_Help (or About_Help.txt, .md)
-```
-
-The About window supports:
-- Markdown formatting (headers, bold, italic, lists)
-- Code blocks with syntax highlighting
-- Scrollable content for long documentation
-- Rich text formatting
-
 ### Setting Up Alarms
 1. Create or select a note tab
 2. Click the side bar to open alarm settings
