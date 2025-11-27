@@ -74,5 +74,8 @@
     <Compile Include="src\SliderWindow.cs" />
     <Compile Include="src\SoundManager.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="img\situation.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
