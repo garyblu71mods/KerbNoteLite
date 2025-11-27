@@ -54,25 +54,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AlarmEditorRunner.cs" />
-    <Compile Include="AlarmManager.cs" />
-    <Compile Include="AlarmRunner.cs" />
-    <Compile Include="AlarmSelector.cs" />
-    <Compile Include="AlarmSpaceCenterRunner.cs" />
-    <Compile Include="KerbalUIBackground.cs" />
-    <Compile Include="KerbCalc.cs" />
-    <Compile Include="KerbNote.UI.Calc.cs" />
-    <Compile Include="KerbNote.UI.Note.cs" />
-    <Compile Include="KerbNote.UI.Styles.cs" />
-    <Compile Include="KerbNote.UI.TopBarTabs.cs" />
-    <Compile Include="KerbNote.UI.Windows.cs" />
-    <Compile Include="MiniNote.cs" />
+    <Compile Include="src\AlarmEditorRunner.cs" />
+    <Compile Include="src\AlarmManager.cs" />
+    <Compile Include="src\AlarmRunner.cs" />
+    <Compile Include="src\AlarmSelector.cs" />
+    <Compile Include="src\AlarmSpaceCenterRunner.cs" />
+    <Compile Include="src\KerbalUIBackground.cs" />
+    <Compile Include="src\KerbCalc.cs" />
+    <Compile Include="src\KerbNote.UI.Calc.cs" />
+    <Compile Include="src\KerbNote.UI.Note.cs" />
+    <Compile Include="src\KerbNote.UI.Styles.cs" />
+    <Compile Include="src\KerbNote.UI.TopBarTabs.cs" />
+    <Compile Include="src\KerbNote.UI.Windows.cs" />
+    <Compile Include="src\MiniNote.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SettingWindow.cs" />
-    <Compile Include="SkinAssets.cs" />
-    <Compile Include="SkinReload.cs" />
-    <Compile Include="SliderWindow.cs" />
-    <Compile Include="SoundManager.cs" />
+    <Compile Include="src\SettingWindow.cs" />
+    <Compile Include="src\SkinAssets.cs" />
+    <Compile Include="src\SkinReload.cs" />
+    <Compile Include="src\SliderWindow.cs" />
+    <Compile Include="src\SoundManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
