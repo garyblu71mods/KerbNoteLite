@@ -73,7 +73,6 @@
     <Compile Include="src\SkinReload.cs" />
     <Compile Include="src\SliderWindow.cs" />
     <Compile Include="src\SoundManager.cs" />
-    <Compile Include="src\TestAlarm.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="img\situation.png" />
