@@ -50,10 +50,13 @@ KerbNoteLite is a comprehensive note-taking and alarm system mod for Kerbal Spac
 
 ## Installation
 
-1. Download the latest release
-2. Extract the contents to your KSP `GameData` folder
-3. The mod structure should be: `GameData/KerbCalcProject/`
-4. Launch KSP and enjoy!
+1. Download the latest release from the [Releases page](https://github.com/garyblu71mods/KerbNoteLite/releases)
+2. Extract the `KerbCalcProject` folder from the downloaded ZIP file
+3. Copy the `KerbCalcProject` folder to your KSP `GameData` directory
+4. The final structure should be: `GameData/KerbCalcProject/`
+5. Launch KSP and enjoy!
+
+**Note:** Download the pre-built release package, not the source code. The release contains the compiled mod ready to use.
 
 ## Usage
 
