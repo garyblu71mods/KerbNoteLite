@@ -181,7 +181,7 @@ public static class AlarmManager
         {
             string folder = KerbNote.ActiveSaveOverride;
             if (string.IsNullOrEmpty(folder)) folder = HighLogic.SaveFolder;
-            string modDir = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbCalcProject", "AlarmsAndNotes");
+            string modDir = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbNoteLite", "AlarmsAndNotes");
             if (!string.IsNullOrEmpty(folder))
             {
                 string upper = Path.Combine(modDir, $"Alarms_{folder}.txt");
@@ -192,7 +192,7 @@ public static class AlarmManager
             }
         }
         catch { }
-        return Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbCalcProject", "AlarmsAndNotes", "alarms.txt");
+        return Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbNoteLite", "AlarmsAndNotes", "alarms.txt");
     }
 
     private static void MigrateLegacyAlarmsIfNeeded()
@@ -211,7 +211,7 @@ public static class AlarmManager
                 if (string.IsNullOrEmpty(folder)) folder = HighLogic.SaveFolder;
                 if (!string.IsNullOrEmpty(folder))
                 {
-                    perSaveOld = Path.Combine(KSPUtil.ApplicationRootPath, "saves", folder, "KerbCalcProject", "alarms.txt");
+                    perSaveOld = Path.Combine(KSPUtil.ApplicationRootPath, "saves", folder, "KerbNoteLite", "alarms.txt");
                 }
             }
             catch { }
@@ -223,8 +223,8 @@ public static class AlarmManager
                 return;
             }
 
-            string legacyUpper = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbCalcProject", "Alarms.txt");
-            string legacyLower = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbCalcProject", "alarms.txt");
+            string legacyUpper = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbNoteLite", "Alarms.txt");
+            string legacyLower = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbNoteLite", "alarms.txt");
             if (File.Exists(legacyUpper))
             {
                 File.Copy(legacyUpper, filePath, true);
@@ -243,8 +243,8 @@ public static class AlarmManager
                 if (string.IsNullOrEmpty(folder)) folder = HighLogic.SaveFolder;
                 if (!string.IsNullOrEmpty(folder))
                 {
-                    string oldUpperPerSave = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbCalcProject", $"Alarms_{folder}.txt");
-                    string oldLowerPerSave = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbCalcProject", $"alarms_{folder}.txt");
+                    string oldUpperPerSave = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbNoteLite", $"Alarms_{folder}.txt");
+                    string oldLowerPerSave = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbNoteLite", $"alarms_{folder}.txt");
                     if (File.Exists(oldUpperPerSave))
                     {
                         File.Copy(oldUpperPerSave, filePath, true);

@@ -45,15 +45,15 @@ KerbNoteLite is a comprehensive note-taking and alarm system mod for Kerbal Spac
 - **GUID-based tab system** for reliable tab tracking
 - **Automatic alarm cleanup** removes orphaned alarms
 - **Legacy data migration** from older versions
-- **Per-save data storage** in `GameData/KerbCalcProject/AlarmsAndNotes/`
+- **Per-save data storage** in `GameData/KerbNoteLite/AlarmsAndNotes/`
 - Compatible with **.NET Framework 4.8** and **C# 7.3**
 
 ## Installation
 
 1. Download the latest release from the [Releases page](https://github.com/garyblu71mods/KerbNoteLite/releases)
-2. Extract the `KerbCalcProject` folder from the downloaded ZIP file
-3. Copy the `KerbCalcProject` folder to your KSP `GameData` directory
-4. The final structure should be: `GameData/KerbCalcProject/`
+2. Extract the `KerbNoteLite` folder from the downloaded ZIP file
+3. Copy the `KerbNoteLite` folder to your KSP `GameData` directory
+4. The final structure should be: `GameData/KerbNoteLite/`
 5. Launch KSP and enjoy!
 
 **Note:** Download the pre-built release package, not the source code. The release contains the compiled mod ready to use.
@@ -98,7 +98,7 @@ A collapsible **Settings** panel is available at the bottom of the KerbNote wind
 
 **Available skins** are located in:
 ```
-GameData/KerbCalcProject/texture_pack/[SkinName]/Textures/
+GameData/KerbNoteLite/texture_pack/[SkinName]/Textures/
 ```
 
 **Skin affects:**
@@ -118,14 +118,8 @@ GameData/KerbCalcProject/texture_pack/[SkinName]/Textures/
 
 **Help file** is loaded from:
 ```
-GameData/KerbCalcProject/About_Help (or About_Help.txt, .md)
+GameData/KerbNoteLite/About_Help (or About_Help.txt, .md)
 ```
-
-The About window supports:
-- Markdown formatting (headers, bold, italic, lists)
-- Code blocks with syntax highlighting
-- Scrollable content for long documentation
-- Rich text formatting
 
 ### Setting Up Alarms
 1. Create or select a note tab
@@ -143,7 +137,7 @@ The About window supports:
 ## File Structure
 
 ```
-KerbCalcProject/
+KerbNoteLite/
 ├── src/
 │   ├── AlarmManager.cs           # Core alarm management system
 │   ├── AlarmRunner.cs             # In-flight alarm trigger system
@@ -154,7 +148,7 @@ KerbCalcProject/
 │   ├── MiniNote.cs                # Mini-note window system
 │   ├── SoundManager.cs            # Sound effects
 │   └── SkinAssets.cs              # UI texture management
-└── GameData/KerbCalcProject/
+└── GameData/KerbNoteLite/
     └── AlarmsAndNotes/            # Per-save data storage
 ```
 
@@ -163,13 +157,13 @@ KerbCalcProject/
 ### Notes
 Notes are stored per-save in:
 ```
-GameData/KerbCalcProject/AlarmsAndNotes/Notes_[SaveName].txt
+GameData/KerbNoteLite/AlarmsAndNotes/Notes_[SaveName].txt
 ```
 
 ### Alarms
 Alarms are stored per-save in:
 ```
-GameData/KerbCalcProject/AlarmsAndNotes/Alarms_[SaveName].txt
+GameData/KerbNoteLite/AlarmsAndNotes/Alarms_[SaveName].txt
 ```
 
 ## Alarm Situations
@@ -191,7 +185,7 @@ Special locations:
 ## Development
 
 ### Building
-1. Open `KerbCalcProject.csproj` in Visual Studio
+1. Open `KerbNoteLite.csproj` in Visual Studio
 2. Ensure references to KSP assemblies are correct
 3. Build in Release mode
 4. Output DLL will be in `bin/Release/`
