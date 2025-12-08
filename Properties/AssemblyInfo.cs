@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("KerbNoteLite")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyDescription("A comprehensive note-taking and alarm system mod for Kerbal Space Program that helps you manage your missions with in-game notes, mini-notes, and location-based alarms.")]
+[assembly: AssemblyConfiguration("Release")]
+[assembly: AssemblyCompany("garyblu71mods")]
 [assembly: AssemblyProduct("KerbNoteLite")]
-[assembly: AssemblyCopyright("Copyright ©  2025")]
+[assembly: AssemblyCopyright("Copyright © 2025 garyblu71mods")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
