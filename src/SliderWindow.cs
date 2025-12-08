@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using UnityEngine;
 
 public class SliderWindow : MonoBehaviour
@@ -11,16 +11,16 @@ public class SliderWindow : MonoBehaviour
     // Konfiguracja
     public float minDistanceFromEdge =20f;
     public bool allowDragging = false; // sztywno przylaczony, bez dragowania
-    public float buttonOffset =0f; // opcjonalny offset od środka (Y)
+    public float buttonOffset =0f; // opcjonalny offset od srodka (Y)
 
-    private float buttonWidth =20f; // szerokość paska (stała, z tekstury)
-    private float buttonHeight =20f; // wysokość paska (TERAZ stała 300)
+    private float buttonWidth =20f; // szerokosc paska (stala, z tekstury)
+    private float buttonHeight =20f; // wysokosc paska (TERAZ stala 300)
     private Texture2D alarmBarTexture;
     private float barFixedWidth = 18f;
 
     // Animacja (0 = hidden,1 = visible)
     private float slideT =0f;
-    private const float SNAP_EPSILON =0.001f; // precyzyjny snap, brak pływania
+    private const float SNAP_EPSILON =0.001f; // precyzyjny snap, brak plywania
 
     private float hiddenPanelX;
     private float visiblePanelX;
@@ -29,10 +29,10 @@ public class SliderWindow : MonoBehaviour
     private KerbNote mainWindow;
     private bool isModActive = false;
 
-    private int panelWindowID; // własny ID okna panelu
-    private int buttonWindowID; // własny ID okna przycisku Alarm_bar
+    private int panelWindowID; // wlasny ID okna panelu
+    private int buttonWindowID; // wlasny ID okna przycisku Alarm_bar
 
-    private const string TEXTURE_ALARM_BAR = "KerbCalcProject/Textures/Alarm_bar";
+    private const string TEXTURE_ALARM_BAR = "KerbNoteLite/Textures/Alarm_bar";
 
     // --- Alarm Selector embed ---
     private AlarmSelector selector;
@@ -55,13 +55,13 @@ public class SliderWindow : MonoBehaviour
 
     void Start()
     {
-        // Spróbuj znaleźć główne okno, jeśli nie zostało ustawione z zewnątrz
+        // Spr�buj znalezc gl�wne okno, jesli nie zostalo ustawione z zewnatrz
         if (mainWindow == null)
             mainWindow = FindObjectOfType<KerbNote>();
 
         if (mainWindow == null)
         {
-            Debug.LogError("[SliderWindow] Nie znaleziono głównego okna KerbNote!");
+            Debug.LogError("[SliderWindow] Nie znaleziono gl�wnego okna KerbNote!");
             enabled = false;
             return;
         }
@@ -69,14 +69,14 @@ public class SliderWindow : MonoBehaviour
         mainWindowRect = mainWindow.WindowRect;
         screenSize = new Vector2(Screen.width, Screen.height);
 
-        // Ładowanie tekstur (z aktywnego skina)
+        // Ladowanie tekstur (z aktywnego skina)
         KerbalUIBackground.LoadTexture();
         ReloadAlarmBarTexture();
         if (alarmBarTexture == null)
         {
             Debug.LogWarning("[SliderWindow] Alarm_bar texture not found, using fallback sizes.");
         }
-        // Ustal stałą szerokość paska (nie skalujemy w poziomie)
+        // Ustal stala szerokosc paska (nie skalujemy w poziomie)
         if (alarmBarTexture != null && alarmBarTexture.width > 0)
         {
             barFixedWidth = Mathf.Clamp(alarmBarTexture.width, 8f, 64f);
@@ -86,20 +86,20 @@ public class SliderWindow : MonoBehaviour
             barFixedWidth = 18f;
         }
 
-        // Stała wysokość paska: 300 px
+        // Stala wysokosc paska: 300 px
         buttonHeight = 300f;
 
         // Start hidden, bez rysowania panelu
         isVisible = false;
         slideT =0f;
 
-        // Zmniejsz szerokość panelu o25%
+        // Zmniejsz szerokosc panelu o25%
         sliderRect.width = Mathf.Round(sliderRect.width *0.75f);
 
         panelWindowID = GetInstanceID() ^0x5A5A5A5A; // stabilny, unikalny ID okna panelu
         buttonWindowID = GetInstanceID() ^0x3C3C3C3C; // stabilny, unikalny ID okna przycisku
 
-        // Utwórz i skonfiguruj selektor
+        // Utw�rz i skonfiguruj selektor
         selector = gameObject.AddComponent<AlarmSelector>();
         selector.Init(mainWindow, /*tabIndex*/ mainWindow.ActiveTabIndex);
         selector.OnRequestClosePanel = () => { isVisible = false; };
@@ -128,30 +128,30 @@ public class SliderWindow : MonoBehaviour
             return;
         }
 
-        // Zaczytuj aktualny rect okna głównego i jego widoczność
+        // Zaczytuj aktualny rect okna gl�wnego i jego widocznosc
         mainWindowRect = mainWindow.WindowRect;
         isModActive = mainWindow.IsWindowVisible;
 
         if (!isModActive)
         {
             isVisible = false;
-            slideT =0f; // wymuś pełne schowanie gdy mod nieaktywny
+            slideT =0f; // wymus pelne schowanie gdy mod nieaktywny
             UpdateSizesAndAnchors();
             UpdateAnchoredPosition();
             ClearInputLock();
             return;
         }
 
-        // Aktualizuj rozmiary zależne od okna i zakotwicz panel na tej samej wysokości co okno
+        // Aktualizuj rozmiary zalezne od okna i zakotwicz panel na tej samej wysokosci co okno
         UpdateSizesAndAnchors();
 
-        // Reakcja na zmianę rozdzielczości (jeśli potrzeba dodatkowej logiki)
+        // Reakcja na zmiane rozdzielczosci (jesli potrzeba dodatkowej logiki)
         if (screenSize.x != Screen.width || screenSize.y != Screen.height)
         {
             screenSize = new Vector2(Screen.width, Screen.height);
         }
 
-        // Animacja (0..1) z domknięciem (snap) dla braku pływania
+        // Animacja (0..1) z domknieciem (snap) dla braku plywania
         float targetT = isVisible ?1f :0f;
         float nextT = Mathf.Lerp(slideT, targetT, Time.deltaTime * slideSpeed);
         if (Mathf.Abs(nextT - targetT) <0.0005f)
@@ -165,24 +165,24 @@ public class SliderWindow : MonoBehaviour
 
     private void UpdateSizesAndAnchors()
     {
-        // Panel wysokość nadal zależna od okna, ale przycisk (pasek) ma stałą wysokość 350
+        // Panel wysokosc nadal zalezna od okna, ale przycisk (pasek) ma stala wysokosc 350
         float reducedHeight = Mathf.Max(0f, mainWindowRect.height -35f);
         sliderRect.height = reducedHeight;
         sliderRect.y = mainWindowRect.y + (mainWindowRect.height - reducedHeight) /2f;
 
-        // Szerokość paska stała (bez skalowania poziomego)
+        // Szerokosc paska stala (bez skalowania poziomego)
         buttonWidth = barFixedWidth;
 
         // Pozycje X panelu:
-        // Hidden: lewa krawędź panelu równa prawej krawędzi okna minus szerokość panelu (schowany pod oknem)
+        // Hidden: lewa krawedz panelu r�wna prawej krawedzi okna minus szerokosc panelu (schowany pod oknem)
         hiddenPanelX = mainWindowRect.xMax - sliderRect.width;
-        // Visible: lewa krawędź panelu równa prawej krawędzi okna (cały panel po prawej)
+        // Visible: lewa krawedz panelu r�wna prawej krawedzi okna (caly panel po prawej)
         visiblePanelX = mainWindowRect.xMax;
     }
 
     private void UpdateAnchoredPosition()
     {
-        // Ustaw pozycję X panelu według animacji (0..1)
+        // Ustaw pozycje X panelu wedlug animacji (0..1)
         sliderRect.x = Mathf.Lerp(hiddenPanelX, visiblePanelX, slideT);
     }
 
@@ -190,7 +190,7 @@ public class SliderWindow : MonoBehaviour
     {
         if (!isModActive) { ClearInputLock(); return; }
 
-        // Ukryj cały Alarm_bar (poziomy i panel) kiedy About/Help jest otwarte
+        // Ukryj caly Alarm_bar (poziomy i panel) kiedy About/Help jest otwarte
         if (SettingWindow.IsAboutVisible)
         {
             ClearInputLock();
@@ -208,10 +208,10 @@ public class SliderWindow : MonoBehaviour
             UpdateAnchoredPosition();
         }
 
-        // Oblicz widoczną szerokość „wyciągniętego" fragmentu panelu poza okno główne
+        // Oblicz widoczna szerokosc �wyciagnietego" fragmentu panelu poza okno gl�wne
         float protrusion = Mathf.Clamp(sliderRect.x + sliderRect.width - mainWindowRect.xMax,0f, sliderRect.width);
 
-        // RYSUJ panel jako GUI.Window w obszarze wystającym po PRAWEJ (ta sama warstwa co okno moda)
+        // RYSUJ panel jako GUI.Window w obszarze wystajacym po PRAWEJ (ta sama warstwa co okno moda)
         if (protrusion > SNAP_EPSILON)
         {
             Rect panelWinRect = new Rect(mainWindowRect.xMax, sliderRect.y, protrusion, sliderRect.height);
@@ -224,7 +224,7 @@ public class SliderWindow : MonoBehaviour
         }
 
         // RYSUJ Alarm_bar jako osobne okno, zawsze widocne (ta sama warstwa co panel/okno)
-        float btnX = mainWindowRect.xMax + protrusion; // lewa krawędź przycisku = prawa krawędź okna/panelu
+        float btnX = mainWindowRect.xMax + protrusion; // lewa krawedz przycisku = prawa krawedz okna/panelu
         float btnY = mainWindowRect.y + (mainWindowRect.height - buttonHeight) /2f + buttonOffset;
         Rect btnWinRect = new Rect(btnX, btnY, buttonWidth, buttonHeight);
         lastButtonWinRect = btnWinRect;
@@ -243,7 +243,7 @@ public class SliderWindow : MonoBehaviour
 
     private void DrawPanelWindow(int id)
     {
-        // Wewnątrz okna rysujemy całą zawartość panelu przesuniętą tak, aby była widoczna tylko jego prawa część
+        // Wewnatrz okna rysujemy cala zawartosc panelu przesunieta tak, aby byla widoczna tylko jego prawa czesc
         float protrusion = Mathf.Clamp(sliderRect.x + sliderRect.width - mainWindowRect.xMax,0f, sliderRect.width);
         float localX = -(sliderRect.width - protrusion);
         DrawPanelContents(localX);
@@ -293,15 +293,15 @@ public class SliderWindow : MonoBehaviour
 
     private void DrawPanelContents(float localX)
     {
-        // Tło panelu
+        // Tlo panelu
         KerbalUIBackground.DrawNoteWindow(new Rect(localX,0, sliderRect.width, sliderRect.height));
 
-        // Obszar na treść selektora (z marginesem)
+        // Obszar na tresc selektora (z marginesem)
         Rect contentArea = new Rect(localX +8f,8f, sliderRect.width -16f, sliderRect.height -16f);
 
         if (selector != null)
         {
-            // Rysujemy selektor w embedzie: nazwa zakładki na górze, pod spodem lista ciał (scroll)
+            // Rysujemy selektor w embedzie: nazwa zakladki na g�rze, pod spodem lista cial (scroll)
             selector.DrawEmbedded(contentArea, mainWindow, /*TabIndex*/ mainWindow.ActiveTabIndex);
         }
         else
@@ -312,7 +312,7 @@ public class SliderWindow : MonoBehaviour
         // Brak dragowania (panel przyklejony)
         if (allowDragging)
         {
-            // DragWindow działa tylko w Window, tu pomijamy
+            // DragWindow dziala tylko w Window, tu pomijamy
         }
     }
 
@@ -344,12 +344,12 @@ public class SliderWindow : MonoBehaviour
         cachedAlarmButtonStyle = null;
     }
 
-    // --- API: public helper to force-open panel (używane przez MiniNote) ---
+    // --- API: public helper to force-open panel (uzywane przez MiniNote) ---
     public void ShowPanelImmediate()
     {
-        // Wymuś pokazanie panelu natychmiast (bez animacji oczekiwania)
+        // Wymus pokazanie panelu natychmiast (bez animacji oczekiwania)
         isVisible = true;
-        slideT = 1f; // pełne wysunięcie
+        slideT = 1f; // pelne wysuniecie
         UpdateSizesAndAnchors();
         UpdateAnchoredPosition();
     }

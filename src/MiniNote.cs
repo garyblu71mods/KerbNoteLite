@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Linq;
 
@@ -23,9 +23,9 @@ public class MiniNote : MonoBehaviour
 	private Vector2 scroll = Vector2.zero;
 
 	private KerbNote host; // reference to main window to pull tab text
-	public string TabGuid { get; private set; } // używamy GUID zamiast indeksu
+	public string TabGuid { get; private set; } // uzywamy GUID zamiast indeksu
 	
-	// Backward compat: TabIndex property dla starych wywołań
+	// Backward compat: TabIndex property dla starych wywolan
 	public int TabIndex 
 	{ 
 		get { return host != null ? host.GetTabIndexFromGuid(TabGuid) : -1; }
@@ -44,12 +44,12 @@ public class MiniNote : MonoBehaviour
 	private bool keepAlphaAtEighty = false;
 
 	// Draw order: Main Window (default), Panel (-100), MiniNote (super top now at -2000)
-	private const int MININOTE_DEPTH = -2000; // bardzo wysoki priorytet rysowania (niższa wartość = nad innymi)
+	private const int MININOTE_DEPTH = -2000; // bardzo wysoki priorytet rysowania (nizsza wartosc = nad innymi)
 	// Delay hover fade
 	private bool lastHover = false;
 	private float hoverChangeTimestamp = 0f;
 	private float delayedTargetAlpha = 0.4f;
-	private const float HOVER_DELAY = 0.2f; // sekundy opóźnienia
+	private const float HOVER_DELAY = 0.2f; // sekundy op�znienia
 
 	// Flag telling if this MiniNote visibility was caused by an alarm trigger
 	public bool SpawnedByAlarm { get; set; }
@@ -371,7 +371,7 @@ public class MiniNote : MonoBehaviour
 			GUI.Label(new Rect(PADDING, TOP_BAR_HEIGHT -2f, windowRect.width - PADDING *2 - reservedRight, alarmLineHeight), alarmInfo, alarmStyle);
 		}
 
-		// Buttons on the right: [edit] [O/●] [X] only when controls visible
+		// Buttons on the right: [edit] [O/?] [X] only when controls visible
 		if (showControls)
 		{
 			float btnH = TOP_BAR_HEIGHT -4f;
@@ -392,7 +392,7 @@ public class MiniNote : MonoBehaviour
 					if (!hostVisible || currentActiveIdx != activeIdx)
 					{
 						if (activeIdx >= 0) host.OpenOnTab(activeIdx);
-						// Natychmiast wysuń panel alarmów przy edycji z MiniNote
+						// Natychmiast wysun panel alarm�w przy edycji z MiniNote
 						host.ShowAlarmPanelImmediate();
 					}
 					else
@@ -402,7 +402,7 @@ public class MiniNote : MonoBehaviour
 				}
 			}
 			xRight -= editW +4f;
-			// O/● toggle (leftmost of the right controls)
+			// O/? toggle (leftmost of the right controls)
 			if (GUI.Button(new Rect(xRight - ringW, btnY, ringW, btnH), ringLabel))
 			{
 				keepAlphaAtEighty = !keepAlphaAtEighty;

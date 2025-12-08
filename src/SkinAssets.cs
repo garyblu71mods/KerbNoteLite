@@ -6,7 +6,7 @@ using UnityEngine;
 
 public static class SkinAssets
 {
- private static string currentUrlRoot; // url root for GameDatabase lookup (e.g., KerbCalcProject/texture_pack/<Pack>/Textures)
+ private static string currentUrlRoot; // url root for GameDatabase lookup (e.g., KerbNoteLite/texture_pack/<Pack>/Textures)
  private static string currentFolder;   // absolute folder path
  private static string fallbackUrlRoot; // url root for fallback pack (e.g., Stock/Green)
  private static string fallbackFolder;  // absolute folder path for fallback
@@ -14,7 +14,7 @@ public static class SkinAssets
 
  public static bool DebugTrace = true;
 
- private const string DefaultUrlRoot = "KerbCalcProject/Textures";
+ private const string DefaultUrlRoot = "KerbNoteLite/Textures";
  
  // Cache for loaded textures to avoid repeated file/DB lookups
  private static readonly Dictionary<string, Texture2D> textureCache = new Dictionary<string, Texture2D>();

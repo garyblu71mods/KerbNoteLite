@@ -1,4 +1,4 @@
-﻿using KSP.UI.Screens;
+using KSP.UI.Screens;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +9,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-// Statyczna klasa do przechowywania historii kalkulatora między scenami
+// Statyczna klasa do przechowywania historii kalkulatora miedzy scenami
+// Version: 1.2.4 - Force Rebuild
 public static class CalcHistoryStore
 {
     private static List<string> history = new List<string>();
@@ -120,61 +121,61 @@ public partial class KerbNote : MonoBehaviour
         openWhenReadyCoro = null;
     }
 
-    // --- KONFIGURACJA ELEMENTÓW UI MODA ---
-    // Nazwa pliku tekstury, wysokość, szerokość, pozycja X, pozycja Y // Opis zastosowania
-    public const string TEXTURE_ICON_ON = "KerbCalcProject/Textures/IconOn"; //38x38, x:0, y:0 // Ikona aktywna w launcherze
-    public const string TEXTURE_ICON_OFF = "KerbCalcProject/Textures/IconOff"; //38x38, x:0, y:0 // Ikona nieaktywna w launcherze
-    public const string TEXTURE_TAB = "KerbCalcProject/Textures/Tab"; //28x80, x:dynamic, y:topBarY+topBarHeight // Tło zakładki
-    public const string TEXTURE_TAB_HOVER = "KerbCalcProject/Textures/TabHover"; //28x80, x:dynamic, y:topBarY+topBarHeight // Tło zakładki hover
-    public const string TEXTURE_TAB_CLICK = "KerbCalcProject/Textures/TabClick"; //28x80, x:dynamic, y:topBarY+topBarHeight // Tło zakładki klikniętej
-    public const string TEXTURE_BUTTON = "KerbCalcProject/Textures/Button"; //24x80, x:dynamic, y:topBarY // Tło przycisku
-    public const string TEXTURE_BUTTON_HOVER = "KerbCalcProject/Textures/ButtonHover"; //24x80, x:dynamic, y:topBarY // Tło przycisku hover
-    public const string TEXTURE_BUTTON_CLICK = "KerbCalcProject/Textures/ButtonClick"; //24x80, x:dynamic, y:topBarY // Tło przycisku klikniętego
-    public const string TEXTURE_BUTTON_RED = "KerbCalcProject/Textures/red_Button"; //24x80, x:dynamic, y:topBarY // Tło przycisku czerwonego
-    public const string TEXTURE_AAA = "KerbCalcProject/Textures/AAA"; //24x24, x:noteX, y:areaRect.yMax+10 // Ikona zoom pod notatką
-    public const string TEXTURE_NOTE_WINDOW = "KerbCalcProject/Textures/NoteWindow"; // dynamic, x:noteX, y:topMargin // Tło obszaru notatki
-    public const string TEXTURE_BACKGROUND_WINDOW = "KerbCalcProject/Textures/BackgroundWindow"; // dynamic, x:0, y:0 // Tło całego okna moda
-   // public const string TEXTURE_BACKGROUND_UNDO = "KerbCalcProject/Textures/BackgroundUndo"; // dynamic, x:0, y:0 // Tło przycisku undo delete
+    // --- KONFIGURACJA ELEMENT�W UI MODA ---
+    // Nazwa pliku tekstury, wysokosc, szerokosc, pozycja X, pozycja Y // Opis zastosowania
+    public const string TEXTURE_ICON_ON = "KerbNoteLite/Textures/IconOn"; //38x38, x:0, y:0 // Ikona aktywna w launcherze
+    public const string TEXTURE_ICON_OFF = "KerbNoteLite/Textures/IconOff"; //38x38, x:0, y:0 // Ikona nieaktywna w launcherze
+    public const string TEXTURE_TAB = "KerbNoteLite/Textures/Tab"; //28x80, x:dynamic, y:topBarY+topBarHeight // Tlo zakladki
+    public const string TEXTURE_TAB_HOVER = "KerbNoteLite/Textures/TabHover"; //28x80, x:dynamic, y:topBarY+topBarHeight // Tlo zakladki hover
+    public const string TEXTURE_TAB_CLICK = "KerbNoteLite/Textures/TabClick"; //28x80, x:dynamic, y:topBarY+topBarHeight // Tlo zakladki kliknietej
+    public const string TEXTURE_BUTTON = "KerbNoteLite/Textures/Button"; //24x80, x:dynamic, y:topBarY // Tlo przycisku
+    public const string TEXTURE_BUTTON_HOVER = "KerbNoteLite/Textures/ButtonHover"; //24x80, x:dynamic, y:topBarY // Tlo przycisku hover
+    public const string TEXTURE_BUTTON_CLICK = "KerbNoteLite/Textures/ButtonClick"; //24x80, x:dynamic, y:topBarY // Tlo przycisku kliknietego
+    public const string TEXTURE_BUTTON_RED = "KerbNoteLite/Textures/red_Button"; //24x80, x:dynamic, y:topBarY // Tlo przycisku czerwonego
+    public const string TEXTURE_AAA = "KerbNoteLite/Textures/AAA"; //24x24, x:noteX, y:areaRect.yMax+10 // Ikona zoom pod notatka
+    public const string TEXTURE_NOTE_WINDOW = "KerbNoteLite/Textures/NoteWindow"; // dynamic, x:noteX, y:topMargin // Tlo obszaru notatki
+    public const string TEXTURE_BACKGROUND_WINDOW = "KerbNoteLite/Textures/BackgroundWindow"; // dynamic, x:0, y:0 // Tlo calego okna moda
+   // public const string TEXTURE_BACKGROUND_UNDO = "KerbNoteLite/Textures/BackgroundUndo"; // dynamic, x:0, y:0 // Tlo przycisku undo delete
 
-    public const float WINDOWS_DEFAULT_X = 200f; // Pozycja X okna głównego
-    public const float WINDOWS_DEFAULT_Y = 200f; // Pozycja Y okna głównego
-    public const float WINDOWS_DEFAULT_WIDTH = 460f; // Szerokość okna głównego
-    public const float WINDOWS_DEFAULT_HEIGHT = 410f; // Wysokość okna głównego
+    public const float WINDOWS_DEFAULT_X = 200f; // Pozycja X okna gl�wnego
+    public const float WINDOWS_DEFAULT_Y = 200f; // Pozycja Y okna gl�wnym
+    public const float WINDOWS_DEFAULT_WIDTH = 460f; // Szerokosc okna gl�wnym
+    public const float WINDOWS_DEFAULT_HEIGHT = 410f; // Wysokosc okna gl�wnym
 
-    public const float TOP_BAR_HEIGHT = 24f; // Wysokość paska górnego
-    public const float TOP_BAR_Y = 10f; // Pozycja Y paska górnego
-    public const float TOP_BAR_BUTTON_PADDING = 24f; // Padding przycisków na pasku górnym
+    public const float TOP_BAR_HEIGHT = 24f; // Wysokosc paska g�rnego
+    public const float TOP_BAR_Y = 10f; // Pozycja Y paska g�rnego
+    public const float TOP_BAR_BUTTON_PADDING = 24f; // Padding przycisk�w na pasku g�rnym
 
-    public const float TAB_BAR_Y = TOP_BAR_Y + TOP_BAR_HEIGHT + 3f; // Pozycja Y paska zakładek (3px pod topbarem)
-    public const float TAB_BARHEIGHT = 20f; // Wysokość paska zakładek (zmniejszona)
-    public const float TAB_BAR_MARGIN = 12f; // Margines paska zakładek
-    public const float TAB_MIN_WIDTH = 80f; // Minimalna szerokość zakładki
-    public const float TAB_MAX_WIDTH = 340f; // Maksymalna szerokość zakładki
-    public const float TAB_PADDING = 28f; // Padding tekstu zakładki
+    public const float TAB_BAR_Y = TOP_BAR_Y + TOP_BAR_HEIGHT + 3f; // Pozycja Y paska zakladek (3px pod topbarem)
+    public const float TAB_BARHEIGHT = 20f; // Wysokosc paska zakladek (zmniejszona)
+    public const float TAB_BAR_MARGIN = 12f; // Margines paska zakladek
+    public const float TAB_MIN_WIDTH = 80f; // Minimalna szerokosc zakladki
+    public const float TAB_MAX_WIDTH = 340f; // Maksymalna szerokosc zakladki
+    public const float TAB_PADDING = 28f; // Padding tekstu zakladki
 
-    public const float NOTE_BG_MARGIN = 10f; // Margines tła notatki
-    public const float NOTE_TOP_MARGIN = TAB_BAR_Y + TAB_BARHEIGHT; // Pozycja Y notatki (bezpośrednio pod tabbarem)
+    public const float NOTE_BG_MARGIN = 10f; // Margines tla notatki
+    public const float NOTE_TOP_MARGIN = TAB_BAR_Y + TAB_BARHEIGHT; // Pozycja Y notatki (bezposrednio pod tabbarem)
     public const float NOTE_BOTTOM_MARGIN = 100f; // Margines dolny notatki (zmniejszony)
-    public const float NOTE_WIDTH = WINDOWS_DEFAULT_WIDTH - 2 * NOTE_BG_MARGIN - 2f; // Szerokość notatki
+    public const float NOTE_WIDTH = WINDOWS_DEFAULT_WIDTH - 2 * NOTE_BG_MARGIN - 2f; // Szerokosc notatki
     public const float NOTE_X = NOTE_BG_MARGIN + 1f; // Pozycja X notatki
 
-    public const float AAA_BTN_WIDTH = TOP_BAR_HEIGHT + TOP_BAR_BUTTON_PADDING; // Szerokość przycisku AAA
-    public const float AAA_BTN_HEIGHT = TOP_BAR_HEIGHT; // Wysokość przycisku AAA
+    public const float AAA_BTN_WIDTH = TOP_BAR_HEIGHT + TOP_BAR_BUTTON_PADDING; // Szerokosc przycisku AAA
+    public const float AAA_BTN_HEIGHT = TOP_BAR_HEIGHT; // Wysokosc przycisku AAA
     public const float AAA_BTN_X = NOTE_X; // Pozycja X przycisku AAA
-    public const float AAA_BTN_Y_OFFSET = 10f; // Offset Y przycisku AAA względem notatki
+    public const float AAA_BTN_Y_OFFSET = 10f; // Offset Y przycisku AAA wzgledem notatki
 
-    public const float CALC_DISPLAY_X = 15f; // Pozycja X wyświetlacza kalkulatora
-    public const float CALC_DISPLAY_Y = 50f; // Pozycja Y wyświetlacza kalkulatora
-    public const float CALC_DISPLAY_WIDTH = WINDOWS_DEFAULT_WIDTH - 90f; // Szerokość wyświetlacza kalkulatora (skrócone z prawej)
-    public const float CALC_DISPLAY_HEIGHT = 40f; // Wysokość wyświetlacza kalkulatora
+    public const float CALC_DISPLAY_X = 15f; // Pozycja X wyswietlacza kalkulatora
+    public const float CALC_DISPLAY_Y = 50f; // Pozycja Y wyswietlacza kalkulatora
+    public const float CALC_DISPLAY_WIDTH = WINDOWS_DEFAULT_WIDTH - 90f; // Szerokosc wyswietlacza kalkulatora (skr�cone z prawej)
+    public const float CALC_DISPLAY_HEIGHT = 40f; // Wysokosc wyswietlacza kalkulatora
 
-    public const float CALC_HISTORY_TOP_MARGIN = 100f; // Margines górny historii kalkulatora
+    public const float CALC_HISTORY_TOP_MARGIN = 100f; // Margines g�rny historii kalkulatora
     public const float CALC_HISTORY_BOTTOM_MARGIN = 70f; // Margines dolny historii kalkulatora
     public const float CALC_HISTORY_SIDE_MARGIN = 12f; // Margines boczny historii kalkulatora
     public const float CALC_KEYPAD_X = WINDOWS_DEFAULT_WIDTH - 230f; // Pozycja X klawiatury kalkulatora
     public const float CALC_KEYPAD_Y = 100f; // Pozycja Y klawiatury kalkulatora
-    public const float CALC_KEYPAD_WIDTH = 210f; // Szerokość klawiatury kalkulatora
-    public const float CALC_KEYPAD_HEIGHT = 300f; // Wysokość klawiatury kalkulatora
+    public const float CALC_KEYPAD_WIDTH = 210f; // Szerokosc klawiatury kalkulatora
+    public const float CALC_KEYPAD_HEIGHT = 300f; // Wysokosc klawiatury kalkulatora
     // --- KONIEC KONFIGURACJI ---
 
     private const string DEFAULT_SKIN_NAME = "Green";
@@ -193,21 +194,21 @@ public partial class KerbNote : MonoBehaviour
 
     private string tabRenameBuffer = "";
     private int windowID = 123456;
-    private Rect windowRect = new Rect(200, 200, WINDOWS_DEFAULT_WIDTH, WINDOWS_DEFAULT_HEIGHT); // Domyślny rozmiar
+    private Rect windowRect = new Rect(200, 200, WINDOWS_DEFAULT_WIDTH, WINDOWS_DEFAULT_HEIGHT); // Domyslny rozmiar
 
-    // Publiczna właściwość do dostępu do pozycji i rozmiaru okna
+    // Publiczna wlasciwosc do dostepu do pozycji i rozmiaru okna
     public Rect WindowRect
     {
         get { return windowRect; }
     }
 
-    // Publiczna właściwość do sprawdzania czy okno jest widoczne
+    // Publiczna wlasciwosc do sprawdzania czy okno jest widoczne
     public bool IsWindowVisible
     {
         get { return showWindow; }
     }
 
-    // Publiczny dostęp do bieżącego aktywnego indeksu zakładki
+    // Publiczny dostep do biezacego aktywnego indeksu zakladki
     public int ActiveTabIndex { get { return activeTabIndex; } }
 
     // Get GUID of the active tab
@@ -288,15 +289,15 @@ public partial class KerbNote : MonoBehaviour
     private Texture2D iconOn;
     private Texture2D iconOff;
 
-    // Historia kalkulatora teraz używa statycznego store zamiast lokalnej listy
+    // Historia kalkulatora teraz uzywa statycznego store zamiast lokalnej listy
     private Vector2 historyScroll = Vector2.zero;
     private Texture2D resizeIcon;
 
-    // ✅ Style GUI
+    // ? Style GUI
     private GUIStyle buttonStyle, buttonStyleRed, noteStyle, textAreaStyle;
     private GUIStyle calcDisplayStyle;
 
-    // ✅ Tekstury zakładek
+    // ? Tekstury zakladek
     private Texture2D TabTexture;
     private Texture2D TabHoverTexture;
     private Texture2D TabClickTexture;
@@ -308,11 +309,11 @@ public partial class KerbNote : MonoBehaviour
     private Texture2D AAATexture; // Nowa tekstura dla przycisku zoom
     private Texture2D DropTexture;
 
-    // ✅ Zakładki
+    // ? Zakladki
     private List<NoteTab> tabs = new List<NoteTab>();
     private int activeTabIndex = 0;
 
-    private Texture2D noteTex; // jeśli chcesz używać osobno
+    private Texture2D noteTex; // jesli chcesz uzywac osobno
     private Texture2D noteAreaTex; // skin-driven NoteWindow for note area
 
     // reference to MiniNote
@@ -323,11 +324,11 @@ public partial class KerbNote : MonoBehaviour
     private bool editorLockActive = false;
     private Rect lastMiniBtnRectScreen = new Rect();
 
-    // ✅ Klasa zakładki
+    // ? Klasa zakladki
 
     public class NoteTab
     {
-        public string guid; // unikalny identyfikator zakładki
+        public string guid; // unikalny identyfikator zakladki
         public string name;
         public string text;
         public string lastSaved;
@@ -414,11 +415,11 @@ public partial class KerbNote : MonoBehaviour
         slider.mainWindowRect = this.windowRect;
         sliderWindow = slider; // keep reference for MiniNote integration
         
-        this.resizeIcon = SkinAssets.Get("resize") ?? GameDatabase.Instance.GetTexture("KerbCalcProject/Textures/resize", false);
+        this.resizeIcon = SkinAssets.Get("resize") ?? GameDatabase.Instance.GetTexture("KerbNoteLite/Textures/resize", false);
         if (this.resizeIcon == null)
             Debug.LogWarning("[KerbNote] resize.png not found!");
 
-        // Upewnij się, że ścieżka notatek/szynka jest ustawiona i nagłówek istnieje
+        // Upewnij sie, ze sciezka notatek/szynka jest ustawiona i nagl�rek istnieje
         notesPath = ComputeNotesPath();
         EnsureNotesDirectory();
         EnsureNotesHeaderExists(notesPath, DEFAULT_SKIN_NAME);
@@ -430,21 +431,21 @@ public partial class KerbNote : MonoBehaviour
         try { SkinReload.Reload(this); } catch { }
 
         // Inicjalizacja tekstur
-        backgroundUndoTex = GameDatabase.Instance.GetTexture("KerbCalcProject/Textures/BackgroundUndo", false);
+        backgroundUndoTex = GameDatabase.Instance.GetTexture("KerbNoteLite/Textures/BackgroundUndo", false);
         TabTexture = SkinAssets.Get("Tab") ?? GameDatabase.Instance.GetTexture(TEXTURE_TAB, false);
         TabHoverTexture = SkinAssets.Get("TabHover") ?? GameDatabase.Instance.GetTexture(TEXTURE_TAB_HOVER, false);
         TabClickTexture = SkinAssets.Get("TabClick") ?? GameDatabase.Instance.GetTexture(TEXTURE_TAB_CLICK, false);
         ButtonTexture = SkinAssets.Get("Button") ?? GameDatabase.Instance.GetTexture(TEXTURE_BUTTON, false);
         ButtonHoverTexture = SkinAssets.Get("ButtonHover") ?? GameDatabase.Instance.GetTexture(TEXTURE_BUTTON_HOVER, false);
         ButtonClickTexture = SkinAssets.Get("ButtonClick") ?? GameDatabase.Instance.GetTexture(TEXTURE_BUTTON_CLICK, false);
-        AAATexture = SkinAssets.Get("AAA") ?? GameDatabase.Instance.GetTexture(TEXTURE_AAA, false); // Ładowanie tekstury AAA
-        noteTex = SkinAssets.Get("BackgroundWindow") ?? GameDatabase.Instance.GetTexture(TEXTURE_BACKGROUND_WINDOW, false); // Ładowanie tła okna
-        noteAreaTex = SkinAssets.Get("NoteWindow") ?? GameDatabase.Instance.GetTexture(TEXTURE_NOTE_WINDOW, false); // Ładowanie tła obszaru notatki
+        AAATexture = SkinAssets.Get("AAA") ?? GameDatabase.Instance.GetTexture(TEXTURE_AAA, false); // Ladowanie tekstury AAA
+        noteTex = SkinAssets.Get("BackgroundWindow") ?? GameDatabase.Instance.GetTexture(TEXTURE_BACKGROUND_WINDOW, false); // Ladowanie tla okna
+        noteAreaTex = SkinAssets.Get("NoteWindow") ?? GameDatabase.Instance.GetTexture(TEXTURE_NOTE_WINDOW, false); // Ladowanie tla obszaru notatki
 
         // Init overlay Mini button window id
         miniButtonWindowID = GetInstanceID() ^0x11EE77;
 
-        // Logi błędów
+        // Logi bled�w
         if (Event.current.type == EventType.Repaint)
         {
         }
@@ -468,14 +469,14 @@ public partial class KerbNote : MonoBehaviour
         else
             windowRect = new Rect(windowRect.x -19f, windowRect.y +28f, windowRect.width, windowRect.height);
 
-        // Ładowanie tekstur tła UI
+        // Ladowanie tekstur tla UI
         try { KerbalUIBackground.LoadTexture(); }
         catch (Exception ex) { Debug.LogError("[KerbNote] LoadTexture error: " + ex.Message); }
 
         // --- Per-save notes path (stored in mod folder subdir) + migration from legacy/global per-save file ---
         notesPath = ComputeNotesPath();
         EnsureNotesDirectory();
-        string legacyGlobalPath = Path.Combine(KSPUtil.ApplicationRootPath, "GameData/KerbCalcProject/notes.txt");
+        string legacyGlobalPath = Path.Combine(KSPUtil.ApplicationRootPath, "GameData/KerbNoteLite/notes.txt");
         MigrateLegacyNotesIfNeeded(legacyGlobalPath);
         // Also touch-create empty file for new saves, so notes don't overlap between saves (after migration)
         try { if (!File.Exists(notesPath)) File.WriteAllText(notesPath, string.Empty); } catch {}
@@ -625,14 +626,14 @@ public partial class KerbNote : MonoBehaviour
     }
 
     // Switch active save for notes and alarms (Settings)
-    public void SwitchToSave(string saveName)
+    public void SwitchToSave(String saveName)
     {
         ActiveSaveOverride = saveName;
         // Notes path handling
         notesPath = ComputeNotesPath();
         EnsureNotesDirectory();
         // Attempt migration from old locations when switching saves
-        string legacyGlobalPath = Path.Combine(KSPUtil.ApplicationRootPath, "GameData/KerbCalcProject/notes.txt");
+        String legacyGlobalPath = Path.Combine(KSPUtil.ApplicationRootPath, "GameData/KerbNoteLite/notes.txt");
         MigrateLegacyNotesIfNeeded(legacyGlobalPath);
         try { if (!File.Exists(notesPath)) File.WriteAllText(notesPath, string.Empty); } catch { }
 
@@ -663,7 +664,7 @@ public partial class KerbNote : MonoBehaviour
         }
     }
 
-    // --- Debug kliknięć myszki ---
+    // --- Debug klikniec myszki ---
     private Vector2 lastClickPos = Vector2.zero;
     private Vector2 clickDistance = Vector2.zero;
 
@@ -674,7 +675,7 @@ public partial class KerbNote : MonoBehaviour
 
     private int miniButtonWindowID =0; // overlay window for Mini button (always on top)
 
-    // --- pozostałe metody bez zmian ---
+    // --- pozostale metody bez zmian ---
 
     private bool stylesInitialized = false;
 
@@ -689,14 +690,14 @@ public partial class KerbNote : MonoBehaviour
     double EvaluateExpression(string expression)
     {
         // Nowa, bardziej niezawodna implementacja: shunting-yard + postfix
-        // Obsługa: + - * /, nawiasy (), unary +/-, liczby z kropką lub przecinkiem
+        // Obsluga: + - * /, nawiasy (), unary +/-, liczby z kropka lub przecinkiem
         if (string.IsNullOrWhiteSpace(expression)) return 0d;
         string expr = expression.Trim();
 
-        // Zamień przecinki na kropki (ułatwia parsowanie InvariantCulture)
+        // Zamien przecinki na kropki (ulatwia parsowanie InvariantCulture)
         expr = expr.Replace(',', '.');
 
-        // Tokenizacja ręczna (aby wyłapać unary minus / plus)
+        // Tokenizacja reczna (aby wylapac unary minus / plus)
         var tokens = new List<string>();
         int i = 0;
         while (i < expr.Length)
@@ -719,17 +720,17 @@ public partial class KerbNote : MonoBehaviour
             }
             if (c == '+' || c == '-' )
             {
-                // Unary jeśli na początku albo po innym operatorze lub '('
+                // Unary jesli na poczatku albo po innym operatorze lub '('
                 bool unary = (tokens.Count == 0) ||
                               (tokens.Count > 0 && IsOperator(tokens[tokens.Count - 1])) ||
                               (tokens.Count > 0 && tokens[tokens.Count - 1] == "(");
                 if (unary)
                 {
-                    // Złącz ze następną liczbą jeśli występuje
+                    // Zlacz ze nastepna liczba jesli wystepuje
                     int signStart = i;
                     i++; // konsumuj znak
-                    // Oczekujemy liczby po unary; jeśli brak -> traktuj jako 0 +/- (np. - (3+2)) -> wstaw 0
-                    // Pomiń spacje
+                    // Oczekujemy liczby po unary; jesli brak -> traktuj jako 0 +/- (np. - (3+2)) -> wstaw 0
+                    // Pomin spacje
                     while (i < expr.Length && char.IsWhiteSpace(expr[i])) i++;
                     if (i < expr.Length && (char.IsDigit(expr[i]) || expr[i] == '.'))
                     {
@@ -746,7 +747,7 @@ public partial class KerbNote : MonoBehaviour
                     }
                     else
                     {
-                        // Wstaw 0 i operator jeśli brak liczby (np. -(3+2))
+                        // Wstaw 0 i operator jesli brak liczby (np. -(3+2))
                         tokens.Add("0");
                         tokens.Add(c.ToString());
                     }
@@ -761,8 +762,8 @@ public partial class KerbNote : MonoBehaviour
             {
                 tokens.Add(c.ToString()); i++; continue;
             }
-            // Nieznany znak – zgłoś błąd
-            throw new ArgumentException("Nieznany znak w wyrażeniu: '" + c + "'");
+            // Nieznany znak � zglos blad
+            throw new ArgumentException("Nieznany znak w wyrazeniu: '" + c + "'");
         }
 
         // Shunting yard: konwersja do postfix
@@ -784,7 +785,7 @@ public partial class KerbNote : MonoBehaviour
                     output.Add(opStack.Pop());
                 if (opStack.Count == 0 || opStack.Peek() != "(")
                     throw new ArgumentException("Niezgodne nawiasy");
-                opStack.Pop(); // usuń '('
+                opStack.Pop(); // usun '('
             }
             else if (IsOperator(t))
             {
@@ -803,7 +804,7 @@ public partial class KerbNote : MonoBehaviour
         while (opStack.Count > 0)
         {
             var op = opStack.Pop();
-            if (op == "(" || op == ")") throw new ArgumentException("Niezgodne nawiasy (pozostały)");
+            if (op == "(" || op == ")") throw new ArgumentException("Niezgodne nawiasy (pozostaly)");
             output.Add(op);
         }
 
@@ -817,7 +818,7 @@ public partial class KerbNote : MonoBehaviour
                 valStack.Push(num);
                 continue;
             }
-            if (valStack.Count < 2) throw new ArgumentException("Błąd składni przy operatorze '" + t + "'");
+            if (valStack.Count < 2) throw new ArgumentException("Blad skladni przy operatorze '" + t + "'");
             double b = valStack.Pop();
             double a = valStack.Pop();
             switch (t)
@@ -831,7 +832,7 @@ public partial class KerbNote : MonoBehaviour
                 default: throw new ArgumentException("Nieznany operator w ewaluacji: " + t);
             }
         }
-        if (valStack.Count != 1) throw new ArgumentException("Błąd końcowy ewaluacji – stos ma " + valStack.Count + " elementów");
+        if (valStack.Count != 1) throw new ArgumentException("Blad koncowy ewaluacji � stos ma " + valStack.Count + " element�w");
         return valStack.Pop();
     }
 
@@ -894,7 +895,7 @@ public partial class KerbNote : MonoBehaviour
     private float tabBarScrollMax = 0f;
     private bool isScrollingTabs = false;
     private Vector2 scrollStartPos = Vector2.zero;
-    private bool isDraggingTab = false; // na przyszłość, scroll działa tylko gdy dragging == false
+    private bool isDraggingTab = false; // na przyszlosc, scroll dziala tylko gdy dragging == false
     private float lastScrollMouseX = 0f;
     private bool tabBarClickCandidate = false;
     private int tabBarClickedIndex = -1;
@@ -913,7 +914,7 @@ public partial class KerbNote : MonoBehaviour
     private bool showCalc = false;
     private string calcInput = "";
     private bool isEditActive = false;
-    private int noteZoomLevel = 0; // 0-4, poziom powiększenia notatki
+    private int noteZoomLevel = 0; // 0-4, poziom powiekszenia notatki
 
     // --- Skalowanie okna ---
     private bool isResizingWindow = false;
@@ -934,7 +935,7 @@ public partial class KerbNote : MonoBehaviour
         try
         {
             string folder = !string.IsNullOrEmpty(ActiveSaveOverride) ? ActiveSaveOverride : HighLogic.SaveFolder;
-            string modDir = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbCalcProject", "AlarmsAndNotes");
+            string modDir = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbNoteLite", "AlarmsAndNotes");
             if (!string.IsNullOrEmpty(folder))
             {
                 // Prefer upper-case naming, but accept lower-case if that file already exists
@@ -951,14 +952,14 @@ public partial class KerbNote : MonoBehaviour
         }
         catch { }
         // Fallback (defensive)
-        return Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbCalcProject", "AlarmsAndNotes", "notes.txt");
+        return Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbNoteLite", "AlarmsAndNotes", "notes.txt");
     }
 
     public static string ComputeNotesPathForSave(string saveName)
     {
         try
         {
-            string modDir = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbCalcProject", "AlarmsAndNotes");
+            string modDir = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbNoteLite", "AlarmsAndNotes");
             if (string.IsNullOrEmpty(saveName)) return Path.Combine(modDir, "notes.txt");
             return Path.Combine(modDir, $"Notes_{saveName}.txt");
         }
@@ -995,10 +996,10 @@ public partial class KerbNote : MonoBehaviour
             if (!string.IsNullOrEmpty(folder))
             {
                 // old per-save in mod root (both case variants)
-                candidates.Add(Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbCalcProject", $"Notes_{folder}.txt"));
-                candidates.Add(Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbCalcProject", $"notes_{folder}.txt"));
+                candidates.Add(Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbNoteLite", $"Notes_{folder}.txt"));
+                candidates.Add(Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbNoteLite", $"notes_{folder}.txt"));
                 // new folder but lower-case variant
-                candidates.Add(Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbCalcProject", "AlarmsAndNotes", $"notes_{folder}.txt"));
+                candidates.Add(Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbNoteLite", "AlarmsAndNotes", $"notes_{folder}.txt"));
             }
             if (!string.IsNullOrEmpty(legacyPath)) candidates.Add(legacyPath);
 
@@ -1219,7 +1220,7 @@ public partial class KerbNote : MonoBehaviour
     {
         try
         {
-            string basePath = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbCalcProject", "texture_pack");
+            string basePath = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbNoteLite", "texture_pack");
             string direct = Path.Combine(basePath, skinName, "Textures");
             if (Directory.Exists(direct)) return direct;
             // Try case-insensitive search for matching pack name

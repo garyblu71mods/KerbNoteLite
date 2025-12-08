@@ -11,7 +11,7 @@ public static class SkinReload
         try
         {
             // Resolve all textures via SkinAssets with final DB fallback for core mod defaults
-            var resize = SkinAssets.Get("resize") ?? GameDatabase.Instance.GetTexture("KerbCalcProject/Textures/resize", false);
+            var resize = SkinAssets.Get("resize") ?? GameDatabase.Instance.GetTexture("KerbNoteLite/Textures/resize", false);
             var tab = SkinAssets.Get("Tab") ?? GameDatabase.Instance.GetTexture(KerbNote.TEXTURE_TAB, false);
             var tabHover = SkinAssets.Get("TabHover") ?? GameDatabase.Instance.GetTexture(KerbNote.TEXTURE_TAB_HOVER, false);
             var tabClick = SkinAssets.Get("TabClick") ?? GameDatabase.Instance.GetTexture(KerbNote.TEXTURE_TAB_CLICK, false);
@@ -27,7 +27,7 @@ public static class SkinReload
             // If any of the core button textures are null, hard-fallback to Green pack for all UI textures
             if (btn == null || btnHover == null || btnClick == null)
             {
-                string greenUrl = "KerbCalcProject/texture_pack/Green/Textures";
+                string greenUrl = "KerbNoteLite/texture_pack/Green/Textures";
                 btn = GameDatabase.Instance.GetTexture(greenUrl + "/Button", false) ?? btn;
                 btnHover = GameDatabase.Instance.GetTexture(greenUrl + "/ButtonHover", false) ?? btnHover;
                 btnClick = GameDatabase.Instance.GetTexture(greenUrl + "/ButtonClick", false) ?? btnClick;

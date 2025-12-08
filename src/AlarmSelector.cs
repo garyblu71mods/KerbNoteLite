@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -13,7 +13,7 @@ public class AlarmSelector : MonoBehaviour
 
 	// Host and tab context
 	private KerbNote host;
-	public string TabGuid { get; private set; } // zamiast TabIndex używamy GUID
+	public string TabGuid { get; private set; } // zamiast TabIndex uzywamy GUID
 
 	// Allow embedding container to close the panel
 	public Action OnRequestClosePanel { get; set; }
@@ -73,7 +73,7 @@ public class AlarmSelector : MonoBehaviour
 
 	private void OnEnable()
 	{
-		// Subskrybuj zmiany skinu, aby odświeżyć tekstury/styl panelu alarmów po przełączeniu notesu/sejwa
+		// Subskrybuj zmiany skinu, aby odswiezyc tekstury/styl panelu alarm�w po przelaczeniu notesu/sejwa
 		KerbNote.SkinChanged += OnSkinChanged;
 	}
 
@@ -85,7 +85,7 @@ public class AlarmSelector : MonoBehaviour
 
 	private void OnSkinChanged(string skin)
 	{
-		// Wymuś ponowne pobranie tekstur oraz przebudowę styli
+		// Wymus ponowne pobranie tekstur oraz przebudowe styli
 		RefreshTextures();
 	}
 
@@ -118,7 +118,7 @@ public class AlarmSelector : MonoBehaviour
 		if (tabRedTex == null)
 		{
 			tabRedTex = SkinAssets.Get("TabRed");
-			if (tabRedTex == null) tabRedTex = GameDatabase.Instance.GetTexture("KerbCalcProject/Textures/TabRed", false);
+			if (tabRedTex == null) tabRedTex = GameDatabase.Instance.GetTexture("KerbNoteLite/Textures/TabRed", false);
 		}
 	}
 
@@ -128,7 +128,7 @@ public class AlarmSelector : MonoBehaviour
 		tabTex = SkinAssets.Get("Tab") ?? GameDatabase.Instance.GetTexture(KerbNote.TEXTURE_TAB, false);
 		tabHoverTex = SkinAssets.Get("TabHover") ?? GameDatabase.Instance.GetTexture(KerbNote.TEXTURE_TAB_HOVER, false);
 		tabClickTex = SkinAssets.Get("TabClick") ?? GameDatabase.Instance.GetTexture(KerbNote.TEXTURE_TAB_CLICK, false);
-		tabRedTex = SkinAssets.Get("TabRed") ?? GameDatabase.Instance.GetTexture("KerbCalcProject/Textures/TabRed", false);
+		tabRedTex = SkinAssets.Get("TabRed") ?? GameDatabase.Instance.GetTexture("KerbNoteLite/Textures/TabRed", false);
 		stylesInitialized = false;
 	}
 
@@ -186,7 +186,7 @@ public class AlarmSelector : MonoBehaviour
 			alignment = TextAnchor.MiddleCenter,
 			padding = new RectOffset(8,8,2,2)
 		};
-		// Użyj TabRed jako tła przycisku Delete alarm, jeżeli dostępne
+		// Uzyj TabRed jako tla przycisku Delete alarm, jezeli dostepne
 		if (tabRedTex != null)
 		{
 			redBtnStyle.normal.background = tabRedTex;
@@ -198,7 +198,7 @@ public class AlarmSelector : MonoBehaviour
 		}
 		else
 		{
-			// fallback: czerwony tekst bez tła
+			// fallback: czerwony tekst bez tla
 			redBtnStyle.normal.textColor = new Color(1f,0.4f,0.4f,1f);
 			redBtnStyle.hover.textColor = new Color(1f,0.6f,0.6f,1f);
 		}
@@ -350,7 +350,7 @@ public class AlarmSelector : MonoBehaviour
 		else
 			sitLabel = (page == Page.Situations) ? "(not set)" : (selectedBody != null ? selectedSituation.ToString() : "(not set)");
 		
-		string captionText = "Body: " + bodyName + " • Situation: " + sitLabel;
+		string captionText = "Body: " + bodyName + " � Situation: " + sitLabel;
 		float captionWidth = area.width -2 * PADDING;
 		captionStyle.wordWrap = true;
 		float captionHeight = captionStyle.CalcHeight(new GUIContent(captionText), captionWidth);
@@ -714,7 +714,7 @@ public class AlarmSelector : MonoBehaviour
 	{
 		if (string.IsNullOrEmpty(text) || style == null) return text ?? string.Empty;
 		if (style.CalcSize(new GUIContent(text)).x <= maxWidth) return text;
-		const string dots = "…";
+		const string dots = "�";
 		int len = Math.Max(0, text.Length -1);
 		while (len >0)
 		{

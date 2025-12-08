@@ -15,11 +15,11 @@ public class SoundManager : MonoBehaviour
  // Kerbal vocal clips paths (without extension)
  private static readonly string[] KerbalVocalPaths = new[]
  {
- 	"KerbCalcProject/Sounds/A-haa",
- 	"KerbCalcProject/Sounds/Ahhh",
- 	"KerbCalcProject/Sounds/Awaaa",
- 	"KerbCalcProject/Sounds/Mhm_mhm",
- 	"KerbCalcProject/Sounds/Mhm-aha",
+ 	"KerbNoteLite/Sounds/A-haa",
+ 	"KerbNoteLite/Sounds/Ahhh",
+ 	"KerbNoteLite/Sounds/Awaaa",
+ 	"KerbNoteLite/Sounds/Mhm_mhm",
+ 	"KerbNoteLite/Sounds/Mhm-aha",
  };
  private object[] _kerbalClips; // cached loaded clips
 
@@ -103,7 +103,7 @@ public class SoundManager : MonoBehaviour
  object clip = _instance._cachedDefaultClip;
  if (clip == null)
  {
- 	clip = TryLoadClip("KerbCalcProject/Sounds/Alarm") ?? GenerateBeepClip(0.14f,1200f);
+ 	clip = TryLoadClip("KerbNoteLite/Sounds/Alarm") ?? GenerateBeepClip(0.14f,1200f);
  	_instance._cachedDefaultClip = clip;
  }
  PlayClip(clip);

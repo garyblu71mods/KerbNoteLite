@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.IO;
 
@@ -12,17 +12,17 @@ public static class KerbalUIBackground
         // Prefer SkinAssets-resolved textures if available (file-based), else fallback to default DB textures
         var bgFromSkin = SkinAssets.Get("BackgroundWindow");
         var noteFromSkin = SkinAssets.Get("NoteWindow");
-        if (bgFromSkin != null) backgroundTexture = bgFromSkin; else backgroundTexture = GameDatabase.Instance.GetTexture("KerbCalcProject/Textures/BackgroundWindow", false);
-        if (noteFromSkin != null) noteWindowTexture = noteFromSkin; else noteWindowTexture = GameDatabase.Instance.GetTexture("KerbCalcProject/Textures/NoteWindow", false);
+        if (bgFromSkin != null) backgroundTexture = bgFromSkin; else backgroundTexture = GameDatabase.Instance.GetTexture("KerbNoteLite/Textures/BackgroundWindow", false);
+        if (noteFromSkin != null) noteWindowTexture = noteFromSkin; else noteWindowTexture = GameDatabase.Instance.GetTexture("KerbNoteLite/Textures/NoteWindow", false);
 
         if (backgroundTexture == null)
         {
-            Debug.LogWarning("[KerbalUIBackground] Nie udało się załadować Textures/BackgroundWindow");
+            Debug.LogWarning("[KerbalUIBackground] Nie udalo sie zaladowac Textures/BackgroundWindow");
         }
         
         if (noteWindowTexture == null)
         {
-            Debug.LogWarning("[KerbalUIBackground] Nie udało się załadować Textures/NoteWindow");
+            Debug.LogWarning("[KerbalUIBackground] Nie udalo sie zaladowac Textures/NoteWindow");
         }
     }
 

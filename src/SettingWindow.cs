@@ -1,4 +1,4 @@
-﻿using KSP.UI.Screens;
+using KSP.UI.Screens;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-// Settings: wysuwany panel od dołu okna KerbNote, z wąskim, wycentrowanym paskiem toggle
+// Settings: wysuwany panel od dolu okna KerbNote, z waskim, wycentrowanym paskiem toggle
 [KSPAddon(KSPAddon.Startup.AllGameScenes, false)]
 public class SettingWindow : MonoBehaviour
 {
@@ -16,7 +16,7 @@ public class SettingWindow : MonoBehaviour
  // Expose About visibility for other UI (e.g., Alarm_bar) to avoid stealing focus
  public static bool IsAboutVisible => _instance != null && _instance.showAbout;
 
- private KerbNote host; // okno główne
+ private KerbNote host; // okno gl�wne
  private Vector2 screenSize;
 
  private Rect panelRect = new Rect(0,0,320f,220f);
@@ -36,13 +36,13 @@ public class SettingWindow : MonoBehaviour
  private Texture2D toggleTexVertical;
  private bool useRotatedToggle = false;
 
- private const string TEXTURE_TOGGLE_HORIZONTAL = "KerbCalcProject/Textures/Alarm_bar_horizontal";
- private const string TEXTURE_TOGGLE_VERTICAL = "KerbCalcProject/Textures/Alarm_bar";
+ private const string TEXTURE_TOGGLE_HORIZONTAL = "KerbNoteLite/Textures/Alarm_bar_horizontal";
+ private const string TEXTURE_TOGGLE_VERTICAL = "KerbNoteLite/Textures/Alarm_bar";
 
- // Pasek toggle (poziomy): stała szerokość 350, stała wysokość z tekstury
- private float toggleHeight =22f; // trzymamy stałą wysokość (z tekstury)
- private float toggleWidth =350f; // stała szerokość 350
- private float toggleOffsetX =0f; // opcjonalny offset od środka
+ // Pasek toggle (poziomy): stala szerokosc 350, stala wysokosc z tekstury
+ private float toggleHeight =22f; // trzymamy stala wysokosc (z tekstury)
+ private float toggleWidth =350f; // stala szerokosc 350
+ private float toggleOffsetX =0f; // opcjonalny offset od srodka
 
  private bool stylesReady;
  private Texture2D tabTex;
@@ -60,7 +60,6 @@ public class SettingWindow : MonoBehaviour
  private Vector2 skinScroll = Vector2.zero;
  private readonly List<string> skinPackNames = new List<string>();
  private readonly Dictionary<string, string> skinTextureFolderByName = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
- private const string SKINS_BASE_PATH = @"C:\Program Files\Epic Games\KerbalSpaceProgram\English\GameData\KerbCalcProject\texture_pack";
 
  private bool isDraggingBar = false;
  private Vector2 dragStartMouse;
@@ -78,10 +77,10 @@ public class SettingWindow : MonoBehaviour
  private Rect aboutRect = new Rect(200, 120, 520, 420);
  private Vector2 aboutScroll = Vector2.zero;
  private string aboutText = string.Empty;
- private int aboutWindowID = -4000; // stały ujemny ID aby być na wierzchu
+ private int aboutWindowID = -4000; // staly ujemny ID aby byc na wierzchu
  private Rect lastAboutRect;
  private Texture2D _darkTex;
- private Texture2D _aboutCloseBtnTex; // Button.png tło dla X
+ private Texture2D _aboutCloseBtnTex; // Button.png tlo dla X
  private Texture2D _aboutCloseBtnHoverTex;
  private Texture2D _aboutCloseBtnActiveTex;
 
@@ -99,14 +98,14 @@ public class SettingWindow : MonoBehaviour
 
  panelWindowID = GetInstanceID() ^0x51AFCC21;
  buttonWindowID = GetInstanceID() ^0x31B1EE4F;
- aboutWindowID = -4000; // wymuszenie stałego ID
+ aboutWindowID = -4000; // wymuszenie stalego ID
  }
 
  void Start()
  {
  TrySetupStyles();
 
- // Znajdź okno główne
+ // Znajdz okno gl�wne
  if (host == null)
  {
  try { host = FindObjectOfType<KerbNote>(); } catch { host = null; }
@@ -121,7 +120,7 @@ public class SettingWindow : MonoBehaviour
  // Wczytaj tekstury paska toggle z aktywnego skina
  ReloadToggleTextures();
 
- // Ustaw zakotwiczenie i pozycję początkową
+ // Ustaw zakotwiczenie i pozycje poczatkowa
  UpdatePanelSizeAndAnchors();
  UpdateAnchoredPosition();
  }
@@ -132,17 +131,17 @@ public class SettingWindow : MonoBehaviour
      // Prefer aktywny skin via SkinAssets
      toggleTexHorizontal = SkinAssets.Get("Alarm_bar_horizontal") ?? GameDatabase.Instance.GetTexture(TEXTURE_TOGGLE_HORIZONTAL, false);
      toggleTexVertical = SkinAssets.Get("Alarm_bar") ?? GameDatabase.Instance.GetTexture(TEXTURE_TOGGLE_VERTICAL, false);
-     // Jeśli brak poziomej – użyj pionowej obróconej
+     // Jesli brak poziomej � uzyj pionowej obr�conej
      useRotatedToggle = (toggleTexHorizontal == null && toggleTexVertical != null);
 
-     // Wysokość paska poziomego z tekstury, szerokość stała 350
+     // Wysokosc paska poziomego z tekstury, szerokosc stala 350
      if (toggleTexHorizontal != null)
      {
          toggleHeight = Mathf.Clamp(toggleTexHorizontal.height, 12f, 64f);
      }
      else if (toggleTexVertical != null && useRotatedToggle)
      {
-         // Gdy używamy obróconej pionowej, wysokość pozioma = szerokość pionowej (bez dalszego skalowania przy zmianie okna)
+         // Gdy uzywamy obr�conej pionowej, wysokosc pozioma = szerokosc pionowej (bez dalszego skalowania przy zmianie okna)
          toggleHeight = Mathf.Clamp(toggleTexVertical.width, 12f, 64f);
      }
      toggleWidth = 350f;
@@ -156,7 +155,7 @@ public class SettingWindow : MonoBehaviour
  if (host == null) return;
  }
 
- // Auto-hide gdy okno główne niewidocne
+ // Auto-hide gdy okno gl�wne niewidocne
  if (!host.IsWindowVisible)
  {
  isVisible = false;
@@ -168,11 +167,11 @@ public class SettingWindow : MonoBehaviour
  return;
  }
 
- // Reakcja na zmianę rozdzielczości
+ // Reakcja na zmiane rozdzielczosci
  if (screenSize.x != Screen.width || screenSize.y != Screen.height)
  {
  screenSize = new Vector2(Screen.width, Screen.height);
- // Re-center About window na zmianę rozdzielczości
+ // Re-center About window na zmiane rozdzielczosci
  if (showAbout)
  {
      CenterAboutWindow();
@@ -181,7 +180,7 @@ public class SettingWindow : MonoBehaviour
 
  UpdatePanelSizeAndAnchors();
 
- // Jeżeli użytkownik przeciąga pasek – nie nadpisuj slideT interpolacją
+ // Jezeli uzytkownik przeciaga pasek � nie nadpisuj slideT interpolacja
  bool animate = !isDraggingBar;
  if (animate)
  {
@@ -204,13 +203,13 @@ public class SettingWindow : MonoBehaviour
 
  if (!stylesReady) TrySetupStyles();
 
- // Zawsze aktualizuj rozmiary (np. zmiana okna), ale jeśli About jest otwarte – rysujemy tylko About
+ // Zawsze aktualizuj rozmiary (np. zmiana okna), ale jesli About jest otwarte � rysujemy tylko About
  UpdatePanelSizeAndAnchors();
  UpdateAnchoredPosition();
 
  if (showAbout)
  {
-     // About/Help modal only – bez paska Settings i panelu
+     // About/Help modal only � bez paska Settings i panelu
      aboutRect = ClampRectToScreen(aboutRect, 10f);
      lastAboutRect = aboutRect;
      GUI.Window(aboutWindowID, aboutRect, DrawAboutWindow, string.Empty, GUIStyle.none);
@@ -221,13 +220,13 @@ public class SettingWindow : MonoBehaviour
      return; // nie rysuj paska ani panelu
  }
 
- // --- poniżej normalny rendering paska i panelu, gdy About nie jest otwarte ---
+ // --- ponizej normalny rendering paska i panelu, gdy About nie jest otwarte ---
 
- // Szerokość paska stała 350 i wycentrowana względem okna głównego
+ // Szerokosc paska stala 350 i wycentrowana wzgledem okna gl�wnego
  Rect hostRect = host.WindowRect;
  float protrusion = Mathf.Clamp(panelRect.y + panelRect.height - hostRect.yMax, 0f, panelRect.height);
 
- // Panel (przycięty do wystającej części)
+ // Panel (przyciety do wystajacej czesci)
  if (protrusion > SNAP_EPSILON)
  {
  Rect panelWinRect = new Rect(
@@ -244,9 +243,9 @@ public class SettingWindow : MonoBehaviour
  lastPanelWinRect = Rect.zero;
  }
 
- // Pozycja paska – centrowanie poziome względem okna głównego
+ // Pozycja paska � centrowanie poziome wzgledem okna gl�wnego
  float btnX = hostRect.center.x - (toggleWidth /2f) + toggleOffsetX;
- float btnY = hostRect.yMax + protrusion; // porusza się razem z wysuwanym panelem w dół
+ float btnY = hostRect.yMax + protrusion; // porusza sie razem z wysuwanym panelem w d�l
  Rect btnAbsRect = new Rect(btnX, btnY, toggleWidth, toggleHeight);
  lastBarRect = btnAbsRect; // remember for input lock
  DrawToggleBarOverlay(btnAbsRect);
@@ -262,7 +261,7 @@ public class SettingWindow : MonoBehaviour
  Rect hostRect = host.WindowRect;
  float protrusion = Mathf.Clamp(panelRect.y + panelRect.height - hostRect.yMax,0f, panelRect.height);
 
- // Przesunięcie lokalne, aby dolna część była widoczna
+ // Przesuniecie lokalne, aby dolna czesc byla widoczna
  float localY = -(panelRect.height - protrusion);
 
  DrawPanelContents(localY);
@@ -270,11 +269,11 @@ public class SettingWindow : MonoBehaviour
 
  private void DrawToggleBarOverlay(Rect absRect)
  {
- // Rysuj Alarm_bar obrócony o90° (poziomy szeroki pasek) w przestrzeni ekranu – brak clipowania przez Window
+ // Rysuj Alarm_bar obr�cony o90� (poziomy szeroki pasek) w przestrzeni ekranu � brak clipowania przez Window
  if (toggleTexVertical != null && useRotatedToggle)
  {
  Vector2 pivot = new Vector2(absRect.x + absRect.width /2f, absRect.y + absRect.height /2f);
- // Prostokąt pre-rotacji (zamiana wymiarów) wycentrowany względem prostokąta docelowego
+ // Prostokat pre-rotacji (zamiana wymiar�w) wycentrowany wzgledem prostokata docelowego
  Rect preRotRect = new Rect(
  absRect.x + (absRect.width - absRect.height) /2f,
  absRect.y + (absRect.height - absRect.width) /2f,
@@ -288,16 +287,16 @@ public class SettingWindow : MonoBehaviour
  }
  else if (toggleTexHorizontal != null)
  {
- // Fallback: gotowa pozioma tekstura – wysokość stała (z tekstury), szerokość rozciąga się
+ // Fallback: gotowa pozioma tekstura � wysokosc stala (z tekstury), szerokosc rozciaga sie
  GUI.DrawTexture(absRect, toggleTexHorizontal, ScaleMode.StretchToFill);
  }
  else
  {
- // Awaryjnie – prosty box
+ // Awaryjnie � prosty box
  GUI.Box(absRect, string.Empty, GUI.skin.button);
  }
 
- // Napis na paskie – czytelny i wycentrowany, podniesiony o3 px
+ // Napis na paskie � czytelny i wycentrowany, podniesiony o3 px
  if (toggleLabelStyle == null)
  {
  toggleLabelStyle = new GUIStyle(GUI.skin.label)
@@ -310,7 +309,7 @@ public class SettingWindow : MonoBehaviour
  var labelRect = new Rect(absRect.x, absRect.y -3f, absRect.width, absRect.height);
  GUI.Label(labelRect, "Settings", toggleLabelStyle);
 
- // Przycisk niewidzialny – pojedynczy toggle na MouseUp
+ // Przycisk niewidzialny � pojedynczy toggle na MouseUp
  if (GUI.Button(absRect, GUIContent.none, GUIStyle.none))
  {
  isVisible = !isVisible;
@@ -329,23 +328,23 @@ public class SettingWindow : MonoBehaviour
 
  private void DrawPanelContents(float localY)
  {
- // Tło panelu (styl jak w innych oknach)
+ // Tlo panelu (styl jak w innych oknach)
  KerbalUIBackground.DrawNoteWindow(new Rect(0, localY, panelRect.width, panelRect.height));
 
  float margin =10f;
- // Mniejszy górny padding na stronie głównej, aby zlikwidować zbędną przestrzeń
+ // Mniejszy g�rny padding na stronie gl�wnej, aby zlikwidowac zbedna przestrzen
  float y = localY +4f;
  float fullW = panelRect.width - margin *2f;
 
- // Widok główny: tytuł/nagłówki
+ // Widok gl�wny: tytul/nagl�wki
  if (!showSavePicker && !showSkinPicker)
  {
  if (titleStyle != null)
  {
- // Niższy tytuł, mniej miejsca na górze
+ // Nizszy tytul, mniej miejsca na g�rze
  GUI.Label(new Rect(margin, y, fullW,18f), "Settings", titleStyle);
  }
- // Zmniejszony odstęp pod tytułem, aby przyciski zaczynały się wyżej
+ // Zmniejszony odstep pod tytulem, aby przyciski zaczynaly sie wyzej
  y +=20f;
  }
 
@@ -377,7 +376,7 @@ public class SettingWindow : MonoBehaviour
  }
  else if (showSavePicker)
  {
- // Nagłówek „Select save”5 px od górnej krawędzi panelu
+ // Nagl�wek �Select save�5 px od g�rnej krawedzi panelu
  GUIStyle labelStyle = new GUIStyle(GUI.skin.label)
  {
  fontStyle = FontStyle.Bold
@@ -388,20 +387,20 @@ public class SettingWindow : MonoBehaviour
  GUI.Label(new Rect(margin, y, fullW,18f), "Select save:", labelStyle);
  y +=20f;
 
- // Policz liczbę wierszy i listHeight (max5 widocznych), reszta w scrollu
+ // Policz liczbe wierszy i listHeight (max5 widocznych), reszta w scrollu
  float rowH =24f;
  float rowSpacing =4f;
  int rows = saveNames != null ? saveNames.Count :0;
  int rowsVisible = Mathf.Clamp(rows,0,5);
  float fiveOrSevenHeight = rowsVisible * rowH + Mathf.Max(0, rowsVisible -1) * rowSpacing;
  float backH =22f;
- float bottomGap =6f; // mały odstęp od dołu
- float smallGap =6f; // odstęp między listą a Back
+ float bottomGap =6f; // maly odstep od dolu
+ float smallGap =6f; // odstep miedzy lista a Back
  float backY = localY + panelRect.height - backH - bottomGap;
  float available = Mathf.Max(0f, backY - smallGap - y);
  float listHeight = Mathf.Clamp(fiveOrSevenHeight,40f, available);
 
- // Scroll: viewRect wyższy niż listHeight, jeżeli elementów > widoczych
+ // Scroll: viewRect wyzszy niz listHeight, jezeli element�w > widoczych
  float contentHeight = rows * (rowH + rowSpacing);
  Rect viewRect = new Rect(0,0, fullW -16f, Math.Max(contentHeight, listHeight));
  savesScroll = GUI.BeginScrollView(new Rect(margin, y, fullW, listHeight), savesScroll, viewRect);
@@ -419,7 +418,7 @@ public class SettingWindow : MonoBehaviour
  }
  GUI.EndScrollView();
 
- // Back tuż nad dolną krawędzią, po małym odstępie
+ // Back tuz nad dolna krawedzia, po malym odstepie
  Rect backRect = new Rect(margin, backY, fullW, backH);
  if (DrawTexButton(backRect, "Back", tabTex, tabHoverTex, tabClickTex))
  {
@@ -428,7 +427,7 @@ public class SettingWindow : MonoBehaviour
  }
  else if (showSkinPicker)
  {
- // Nagłówek „Select skin”5 px od górnej krawędzi panelu
+ // Nagl�wek �Select skin�5 px od g�rnej krawedzi panelu
  GUIStyle labelStyle = new GUIStyle(GUI.skin.label)
  {
  fontStyle = FontStyle.Bold
@@ -462,7 +461,7 @@ public class SettingWindow : MonoBehaviour
  if (DrawTexButton(r, pack, tabTex, tabHoverTex, tabClickTex))
  {
  ApplySkinSelection(pack);
- // nie zamykamy panelu po wyborze skina – pozwól wybrać inny
+ // nie zamykamy panelu po wyborze skina � pozw�l wybrac inny
  }
  itemY += (rowH + rowSpacing);
  }
@@ -522,20 +521,20 @@ public class SettingWindow : MonoBehaviour
  }
  catch {}
 
- // Wywołaj przełączenie na nowy sejw (to wczyta nowe notatki i skina)
+ // Wywolaj przelaczenie na nowy sejw (to wczyta nowe notatki i skina)
  host.SwitchToSave(save);
 
- // Wymuś aktywację pierwszej zakładki i odświeżenie okna
+ // Wymus aktywacje pierwszej zakladki i odswiezenie okna
  if (host.TabCount >0)
  {
- host.OpenOnTab(0); // To otworzy okno i ustawi pierwszą zakładkę jako aktywną
+ host.OpenOnTab(0); // To otworzy okno i ustawi pierwsza zakladke jako aktywna
  }
  
  // Zainicjuj alarmy dla nowego sejwa
  AlarmManager.Init();
  AlarmRunner.ForceReevaluateNow();
 
- // Po wyborze sejwa – przy kolejnym otwarciu pokaż widok główny Settings
+ // Po wyborze sejwa � przy kolejnym otwarciu pokaz widok gl�wny Settings
  showSavePicker = false;
  savesScroll = Vector2.zero;
  }
@@ -562,7 +561,7 @@ public class SettingWindow : MonoBehaviour
              host.ApplySkinFromFolder(skinName, texturesFolder, persistHeader: true);
          }
  
-         // Odśwież własne tekstury i style, aby przyciski w Settings użyły nowego skina
+         // Odswiez wlasne tekstury i style, aby przyciski w Settings uzyly nowego skina
          stylesReady = false;
          TrySetupStyles();
          ReloadToggleTextures();
@@ -643,9 +642,9 @@ public class SettingWindow : MonoBehaviour
  }
  else
  {
- // Strona główna: mniejszy top i mniejszy blok tytułu, aby zredukować pustą przestrzeń u góry
- float topMarginMain = 4f;      // było 6f
- float titleBlock = 20f;        // 18f wysokości tytułu + 2f odstępu pod nim
+ // Strona gl�wna: mniejszy top i mniejszy blok tytulu, aby zredukowac pusta przestrzen u g�ry
+ float topMarginMain = 4f;      // bylo 6f
+ float titleBlock = 20f;        // 18f wysokosci tytulu + 2f odstepu pod nim
  int totalButtons =3;
  float buttonsBlock = totalButtons * rowH + (totalButtons -1) * rowSpacing;
  float height = topMarginMain + titleBlock + buttonsBlock + bottomGap;
@@ -749,9 +748,7 @@ public class SettingWindow : MonoBehaviour
      skinTextureFolderByName.Clear();
      try
      {
-         string basePath = Directory.Exists(SKINS_BASE_PATH)
-             ? SKINS_BASE_PATH
-             : Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbCalcProject", "texture_pack");
+         string basePath = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbNoteLite", "texture_pack");
          if (!Directory.Exists(basePath))
          {
              Debug.LogWarning("[KerbNote][SettingWindow] Skins base path not found: " + basePath);
@@ -781,7 +778,7 @@ public class SettingWindow : MonoBehaviour
      if (validSaves == null) return;
      try
      {
-         string modDir = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbCalcProject", "AlarmsAndNotes");
+         string modDir = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbNoteLite", "AlarmsAndNotes");
          if (!Directory.Exists(modDir)) return;
          string targetDir = Path.Combine(modDir, "DelatedSaves");
          if (!Directory.Exists(targetDir)) Directory.CreateDirectory(targetDir);
@@ -835,9 +832,9 @@ public class SettingWindow : MonoBehaviour
          // Bazowe katalogi do sprawdzenia
          var baseDirs = new List<string>
          {
-             @"C:\\Program Files\\Epic Games\\KerbalSpaceProgram\\English\\GameData\\KerbCalcProject",
-             Path.Combine(root, "English", "GameData", "KerbCalcProject"),
-             Path.Combine(root, "GameData", "KerbCalcProject")
+             @"C:\\Program Files\\Epic Games\\KerbalSpaceProgram\\English\\GameData\\KerbNoteLite",
+             Path.Combine(root, "English", "GameData", "KerbNoteLite"),
+             Path.Combine(root, "GameData", "KerbNoteLite")
          };
          string fileNameBase = "About_Help"; // bez rozszerzenia
          string[] exts = { "", ".txt", ".md", ".markdown" };
@@ -862,7 +859,7 @@ public class SettingWindow : MonoBehaviour
          }
          if (string.IsNullOrEmpty(text))
          {
-             text = "# KerbCalc / KerbNote\nPlik 'About_Help' nie znaleziony. Umieść go w: GameData/KerbCalcProject lub English/GameData/KerbCalcProject (warianty: About_Help, About_Help.txt, About_Help.md).";
+             text = "# KerbCalc / KerbNote\nPlik 'About_Help' nie znaleziony. Umiesc go w: GameData/KerbNoteLite lub English/GameData/KerbNoteLite (warianty: About_Help, About_Help.txt, About_Help.md).";
          }
          aboutText = ConvertMarkdownToUnityRichText(text);
          CenterAboutWindow();
@@ -896,20 +893,20 @@ public class SettingWindow : MonoBehaviour
 
  private void DrawAboutWindow(int id)
  {
-     // Tło teksturowane + ciemny welon
+     // Tlo teksturowane + ciemny welon
      try { KerbalUIBackground.LoadTexture(); } catch { }
      KerbalUIBackground.Draw(new Rect(0, 0, aboutRect.width, aboutRect.height));
 
      if (_darkTex == null)
      {
          _darkTex = new Texture2D(1,1);
-         _darkTex.SetPixel(0,0, new Color(0f,0f,0f,0.5f)); // półprzezroczysty, by było widać fakturę
+         _darkTex.SetPixel(0,0, new Color(0f,0f,0f,0.5f)); // p�lprzezroczysty, by bylo widac fakture
          _darkTex.Apply();
      }
      GUI.DrawTexture(new Rect(0,0, aboutRect.width, aboutRect.height), _darkTex);
 
      float pad = 12f;
-     float titleH = 30f; // większy tytuł
+     float titleH = 30f; // wiekszy tytul
      Rect titleRect = new Rect(pad, pad, aboutRect.width - pad*2 - 34f, titleH);
      GUIStyle title = new GUIStyle(GUI.skin.label)
      {
@@ -920,12 +917,12 @@ public class SettingWindow : MonoBehaviour
      title.normal.textColor = new Color(0.95f, 0.9f, 0.78f, 0.98f);
      GUI.Label(titleRect, "About / Help", title);
 
-     // Zamknij – tło Button.png (+ hover/active jeśli istnieją)
+     // Zamknij � tlo Button.png (+ hover/active jesli istnieja)
      if (_aboutCloseBtnTex == null)
      {
-         _aboutCloseBtnTex = SkinAssets.Get("Button") ?? GameDatabase.Instance.GetTexture("KerbCalcProject/Textures/Button", false);
-         _aboutCloseBtnHoverTex = SkinAssets.Get("ButtonHover") ?? GameDatabase.Instance.GetTexture("KerbCalcProject/Textures/ButtonHover", false);
-         _aboutCloseBtnActiveTex = SkinAssets.Get("ButtonClick") ?? GameDatabase.Instance.GetTexture("KerbCalcProject/Textures/ButtonClick", false);
+         _aboutCloseBtnTex = SkinAssets.Get("Button") ?? GameDatabase.Instance.GetTexture("KerbNoteLite/Textures/Button", false);
+         _aboutCloseBtnHoverTex = SkinAssets.Get("ButtonHover") ?? GameDatabase.Instance.GetTexture("KerbNoteLite/Textures/ButtonHover", false);
+         _aboutCloseBtnActiveTex = SkinAssets.Get("ButtonClick") ?? GameDatabase.Instance.GetTexture("KerbNoteLite/Textures/ButtonClick", false);
      }
      Rect closeRect = new Rect(aboutRect.width - pad - 28f, pad + 1f, 28f, 28f);
      GUIStyle closeStyle = new GUIStyle(GUI.skin.button)
@@ -949,11 +946,11 @@ public class SettingWindow : MonoBehaviour
          return;
      }
 
-     // Treść
+     // Tresc
      Rect contentRect = new Rect(pad, pad + titleH + 6f, aboutRect.width - pad*2, aboutRect.height - (pad + titleH + 6f) - pad);
      var contentStyle = new GUIStyle(GUI.skin.label) { wordWrap = true, richText = true };
      contentStyle.normal.textColor = new Color(0.88f, 0.96f, 0.88f, 0.98f);
-     contentStyle.fontSize = 16; // większa czcionka
+     contentStyle.fontSize = 16; // wieksza czcionka
 
      float textHeight = contentStyle.CalcHeight(new GUIContent(aboutText), contentRect.width - 16f);
      Rect viewRect = new Rect(0,0, contentRect.width - 16f, Mathf.Max(textHeight + 4f, contentRect.height));
@@ -961,7 +958,7 @@ public class SettingWindow : MonoBehaviour
      GUI.Label(new Rect(0,0, viewRect.width, textHeight), aboutText, contentStyle);
      GUI.EndScrollView();
 
-     // Brak dragowania – nie wywołujemy GUI.DragWindow
+     // Brak dragowania � nie wywolujemy GUI.DragWindow
  }
  
  // --- Markdown helpers ---
@@ -996,7 +993,7 @@ public class SettingWindow : MonoBehaviour
          {
              int leading = line.Length - trim.Length;
              string rest = line.Substring(leading + 2);
-             sb.Append(new string(' ', Mathf.Clamp(leading,0,12))).Append("• ").Append(rest).Append("\n");
+             sb.Append(new string(' ', Mathf.Clamp(leading,0,12))).Append("� ").Append(rest).Append("\n");
              continue;
          }
          string t = line;
