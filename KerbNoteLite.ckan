@@ -29,11 +29,6 @@
       "name": "ModuleManager"
     }
   ],
-  "supports": [
-    {
-      "name": "KerbalSpaceProgram",
-      "version_min": "1.12"
-    }
-  ],
+  "ksp_version_min": "1.12",
   "release_date": "2025-12-08"
 }
