@@ -132,7 +132,7 @@ public partial class KerbNote : MonoBehaviour
     public const string TEXTURE_BUTTON_HOVER = "KerbNoteLite/Textures/ButtonHover"; //24x80, x:dynamic, y:topBarY // Tlo przycisku hover
     public const string TEXTURE_BUTTON_CLICK = "KerbNoteLite/Textures/ButtonClick"; //24x80, x:dynamic, y:topBarY // Tlo przycisku kliknietego
     public const string TEXTURE_BUTTON_RED = "KerbNoteLite/Textures/red_Button"; //24x80, x:dynamic, y:topBarY // Tlo przycisku czerwonego
-    public const string TEXTURE_AAA = "KerbNoteLite/Textures/AAA"; //24x24, x:noteX, y:areaRect.yMax+10 // Ikona zoom pod notatka
+    public const string TEXTURE_AAA = "KerbNoteLite/Textures/AAA"; //24x24, x:noteX, y:areaRect.yMax+10 // Ikona zoom pod notatke
     public const string TEXTURE_NOTE_WINDOW = "KerbNoteLite/Textures/NoteWindow"; // dynamic, x:noteX, y:topMargin // Tlo obszaru notatki
     public const string TEXTURE_BACKGROUND_WINDOW = "KerbNoteLite/Textures/BackgroundWindow"; // dynamic, x:0, y:0 // Tlo calego okna moda
    // public const string TEXTURE_BACKGROUND_UNDO = "KerbNoteLite/Textures/BackgroundUndo"; // dynamic, x:0, y:0 // Tlo przycisku undo delete
@@ -144,7 +144,7 @@ public partial class KerbNote : MonoBehaviour
 
     public const float TOP_BAR_HEIGHT = 24f; // Wysokosc paska górnego
     public const float TOP_BAR_Y = 10f; // Pozycja Y paska górnego
-    public const float TOP_BAR_BUTTON_PADDING = 24f; // Padding przycisków na pasku górnym
+    public const float TOP_BAR_BUTTON_PADDING = 24f; // Padding przycisków na pasku topbarem
 
     public const float TAB_BAR_Y = TOP_BAR_Y + TOP_BAR_HEIGHT + 3f; // Pozycja Y paska zakladek (3px pod topbarem)
     public const float TAB_BARHEIGHT = 20f; // Wysokosc paska zakladek (zmniejszona)
@@ -361,6 +361,8 @@ public partial class KerbNote : MonoBehaviour
         GameEvents.onGUIApplicationLauncherReady.Add(OnAppLauncherReady);
         // Init alarms storage
         AlarmManager.Init();
+        // Init global alarms storage
+        GlobalAlarmManager.Init();
         // Init audio
         SoundManager.Init();
         // Configure skin ASAP from current/active save header so icons/backgrounds use it
@@ -402,19 +404,46 @@ public partial class KerbNote : MonoBehaviour
 
     private void InitWindowRect()
     {
+        // Center window on first launch or if invalid size
         if (windowRect.width <= 0f || windowRect.height <= 0f)
         {
-            windowRect = new Rect(100f, 100f, 500f, 400f);
+            float w = 500f;
+            float h = 400f;
+            float x = (Screen.width - w) / 2f;
+            float y = (Screen.height - h) / 2f;
+            windowRect = new Rect(x, y, w, h);
+            Debug.Log($"[KerbNote] InitWindowRect centered at screen center: {windowRect}");
         }
     }
     void Start()
     {
+        // Ensure main window has a sane centered rect (but do not show it yet)
+        if (windowRect.width <= 0f || windowRect.height <= 0f || windowRect.width < 100f || windowRect.height < 100f)
+            InitWindowRect();
+        else
+            windowRect = new Rect((Screen.width - windowRect.width) / 2f, (Screen.height - windowRect.height) / 2f, windowRect.width, windowRect.height);
+
+        // Do NOT show window on startup; user opens via app icon
+        showWindow = false;
+
         // Inicjalizacja SliderWindow
         GameObject sliderObj = new GameObject("SliderWindow");
         SliderWindow slider = sliderObj.AddComponent<SliderWindow>();
         slider.mainWindowRect = this.windowRect;
         sliderWindow = slider; // keep reference for MiniNote integration
-        
+
+        // Inicjalizacja GlobalAlarmPanel (lewy panel z alarmami)
+        GameObject alarmPanelObj = new GameObject("GlobalAlarmPanel");
+        GlobalAlarmPanel alarmPanel = alarmPanelObj.AddComponent<GlobalAlarmPanel>();
+        globalAlarmPanel = alarmPanel;
+        // Ensure it starts hidden (full reset sets slideT=0 and positions it off-screen)
+        try
+        {
+            globalAlarmPanel.mainWindowRect = this.windowRect;
+            globalAlarmPanel.ResetHiddenImmediate();
+        }
+        catch { }
+
         this.resizeIcon = SkinAssets.Get("resize") ?? GameDatabase.Instance.GetTexture("KerbNoteLite/Textures/resize", false);
         if (this.resizeIcon == null)
             Debug.LogWarning("[KerbNote] resize.png not found!");
@@ -458,17 +487,19 @@ public partial class KerbNote : MonoBehaviour
         if (TabHoverTexture == null) Debug.LogError("[KerbNote] TabHover.png not found!");
         if (TabClickTexture == null) Debug.LogError("[KerbNote] TabClick.png not found!");
         if (AAATexture == null) Debug.LogWarning("[KerbNote] AAA texture not found!");
-        if (windowRect.width <100f || windowRect.height <100f)
+        
+        // Ensure window rect is valid and centered on first run
+        if (windowRect.width < 100f || windowRect.height < 100f)
         {
-            windowRect = new Rect(200f,200f,425f,400f);
-            Debug.Log("[KerbNote] windowRect reset to default in Start()");
+            InitWindowRect();
+            Debug.Log("[KerbNote] windowRect initialized via InitWindowRect() in Start()");
         }
-        // Inicjalizacja okna
-        if (windowRect.width <=0f || windowRect.height <=0f)
-            windowRect = new Rect(100f,100f,500f,400f);
-        else
-            windowRect = new Rect(windowRect.x -19f, windowRect.y +28f, windowRect.width, windowRect.height);
 
+        // Inicjalizacja okna
+        // windowRect already centered at the beginning of Start()
+        if (windowRect.width <= 0f || windowRect.height <= 0f)
+            InitWindowRect();
+        
         // Ladowanie tekstur tla UI
         try { KerbalUIBackground.LoadTexture(); }
         catch (Exception ex) { Debug.LogError("[KerbNote] LoadTexture error: " + ex.Message); }
@@ -569,6 +600,8 @@ public partial class KerbNote : MonoBehaviour
             return;
         }
         showWindow = true;
+        // ensure global alarm panel starts hidden when opening
+        try { if (globalAlarmPanel != null) globalAlarmPanel.ResetHiddenImmediate(); } catch { }
         if (btn != null && iconOn != null)
             btn.SetTexture(iconOn);
     }

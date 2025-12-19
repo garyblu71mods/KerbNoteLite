@@ -5,6 +5,8 @@ using UnityEngine;
 
 public partial class KerbNote
 {
+    private GlobalAlarmPanel globalAlarmPanel;
+
     private void EnsureCoreTexturesBound()
     {
         // Only check and bind textures if they're actually null - avoid redundant lookups

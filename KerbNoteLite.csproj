@@ -7,7 +7,7 @@
     <ProjectGuid>{9AF87A0D-B5FC-471B-BD16-418E60607D1C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>KerbCalc</RootNamespace>
-    <AssemblyName>KerbNote_V1.2.3</AssemblyName>
+    <AssemblyName>KerbNote_V1.3</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -59,6 +59,9 @@
     <Compile Include="src\AlarmRunner.cs" />
     <Compile Include="src\AlarmSelector.cs" />
     <Compile Include="src\AlarmSpaceCenterRunner.cs" />
+    <Compile Include="src\GlobalAlarmDefinition.cs" />
+    <Compile Include="src\GlobalAlarmManager.cs" />
+    <Compile Include="src\GlobalAlarmPanel.cs" />
     <Compile Include="src\KerbalUIBackground.cs" />
     <Compile Include="src\KerbCalc.cs" />
     <Compile Include="src\KerbNote.UI.Calc.cs" />
@@ -68,16 +71,21 @@
     <Compile Include="src\KerbNote.UI.Windows.cs" />
     <Compile Include="src\MiniNote.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\ResourcesAlarmRunner.cs" />
     <Compile Include="src\SettingWindow.cs" />
     <Compile Include="src\SkinAssets.cs" />
     <Compile Include="src\SkinReload.cs" />
     <Compile Include="src\SliderWindow.cs" />
     <Compile Include="src\SoundManager.cs" />
+    <Compile Include="src\TerrainAlarmConfig.cs" />
+    <Compile Include="src\TerrainAlarmRunner.cs" />
+    <Compile Include="src\TimeReminderAlarm.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="img\situation.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="GLOBAL_ALARMS_IMPLEMENTATION.md" />
     <None Include="KerbNoteLite.ckan" />
     <None Include="LICENSE" />
     <None Include="README.md" />

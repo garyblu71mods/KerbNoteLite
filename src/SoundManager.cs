@@ -12,6 +12,21 @@ public class SoundManager : MonoBehaviour
  private Type _audioSourceType;
  private Type _audioClipType;
 
+ private MethodInfo _stopMethod;
+ private MethodInfo _playMethod;
+ private MethodInfo _playOneShotMethod;
+
+ // PullUp playback model
+ // - Requests are reference-counted (Acquire/Release)
+ // - While active: play full clip
+ // - When released: if clip started, cut after 3.5s
+ // - No overlap: never restart while already playing; restart only after clip fully ends and still active
+ private int _pullUpHolds;
+ private float _pullUpCutAtRealtime = -1f;
+ private float _pullUpRestartAtRealtime = -1f;
+ private bool _pullUpPlaying;
+ private object _pullUpClip;
+
  // Kerbal vocal clips paths (without extension)
  private static readonly string[] KerbalVocalPaths = new[]
  {
@@ -23,6 +38,12 @@ public class SoundManager : MonoBehaviour
  };
  private object[] _kerbalClips; // cached loaded clips
 
+ private static object _cachedGearWarningClip;
+ private static object _cachedGearBeepClip;
+ private static object _cachedSinkRateClip;
+
+ private static readonly System.Collections.Generic.Dictionary<int, object> _cachedAltitudeCallouts = new System.Collections.Generic.Dictionary<int, object>();
+
  public static void Init()
  {
  if (_instance != null) return;
@@ -33,7 +54,6 @@ public class SoundManager : MonoBehaviour
 
  private void Awake()
  {
- // Resolve types across Unity versions
  _audioSourceType = Type.GetType("UnityEngine.AudioSource, UnityEngine.AudioModule")
  				 ?? Type.GetType("UnityEngine.AudioSource, UnityEngine");
  _audioClipType = Type.GetType("UnityEngine.AudioClip, UnityEngine.AudioModule")
@@ -41,20 +61,68 @@ public class SoundManager : MonoBehaviour
 
  if (_audioSourceType != null)
  {
- 	// GameObject.AddComponent(Type)
  	var addComp = typeof(GameObject).GetMethods()
- 		.FirstOrDefault(m => m.Name == "AddComponent" && m.GetParameters().Length ==1 && m.GetParameters()[0].ParameterType == typeof(Type));
+ 		.FirstOrDefault(m => m.Name == "AddComponent" && m.GetParameters().Length == 1 && m.GetParameters()[0].ParameterType == typeof(Type));
  	var comp = addComp != null ? addComp.Invoke(gameObject, new object[] { _audioSourceType }) : null;
- 	_source = comp; // Component
+ 	_source = comp;
  	if (_source != null)
  	{
- 		SetProp(_source, "spatialBlend",0f);
+ 		SetProp(_source, "spatialBlend", 0f);
  		SetProp(_source, "playOnAwake", false);
  		SetProp(_source, "loop", false);
- 		SetProp(_source, "priority",64);
- 		SetProp(_source, "volume",1f);
+ 		SetProp(_source, "priority", 64);
+ 		SetProp(_source, "volume", 1f);
+
+ 		_stopMethod = _source.GetType().GetMethod("Stop", BindingFlags.Public | BindingFlags.Instance);
+ 		_playMethod = _source.GetType().GetMethod("Play", BindingFlags.Public | BindingFlags.Instance, null, Type.EmptyTypes, null);
+ 		_playOneShotMethod = _source.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
+ 			.FirstOrDefault(m => m.Name == "PlayOneShot" && m.GetParameters().Length == 1);
  	}
  }
+ }
+
+ private void Update()
+ {
+ 	if (_source == null) return;
+
+ 	float now = Time.realtimeSinceStartup;
+
+ 	// If we were asked to cut (trigger left), stop at cut time.
+ 	if (_pullUpCutAtRealtime > 0f && now >= _pullUpCutAtRealtime)
+ 	{
+ 		_pullUpCutAtRealtime = -1f;
+ 		try { _stopMethod?.Invoke(_source, null); } catch { }
+ 		_pullUpPlaying = false;
+ 		// if still held, schedule immediate restart (non-overlapping)
+ 		if (_pullUpHolds > 0) _pullUpRestartAtRealtime = now;
+ 	}
+
+ 	// Check if clip ended naturally (we query isPlaying)
+ 	if (_pullUpPlaying)
+ 	{
+ 		bool isPlaying = false;
+ 		try
+ 		{
+ 			var p = _source.GetType().GetProperty("isPlaying", BindingFlags.Public | BindingFlags.Instance);
+ 			if (p != null) isPlaying = (bool)p.GetValue(_source, null);
+ 		}
+ 		catch { }
+ 		if (!isPlaying)
+ 		{
+ 			_pullUpPlaying = false;
+ 			if (_pullUpHolds > 0) _pullUpRestartAtRealtime = now; // queue next loop
+ 		}
+ 	}
+
+ 	// Restart if queued and still held
+ 	if (_pullUpRestartAtRealtime >= 0f && now >= _pullUpRestartAtRealtime)
+ 	{
+ 		_pullUpRestartAtRealtime = -1f;
+ 		if (_pullUpHolds > 0 && !_pullUpPlaying)
+ 		{
+ 			PlayPullUpInternal();
+ 		}
+ 	}
  }
 
  private static void SetProp(object obj, string name, object value)
@@ -73,14 +141,13 @@ public class SoundManager : MonoBehaviour
  if (_instance == null) Init();
  _instance.EnsureKerbalClipsLoaded();
  var clips = _instance._kerbalClips;
- if (clips != null && clips.Length >0)
+ if (clips != null && clips.Length > 0)
  {
  	int idx = UnityEngine.Random.Range(0, clips.Length);
  	PlayClip(clips[idx]);
  }
  else
  {
- 	// fallback
  	PlayDefaultAlarm();
  }
  }
@@ -103,7 +170,7 @@ public class SoundManager : MonoBehaviour
  object clip = _instance._cachedDefaultClip;
  if (clip == null)
  {
- 	clip = TryLoadClip("KerbNoteLite/Sounds/Alarm") ?? GenerateBeepClip(0.14f,1200f);
+ 	clip = TryLoadClip("KerbNoteLite/Sounds/Alarm") ?? GenerateBeepClip(0.14f, 1200f);
  	_instance._cachedDefaultClip = clip;
  }
  PlayClip(clip);
@@ -112,7 +179,7 @@ public class SoundManager : MonoBehaviour
  public static void PlayByPath(string dbPath)
  {
  if (_instance == null) Init();
- var clip = TryLoadClip(dbPath) ?? GenerateBeepClip(0.10f,1000f);
+ var clip = TryLoadClip(dbPath) ?? GenerateBeepClip(0.10f, 1000f);
  PlayClip(clip);
  }
 
@@ -120,7 +187,7 @@ public class SoundManager : MonoBehaviour
  {
  if (_instance == null || clip == null || _instance._source == null) return;
  var play = _instance._source.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
- 	.FirstOrDefault(m => m.Name == "PlayOneShot" && m.GetParameters().Length ==1);
+ 	.FirstOrDefault(m => m.Name == "PlayOneShot" && m.GetParameters().Length == 1);
  try { play?.Invoke(_instance._source, new object[] { clip }); } catch { }
  }
 
@@ -130,7 +197,7 @@ public class SoundManager : MonoBehaviour
  try
  {
  	var m = typeof(GameDatabase).GetMethods(BindingFlags.Public | BindingFlags.Instance)
- 		.FirstOrDefault(mm => mm.Name == "GetAudioClip" && mm.GetParameters().Length ==1 && mm.GetParameters()[0].ParameterType == typeof(string));
+ 		.FirstOrDefault(mm => mm.Name == "GetAudioClip" && mm.GetParameters().Length == 1 && mm.GetParameters()[0].ParameterType == typeof(string));
  	return m != null ? m.Invoke(GameDatabase.Instance, new object[] { dbPath }) : null;
  }
  catch { return null; }
@@ -143,29 +210,134 @@ public class SoundManager : MonoBehaviour
  	var audioClipType = Type.GetType("UnityEngine.AudioClip, UnityEngine.AudioModule") ?? Type.GetType("UnityEngine.AudioClip, UnityEngine");
  	if (audioClipType == null) return null;
 
- 	int sampleRate =44100;
+ 	int sampleRate = 44100;
  	int samples = Mathf.Max(1, Mathf.RoundToInt(durationSec * sampleRate));
  	var data = new float[samples];
- 	double inc =2.0 * Math.PI * freq / sampleRate;
- 	double phase =0.0;
- 	for (int i =0; i < samples; i++)
+ 	double inc = 2.0 * Math.PI * freq / sampleRate;
+ 	double phase = 0.0;
+ 	for (int i = 0; i < samples; i++)
  	{
- 		float env =1f;
- 		if (i <64) env = i /64f; // quick fade in
- 		else if (i > samples -256) env = Mathf.Clamp01((samples - i) /256f); // quick fade out
- 		data[i] = (float)Math.Sin(phase) * env *0.8f;
+ 		float env = 1f;
+ 		if (i < 64) env = i / 64f;
+ 		else if (i > samples - 256) env = Mathf.Clamp01((samples - i) / 256f);
+ 		data[i] = (float)Math.Sin(phase) * env * 0.8f;
  		phase += inc;
  	}
 
- 	// AudioClip.Create(name, lengthSamples, channels, frequency, stream)
  	var create = audioClipType.GetMethods(BindingFlags.Public | BindingFlags.Static)
- 		.FirstOrDefault(mi => mi.Name == "Create" && mi.GetParameters().Length ==5);
- 	var clip = create?.Invoke(null, new object[] { "KerbNote_Beep", samples,1, sampleRate, false });
+ 		.FirstOrDefault(mi => mi.Name == "Create" && mi.GetParameters().Length == 5);
+ 	var clip = create?.Invoke(null, new object[] { "KerbNote_Beep", samples, 1, sampleRate, false });
  	var setData = audioClipType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
- 		.FirstOrDefault(mi => mi.Name == "SetData" && mi.GetParameters().Length ==2 && mi.GetParameters()[0].ParameterType == typeof(float[]));
- 	setData?.Invoke(clip, new object[] { data,0 });
+ 		.FirstOrDefault(mi => mi.Name == "SetData" && mi.GetParameters().Length == 2 && mi.GetParameters()[0].ParameterType == typeof(float[]));
+ 	setData?.Invoke(clip, new object[] { data, 0 });
  	return clip;
  }
  catch { return null; }
+ }
+
+ private void EnsurePullUpLoaded()
+ {
+ 	if (_pullUpClip != null) return;
+ 	_pullUpClip = TryLoadClip("KerbNoteLite/Sounds/Pull_Up");
+ }
+
+ private void PlayPullUpInternal()
+ {
+ 	EnsurePullUpLoaded();
+ 	if (_pullUpClip == null || _source == null) return;
+
+ 	_pullUpCutAtRealtime = -1f;
+ 	try
+ 	{
+ 		SetProp(_source, "clip", _pullUpClip);
+ 		SetProp(_source, "time", 0f);
+ 		_playMethod?.Invoke(_source, null);
+ 		_pullUpPlaying = true;
+ 	}
+ 	catch
+ 	{
+ 		try { _playOneShotMethod?.Invoke(_source, new object[] { _pullUpClip }); } catch { }
+ 		_pullUpPlaying = true;
+ 	}
+ }
+
+ // Acquire: call while alarm condition is TRUE (e.g., inside trigger)
+ public static void PullUpAcquire()
+ {
+ 	if (_instance == null) Init();
+ 	_instance.EnsurePullUpLoaded();
+ 	_instance._pullUpHolds++;
+ 	if (_instance._pullUpHolds == 1)
+ 	{
+ 		// start immediately
+ 		_instance._pullUpRestartAtRealtime = Time.realtimeSinceStartup;
+ 	}
+ }
+
+ // Release: call when alarm condition becomes FALSE
+ public static void PullUpRelease()
+ {
+ 	if (_instance == null) return;
+ 	if (_instance._pullUpHolds > 0) _instance._pullUpHolds--;
+ 	if (_instance._pullUpHolds == 0)
+ 	{
+ 		// If currently playing, cut after 3.5s from now.
+ 		if (_instance._pullUpPlaying)
+ 		{
+ 			_instance._pullUpCutAtRealtime = Time.realtimeSinceStartup + 3.5f;
+ 		}
+ 		_instance._pullUpRestartAtRealtime = -1f;
+ 	}
+ }
+
+ // Legacy: immediate one-shot trimmed
+ public static void PlayPullUp()
+ {
+ 	PullUpAcquire();
+ 	PullUpRelease();
+ }
+
+ public static void PlayGearBeep()
+ {
+ 	if (_instance == null) Init();
+ 	if (_cachedGearWarningClip == null)
+ 	{
+ 		_cachedGearWarningClip = TryLoadClip("KerbNoteLite/Sounds/Too_Low_Gear")
+ 							  ?? TryLoadClip("KerbNoteLite/Sounds/too_low_gear")
+ 							  ?? GenerateBeepClip(0.06f, 900f);
+ 	}
+ 	PlayClip(_cachedGearWarningClip);
+ }
+
+ public static void PlayAltitudeCallout(int meters)
+ {
+ 	if (_instance == null) Init();
+ 	object clip;
+ 	if (!_cachedAltitudeCallouts.TryGetValue(meters, out clip) || clip == null)
+ 	{
+ 		clip = TryLoadClip($"KerbNoteLite/Sounds/{meters}");
+ 		_cachedAltitudeCallouts[meters] = clip;
+ 	}
+ 	if (clip != null)
+ 	{
+ 		PlayClip(clip);
+ 	}
+ 	else
+ 	{
+ 		// fallback: audible confirmation even if asset is missing
+ 		PlayClip(GenerateBeepClip(0.05f, 1400f));
+ 	}
+ }
+
+ public static void PlaySinkRate()
+ {
+ 	if (_instance == null) Init();
+ 	if (_cachedSinkRateClip == null)
+ 	{
+ 		_cachedSinkRateClip = TryLoadClip("KerbNoteLite/Sounds/Sink_Rate")
+  						  ?? TryLoadClip("KerbNoteLite/Sounds/sink_rate")
+  						  ?? GenerateBeepClip(0.08f, 600f);
+ 	}
+ 	PlayClip(_cachedSinkRateClip);
  }
 }
