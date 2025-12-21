@@ -68,7 +68,8 @@ public partial class KerbNote : MonoBehaviour
             Debug.Log("[KerbNote] PrewarmUI start");
             SkinReload.Reload(this);
             ForceRebuildStyles();
-            try { InitStyles(); Debug.Log("[KerbNote] InitStyles done (prewarm)"); } catch (Exception ex) { Debug.LogWarning("[KerbNote] InitStyles failed (prewarm): " + ex.Message); }
+            // Don't call InitStyles() here - GUI functions can only be called from OnGUI()
+            // InitStyles will be called automatically on first OnGUI when stylesInitialized is false
             uiPrewarmed = true;
             uiReady = true;
             Debug.Log("[KerbNote] PrewarmUI done -> uiReady=true");
@@ -90,14 +91,14 @@ public partial class KerbNote : MonoBehaviour
             {
                 SkinReload.Reload(this);
             }
-            // Only rebuild styles if they're not initialized
+            // Only rebuild styles if they're not initialized - but don't call InitStyles() here
+            // InitStyles() will be called from OnGUI() when stylesInitialized is false
             if (!stylesInitialized)
             {
                 ForceRebuildStyles();
-                try { InitStyles(); Debug.Log("[KerbNote] InitStyles done (ensure)"); } catch (Exception ex) { Debug.LogWarning("[KerbNote] InitStyles failed (ensure): " + ex.Message); }
             }
-            // Mark ready only if core textures and styles exist
-            uiReady = (ButtonTexture != null && ButtonHoverTexture != null && ButtonClickTexture != null && TabTexture != null && calcDisplayStyle != null && buttonStyle != null);
+            // Mark ready only if core textures exist
+            uiReady = (ButtonTexture != null && ButtonHoverTexture != null && ButtonClickTexture != null && TabTexture != null);
             Debug.Log("[KerbNote] EnsureUiReady -> uiReady=" + uiReady);
         }
         catch (Exception ex)

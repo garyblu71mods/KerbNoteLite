@@ -15,6 +15,10 @@ public class AlarmRunner : MonoBehaviour
 	private readonly Dictionary<string, VesselState> lastStateByVessel = new Dictionary<string, VesselState>();
 	private string lastActiveSaveOverride = null;
 	private static bool forceNextEvaluation = false;
+	
+	// Global load cooldown - suppress all alarms for first 20 seconds after scene load
+	private float _sceneLoadTime;
+	private const float LoadCooldownSeconds = 20f;
 
 	// Track last matching alarms per vessel to detect exit from alarm condition
 	private readonly Dictionary<string, List<AlarmDefinition>> lastMatchedAlarmsByVessel = new Dictionary<string, List<AlarmDefinition>>();
@@ -27,7 +31,18 @@ public class AlarmRunner : MonoBehaviour
 		GameEvents.onVesselGoOffRails.Add(OnVesselGoOffRails);
 		GameEvents.onDockingComplete.Add(OnDockingComplete);
 		GameEvents.onPartCouple.Add(OnPartCouple);
+		GameEvents.onVesselChange.Add(OnVesselSwitched);
+		
+		// Initialize scene load time
+		_sceneLoadTime = Time.realtimeSinceStartup;
 	}
+	
+	private void OnVesselSwitched(Vessel v)
+	{
+		// Reset cooldown timer when switching vessels to prevent false alarms
+		_sceneLoadTime = Time.realtimeSinceStartup;
+	}
+	
 	private void OnDestroy()
 	{
 		GameEvents.onVesselSituationChange.Remove(OnVesselSituationChange);
@@ -36,6 +51,7 @@ public class AlarmRunner : MonoBehaviour
 		GameEvents.onVesselGoOffRails.Remove(OnVesselGoOffRails);
 		GameEvents.onDockingComplete.Remove(OnDockingComplete);
 		GameEvents.onPartCouple.Remove(OnPartCouple);
+		GameEvents.onVesselChange.Remove(OnVesselSwitched);
 	}
 
 	private void OnVesselSituationChange(GameEvents.HostedFromToAction<Vessel, Vessel.Situations> data) => TryTriggerFor(data.host, data.to);
@@ -96,6 +112,12 @@ public class AlarmRunner : MonoBehaviour
 		{
 			if (vessel == null || FlightGlobals.ActiveVessel == null) return;
 			if (vessel != FlightGlobals.ActiveVessel) return;
+			
+			// Global load cooldown - skip all alarm checks for first 20 seconds after scene load
+			if (Time.realtimeSinceStartup - _sceneLoadTime < LoadCooldownSeconds)
+			{
+				return; // Skip all alarm processing during cooldown
+			}
 
 			// Clear caches when override changes to avoid stale-trigger suppression
 			string activeOverride = KerbNote.ActiveSaveOverride; // may be null/empty

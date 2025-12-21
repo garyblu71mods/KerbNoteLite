@@ -55,9 +55,9 @@ public static class SkinReload
             SetField(host, "iconOn", iconOn);
             SetField(host, "iconOff", iconOff);
 
-            // Force style rebuild
+            // Reset style initialization flag so styles will be rebuilt on next OnGUI
+            // Don't call InitStyles() here - GUI functions can only be called from OnGUI()
             SetField(host, "stylesInitialized", false);
-            InvokeMethod(host, "InitStyles");
         }
         catch (Exception ex)
         {

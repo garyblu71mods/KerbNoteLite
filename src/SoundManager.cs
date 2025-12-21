@@ -41,8 +41,12 @@ public class SoundManager : MonoBehaviour
  private static object _cachedGearWarningClip;
  private static object _cachedGearBeepClip;
  private static object _cachedSinkRateClip;
+ private static object _cachedLandedClip;
 
  private static readonly System.Collections.Generic.Dictionary<int, object> _cachedAltitudeCallouts = new System.Collections.Generic.Dictionary<int, object>();
+
+ // Volume multiplier for terrain alarm sounds (set by TerrainAlarmRunner)
+ private static float _terrainVolume = 1.0f;
 
  public static void Init()
  {
@@ -183,11 +187,22 @@ public class SoundManager : MonoBehaviour
  PlayClip(clip);
  }
 
- private static void PlayClip(object clip)
+ private static void PlayClip(object clip, float volume = 1.0f)
  {
  if (_instance == null || clip == null || _instance._source == null) return;
+ 
+ // Try PlayOneShot with 2 parameters (clip, volume)
+ var playWithVolume = _instance._source.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
+ .FirstOrDefault(m => m.Name == "PlayOneShot" && m.GetParameters().Length == 2);
+ 
+ if (playWithVolume != null)
+ {
+  try { playWithVolume.Invoke(_instance._source, new object[] { clip, volume }); return; } catch { }
+ }
+ 
+ // Fallback: PlayOneShot with 1 parameter (no volume control)
  var play = _instance._source.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
- 	.FirstOrDefault(m => m.Name == "PlayOneShot" && m.GetParameters().Length == 1);
+ .FirstOrDefault(m => m.Name == "PlayOneShot" && m.GetParameters().Length == 1);
  try { play?.Invoke(_instance._source, new object[] { clip }); } catch { }
  }
 
@@ -238,7 +253,8 @@ public class SoundManager : MonoBehaviour
  private void EnsurePullUpLoaded()
  {
  	if (_pullUpClip != null) return;
- 	_pullUpClip = TryLoadClip("KerbNoteLite/Sounds/Pull_Up");
+ 	_pullUpClip = TryLoadClip("KerbNoteLite/Sounds/Pull_Up")
+			   ?? TryLoadClip("KerbNoteLite/Sounds/pull_up");
  }
 
  private void PlayPullUpInternal()
@@ -251,6 +267,7 @@ public class SoundManager : MonoBehaviour
  	{
  		SetProp(_source, "clip", _pullUpClip);
  		SetProp(_source, "time", 0f);
+ 		SetProp(_source, "volume", _terrainVolume); // Apply terrain volume
  		_playMethod?.Invoke(_source, null);
  		_pullUpPlaying = true;
  	}
@@ -297,19 +314,19 @@ public class SoundManager : MonoBehaviour
  	PullUpRelease();
  }
 
- public static void PlayGearBeep()
+ public static void PlayGearBeep(float volume = 1.0f)
  {
  	if (_instance == null) Init();
  	if (_cachedGearWarningClip == null)
  	{
  		_cachedGearWarningClip = TryLoadClip("KerbNoteLite/Sounds/Too_Low_Gear")
  							  ?? TryLoadClip("KerbNoteLite/Sounds/too_low_gear")
- 							  ?? GenerateBeepClip(0.06f, 900f);
+ 							  ?? GenerateBeepClip(0.12f, 900f);
  	}
- 	PlayClip(_cachedGearWarningClip);
+ 	PlayClip(_cachedGearWarningClip, volume);
  }
 
- public static void PlayAltitudeCallout(int meters)
+ public static void PlayAltitudeCallout(int meters, float volume = 1.0f)
  {
  	if (_instance == null) Init();
  	object clip;
@@ -320,16 +337,17 @@ public class SoundManager : MonoBehaviour
  	}
  	if (clip != null)
  	{
- 		PlayClip(clip);
+ 		PlayClip(clip, volume);
  	}
  	else
  	{
  		// fallback: audible confirmation even if asset is missing
- 		PlayClip(GenerateBeepClip(0.05f, 1400f));
+ 		PlayClip(GenerateBeepClip(0.05f, 1400f), volume);
  	}
+ 	// Note: Screen message moved to caller (TerrainAlarmRunner) for separate control
  }
 
- public static void PlaySinkRate()
+ public static void PlaySinkRate(float volume = 1.0f)
  {
  	if (_instance == null) Init();
  	if (_cachedSinkRateClip == null)
@@ -338,6 +356,23 @@ public class SoundManager : MonoBehaviour
   						  ?? TryLoadClip("KerbNoteLite/Sounds/sink_rate")
   						  ?? GenerateBeepClip(0.08f, 600f);
  	}
- 	PlayClip(_cachedSinkRateClip);
+ 	PlayClip(_cachedSinkRateClip, volume);
+ }
+
+ public static void PlayLandedCallout(float volume = 1.0f)
+ {
+ 	if (_instance == null) Init();
+ 	if (_cachedLandedClip == null)
+ 	{
+ 		_cachedLandedClip = TryLoadClip("KerbNoteLite/Sounds/Landed")
+                            ?? TryLoadClip("KerbNoteLite/Sounds/landed")
+                            ?? GenerateBeepClip(0.07f, 1100f);
+ 	}
+ 	PlayClip(_cachedLandedClip, volume);
+ }
+
+ public static void SetTerrainVolume(float volume)
+ {
+ 	_terrainVolume = Mathf.Clamp01(volume);
  }
 }

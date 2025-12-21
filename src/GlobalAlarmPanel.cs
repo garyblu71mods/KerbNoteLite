@@ -121,6 +121,16 @@ public class GlobalAlarmPanel : MonoBehaviour
         // Start hidden (left, off-screen)
         sliderRect.x = hiddenPanelX;
         _wasModActive = false;
+        
+        // Find existing alarm runners (created by AlarmSystemBootstrap) to avoid creating duplicates
+        if (resourcesRunner == null)
+        {
+            resourcesRunner = FindObjectOfType<ResourcesAlarmRunner>();
+        }
+        if (terrainRunner == null)
+        {
+            terrainRunner = FindObjectOfType<TerrainAlarmRunner>();
+        }
     }
 
     private void EnsureStyles()
@@ -128,7 +138,8 @@ public class GlobalAlarmPanel : MonoBehaviour
         if (stylesInitialized) return;
         stylesInitialized = true;
         GUI.skin = HighLogic.Skin;
-        // Header style similar to AlarmSelector
+        
+        // Header style - use white/cream color like resource labels
         titleStyle = new GUIStyle(GUI.skin.label)
         {
             fontSize = 13,
@@ -136,7 +147,7 @@ public class GlobalAlarmPanel : MonoBehaviour
             alignment = TextAnchor.MiddleLeft,
             wordWrap = true
         };
-        titleStyle.normal.textColor = new Color(0.9f, 0.85f, 0.4f, 1f);
+        titleStyle.normal.textColor = new Color(0.95f, 0.95f, 0.95f, 1f); // White/cream instead of yellow-green
 
         // Load tab textures for buttons
         tabTex = SkinAssets.Get("Tab") ?? GameDatabase.Instance.GetTexture(KerbNote.TEXTURE_TAB, false);
@@ -342,12 +353,20 @@ public class GlobalAlarmPanel : MonoBehaviour
 
         KerbalUIBackground.DrawNoteWindow(new Rect(localX, 0, sliderRect.width, sliderRect.height));
 
-        GUI.Label(new Rect(localX + 8f, 6f, sliderRect.width - 16f, 20f), "Global Alarms", titleStyle);
-
-        float y = 28f;
-        Rect contentArea = new Rect(localX + 8f, y, sliderRect.width - 16f, sliderRect.height - y - 8f);
+        float y = 8f; // Start content from top (no header needed)
+        // Increase right margin to accommodate thin scrollbar (8px scrollbar + 8px padding = 16px total)
+        Rect contentArea = new Rect(localX + 8f, y, sliderRect.width - 24f, sliderRect.height - y - 8f);
+        
+        // Custom scrollbar style - 2x narrower and aligned to right
+        GUIStyle thinScrollbar = new GUIStyle(GUI.skin.verticalScrollbar);
+        thinScrollbar.fixedWidth = 8f; // Half of default ~16px
+        
+        GUIStyle thinScrollbarThumb = new GUIStyle(GUI.skin.verticalScrollbarThumb);
+        thinScrollbarThumb.fixedWidth = 8f;
+        
         GUILayout.BeginArea(contentArea);
-        _scroll = GUILayout.BeginScrollView(_scroll, GUILayout.Width(contentArea.width), GUILayout.Height(contentArea.height));
+        _scroll = GUILayout.BeginScrollView(_scroll, false, true, GUIStyle.none, thinScrollbar, GUI.skin.scrollView, 
+                                           GUILayout.Width(contentArea.width), GUILayout.Height(contentArea.height));
         switch (currentPage)
         {
             case Page.Menu:
@@ -386,9 +405,17 @@ public class GlobalAlarmPanel : MonoBehaviour
             currentPage = Page.Resources;
             if (resourcesRunner == null)
             {
-                var go = new GameObject("ResourcesAlarmRunner");
-                resourcesRunner = go.AddComponent<ResourcesAlarmRunner>();
-                DontDestroyOnLoad(go);
+                // First try to find existing runner (created by AlarmSystemBootstrap)
+                resourcesRunner = FindObjectOfType<ResourcesAlarmRunner>();
+                
+                // If not found, create new one
+                if (resourcesRunner == null)
+                {
+                    var go = new GameObject("ResourcesAlarmRunner");
+                    resourcesRunner = go.AddComponent<ResourcesAlarmRunner>();
+                    DontDestroyOnLoad(go);
+                    ResourcesAlarmConfig.LoadInto(resourcesRunner);
+                }
             }
         }
         if (GUILayout.Button("Terrain alarm", tabBtnStyle))
@@ -396,10 +423,17 @@ public class GlobalAlarmPanel : MonoBehaviour
             currentPage = Page.Terrain;
             if (terrainRunner == null)
             {
-                var go = new GameObject("TerrainAlarmRunner");
-                terrainRunner = go.AddComponent<TerrainAlarmRunner>();
-                DontDestroyOnLoad(go);
-                TerrainAlarmConfig.LoadInto(terrainRunner);
+                // First try to find existing runner (created by AlarmSystemBootstrap)
+                terrainRunner = FindObjectOfType<TerrainAlarmRunner>();
+                
+                // If not found, create new one
+                if (terrainRunner == null)
+                {
+                    var go = new GameObject("TerrainAlarmRunner");
+                    terrainRunner = go.AddComponent<TerrainAlarmRunner>();
+                    DontDestroyOnLoad(go);
+                    TerrainAlarmConfig.LoadInto(terrainRunner);
+                }
             }
 
             // refresh input buffers from runner so fields show immediately
@@ -417,7 +451,13 @@ public class GlobalAlarmPanel : MonoBehaviour
 
     private void DrawResourcesPage()
     {
-        GUILayout.Label("Resources alarms", HighLogic.Skin.label);
+        // Back button at the top
+        if (GUILayout.Button("Back", tabBtnStyle)) 
+        {
+            currentPage = Page.Menu;
+            return;
+        }
+        
         GUILayout.Space(4f);
         bool enabled = (resourcesRunner != null && resourcesRunner.enabled);
         string label = enabled ? "Disable" : "Enable";
@@ -427,68 +467,199 @@ public class GlobalAlarmPanel : MonoBehaviour
             {
                 if (resourcesRunner == null)
                 {
-                    var go = new GameObject("ResourcesAlarmRunner");
-                    resourcesRunner = go.AddComponent<ResourcesAlarmRunner>();
-                    DontDestroyOnLoad(go);
+                    // First try to find existing runner (created by AlarmSystemBootstrap)
+                    resourcesRunner = FindObjectOfType<ResourcesAlarmRunner>();
+                    
+                    // If not found, create new one
+                    if (resourcesRunner == null)
+                    {
+                        var go = new GameObject("ResourcesAlarmRunner");
+                        resourcesRunner = go.AddComponent<ResourcesAlarmRunner>();
+                        DontDestroyOnLoad(go);
+                        ResourcesAlarmConfig.LoadInto(resourcesRunner);
+                    }
                 }
                 resourcesRunner.Enable();
+                ResourcesAlarmConfig.SaveFrom(resourcesRunner); // Save immediately
             }
             else
             {
                 resourcesRunner.Disable();
+                ResourcesAlarmConfig.SaveFrom(resourcesRunner); // Save immediately
             }
         }
         GUILayout.Space(8f);
+        
+        // White/cream text style for all labels
+        GUIStyle textStyle = new GUIStyle(HighLogic.Skin.label);
+        textStyle.normal.textColor = new Color(0.95f, 0.95f, 0.95f, 1f);
+        
         // Only show resources when in flight and vessel active
         if (!HighLogic.LoadedSceneIsFlight || FlightGlobals.ActiveVessel == null)
         {
-            GUILayout.Label("Available in Flight when a vessel is active.", HighLogic.Skin.label);
+            GUILayout.Label("Resource alarms available in Flight when a vessel is active.", textStyle);
         }
         else
         {
+            // Communication alarm as first resource-like entry
+            bool commAlarm = resourcesRunner != null && resourcesRunner.EnableCommAlarm;
+            float commThreshold = resourcesRunner != null ? resourcesRunner.CommSignalThreshold : 0.25f;
+            bool isCommExpanded = (_expandedResourceSlider == "Communication");
+            
+            // Style for resource labels: no wrapping, clip overflow, white/cream color
+            GUIStyle resourceLabelStyle = new GUIStyle(GUI.skin.label);
+            resourceLabelStyle.wordWrap = false;
+            resourceLabelStyle.clipping = TextClipping.Clip;
+            resourceLabelStyle.alignment = TextAnchor.MiddleLeft;
+            resourceLabelStyle.normal.textColor = new Color(0.95f, 0.95f, 0.95f, 1f);
+            
+            if (!isCommExpanded)
+            {
+                // Compact line: checkbox (20) + label (70) + percent (30) + Set button (35)
+                GUILayout.BeginHorizontal(GUILayout.Height(20));
+                
+                bool newCommAlarm = GUILayout.Toggle(commAlarm, "", GUILayout.Width(20));
+                if (resourcesRunner != null)
+                {
+                    resourcesRunner.EnableCommAlarm = newCommAlarm;
+                    if (newCommAlarm != commAlarm)
+                    {
+                        ResourcesAlarmConfig.SaveFrom(resourcesRunner);
+                    }
+                }
+                
+                GUILayout.Space(-4);
+                GUILayout.Label("Communicat..", resourceLabelStyle, GUILayout.Width(70));
+                GUILayout.Label(((int)(commThreshold * 100)).ToString() + "%", resourceLabelStyle, GUILayout.Width(30));
+                
+                if (GUILayout.Button("Set", GUILayout.Width(35)))
+                {
+                    _expandedResourceSlider = "Communication";
+                }
+                
+                GUILayout.EndHorizontal();
+            }
+            else
+            {
+                // Expanded slider view: full-width slider with OK button
+                GUILayout.BeginVertical();
+                GUILayout.Label($"Communication: {(int)(commThreshold * 100)}%", textStyle);
+                GUILayout.BeginHorizontal();
+                float newThreshold = GUILayout.HorizontalSlider(commThreshold, 0.05f, 0.75f, GUILayout.ExpandWidth(true));
+                if (resourcesRunner != null && Mathf.Abs(newThreshold - commThreshold) > 0.01f)
+                {
+                    resourcesRunner.CommSignalThreshold = newThreshold;
+                    ResourcesAlarmConfig.SaveFrom(resourcesRunner);
+                }
+                if (GUILayout.Button("OK", GUILayout.Width(40)))
+                {
+                    _expandedResourceSlider = null;
+                }
+                GUILayout.EndHorizontal();
+                GUILayout.EndVertical();
+                GUILayout.Space(2f);
+            }
+            
+            // Now regular resources
             string[] names = resourcesRunner != null ? resourcesRunner.GetCurrentVesselResourceNames() : new string[] { };
-            float contentW = GUILayoutUtility.GetLastRect().width;
-            foreach (var n in names.OrderBy(s => s))
+            
+            // Custom sort order: priority resources first, then alphabetical
+            var priorityOrder = new System.Collections.Generic.Dictionary<string, int>(System.StringComparer.OrdinalIgnoreCase)
+            {
+                { "ElectricCharge", 1 },
+                { "LiquidFuel", 2 },
+                { "Oxidizer", 3 },
+                { "MonoPropellant", 4 },
+                { "XenonGas", 5 },
+                { "Ore", 6 },
+                { "Ablator", 7 },
+                { "IntakeAir", 8 }
+            };
+            
+            var sortedNames = names.OrderBy(n => 
+            {
+                int priority;
+                if (priorityOrder.TryGetValue(n, out priority)) return priority;
+                return 100; // other resources after priority ones
+            }).ThenBy(n => n, System.StringComparer.OrdinalIgnoreCase);
+            
+            // Calculate available width: panel width minus margins and scrollbar
+            float availableWidth = sliderRect.width - 16f - 16f; // 8f margin on each side, plus scrollbar reserve
+            
+            foreach (var n in sortedNames)
             {
                 bool isOn = resourcesRunner != null && resourcesRunner.EnabledResources.Contains(n);
                 float cur = 0.15f;
                 if (resourcesRunner != null)
                 {
-                    float v; if (!resourcesRunner.ThresholdByResource.TryGetValue(n, out v)) v = 0.15f; cur = v;
+                    float v; 
+                    if (!resourcesRunner.ThresholdByResource.TryGetValue(n, out v)) v = 0.15f; 
+                    cur = v;
                 }
-                if (contentW >= 360f)
+                
+                // Check if this resource has expanded slider
+                bool isExpanded = (_expandedResourceSlider == n);
+                
+                if (!isExpanded)
                 {
-                    // Single line layout
-                    GUILayout.BeginHorizontal();
-                    bool newOn = GUILayout.Toggle(isOn, "", GUILayout.Width(24));
+                    // Compact line: checkbox (20) + label (70) + percent (30) + Set button (35)
+                    GUILayout.BeginHorizontal(GUILayout.Height(20));
+                    
+                    bool newOn = GUILayout.Toggle(isOn, "", GUILayout.Width(20));
                     if (resourcesRunner != null)
                     {
-                        if (newOn) resourcesRunner.EnabledResources.Add(n); else resourcesRunner.EnabledResources.Remove(n);
+                        if (newOn) resourcesRunner.EnabledResources.Add(n); 
+                        else resourcesRunner.EnabledResources.Remove(n);
                     }
-                    GUILayout.Label(n, GUILayout.Width(150));
-                    float newThr = GUILayout.HorizontalSlider(cur, 0.01f, 0.8f, GUILayout.Width(180));
-                    GUILayout.Label(((int)(newThr*100)).ToString() + "%", GUILayout.Width(45));
-                    if (resourcesRunner != null) resourcesRunner.ThresholdByResource[n] = newThr;
+                    
+                    GUILayout.Space(-4); // Reduce space between checkbox and label
+                    
+                    // Truncate long resource names to fit, use non-wrapping style
+                    string displayName = n.Length > 13 ? n.Substring(0, 11) + ".." : n;
+                    GUILayout.Label(displayName, resourceLabelStyle, GUILayout.Width(70));
+                    
+                    GUILayout.Label(((int)(cur*100)).ToString() + "%", resourceLabelStyle, GUILayout.Width(30));
+                    
+                    if (GUILayout.Button("Set", GUILayout.Width(35)))
+                    {
+                        _expandedResourceSlider = n;
+                    }
+                    
                     GUILayout.EndHorizontal();
                 }
                 else
                 {
-                    // Two-line compact layout (fits narrow panels)
+                    // Expanded slider view: full-width slider with OK button
+                    GUILayout.BeginVertical();
+                    
+                    // Resource name header
+                    GUILayout.Label($"{n}: {(int)(cur*100)}%", textStyle);
+                    
                     GUILayout.BeginHorizontal();
-                    bool newOn = GUILayout.Toggle(isOn, "", GUILayout.Width(24));
-                    if (resourcesRunner != null)
-                    {
-                        if (newOn) resourcesRunner.EnabledResources.Add(n); else resourcesRunner.EnabledResources.Remove(n);
-                    }
-                    GUILayout.Label(n);
-                    GUILayout.EndHorizontal();
-                    GUILayout.BeginHorizontal();
-                    float newThr = GUILayout.HorizontalSlider(cur, 0.01f, 0.8f);
-                    GUILayout.Label(((int)(newThr*100)).ToString() + "%", GUILayout.Width(45));
+                    
+                    // Full-width slider
+                    float newThr = GUILayout.HorizontalSlider(cur, 0.01f, 0.8f, GUILayout.ExpandWidth(true));
                     if (resourcesRunner != null) resourcesRunner.ThresholdByResource[n] = newThr;
+                    
+                    // OK button to close
+                    if (GUILayout.Button("OK", GUILayout.Width(40)))
+                    {
+                        _expandedResourceSlider = null;
+                    }
+                    
                     GUILayout.EndHorizontal();
+                    GUILayout.EndVertical();
                     GUILayout.Space(2f);
                 }
+            }
+            
+            // Silence all alarms checkbox at the bottom
+            GUILayout.Space(8f);
+            bool silence = resourcesRunner != null && resourcesRunner.SilenceAlarms;
+            bool newSilence = GUILayout.Toggle(silence, " Silence all resource alarms");
+            if (resourcesRunner != null)
+            {
+                resourcesRunner.SilenceAlarms = newSilence;
             }
         }
         GUILayout.Space(8f);
@@ -506,10 +677,19 @@ public class GlobalAlarmPanel : MonoBehaviour
     private string _aheadMinSpeedStr;
     private bool _sinkRateToggle;
     private float _lastTerrainConfigSaveTs;
+    
+    // Resources page: expanded slider state
+    private string _expandedResourceSlider; // null = none expanded, or resource name
 
     private void DrawTerrainPage()
     {
-        GUILayout.Label("Terrain alarm", HighLogic.Skin.label);
+        // Back button at the top
+        if (GUILayout.Button("Back", tabBtnStyle)) 
+        {
+            currentPage = Page.Menu;
+            return;
+        }
+        
         GUILayout.Space(4f);
         bool enabled = (terrainRunner != null && terrainRunner.enabled);
         string label = enabled ? "Disable" : "Enable";
@@ -519,11 +699,18 @@ public class GlobalAlarmPanel : MonoBehaviour
             {
                 if (terrainRunner == null)
                 {
-                    var go = new GameObject("TerrainAlarmRunner");
-                    terrainRunner = go.AddComponent<TerrainAlarmRunner>();
-                    DontDestroyOnLoad(go);
+                    // First try to find existing runner (created by AlarmSystemBootstrap)
+                    terrainRunner = FindObjectOfType<TerrainAlarmRunner>();
+                    
+                    // If not found, create new one
+                    if (terrainRunner == null)
+                    {
+                        var go = new GameObject("TerrainAlarmRunner");
+                        terrainRunner = go.AddComponent<TerrainAlarmRunner>();
+                        DontDestroyOnLoad(go);
 
-                    TerrainAlarmConfig.LoadInto(terrainRunner);
+                        TerrainAlarmConfig.LoadInto(terrainRunner);
+                    }
                 }
 
                 terrainRunner.enabled = true;
@@ -553,9 +740,31 @@ public class GlobalAlarmPanel : MonoBehaviour
 
         if (terrainRunner == null)
         {
-            if (GUILayout.Button("Back", tabBtnStyle)) currentPage = Page.Menu;
             return;
         }
+
+        // Vessel type filter: Aircraft only vs All vessels (radio buttons)
+        GUILayout.BeginHorizontal();
+        bool allVessels = !terrainRunner.AircraftOnly;
+        bool aircraftOnly = terrainRunner.AircraftOnly;
+        
+        bool newAllVessels = GUILayout.Toggle(allVessels, " All vessels", GUILayout.Width(120));
+        bool newAircraftOnly = GUILayout.Toggle(aircraftOnly, " Aircraft only", GUILayout.Width(120));
+        
+        // Apply changes immediately with proper radio button behavior
+        if (newAllVessels && !allVessels)
+        {
+            terrainRunner.AircraftOnly = false;
+            TerrainAlarmConfig.SaveFrom(terrainRunner);
+        }
+        else if (newAircraftOnly && !aircraftOnly)
+        {
+            terrainRunner.AircraftOnly = true;
+            TerrainAlarmConfig.SaveFrom(terrainRunner);
+        }
+        
+        GUILayout.EndHorizontal();
+        GUILayout.Space(6f);
 
         if (_terrainAglStr == null) _terrainAglStr = terrainRunner.AltitudeAGL.ToString("F0");
         if (_terrainVsStr == null) _terrainVsStr = terrainRunner.DescentSpeed.ToString("F0");
@@ -569,15 +778,15 @@ public class GlobalAlarmPanel : MonoBehaviour
         if (_aheadMinSpeedStr == null) _aheadMinSpeedStr = terrainRunner.TerrainAheadMinSpeed.ToString("F0");
 
         // Base terrain threshold (always relevant)
-        terrainRunner.EnableTerrainBase = GUILayout.Toggle(terrainRunner.EnableTerrainBase, " Terrain warning (Pull Up)");
+        terrainRunner.EnableTerrainBase = GUILayout.Toggle(terrainRunner.EnableTerrainBase, " Terrain (Pull Up)");
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label("AGL:", GUILayout.Width(50));
+        GUILayout.Label("AGL:", GUILayout.Width(40));
         _terrainAglStr = GUILayout.TextField(_terrainAglStr, GUILayout.ExpandWidth(true));
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label("VSp:", GUILayout.Width(50));
+        GUILayout.Label("VSp:", GUILayout.Width(40));
         _terrainVsStr = GUILayout.TextField(_terrainVsStr, GUILayout.ExpandWidth(true));
         GUILayout.EndHorizontal();
 
@@ -589,21 +798,21 @@ public class GlobalAlarmPanel : MonoBehaviour
         GUILayout.Space(6f);
 
         // Sink rate
-        terrainRunner.EnableSinkRate = GUILayout.Toggle(terrainRunner.EnableSinkRate, " Sink rate alarm");
+        terrainRunner.EnableSinkRate = GUILayout.Toggle(terrainRunner.EnableSinkRate, " Sink rate");
 
         GUILayout.Space(6f);
 
         // Gear
-        bool newGearOn = GUILayout.Toggle(terrainRunner.EnableGearAlarm, " Gear not deployed");
+        bool newGearOn = GUILayout.Toggle(terrainRunner.EnableGearAlarm, " Gear alarm");
         if (newGearOn)
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Label("GearAGL:", GUILayout.Width(70));
+            GUILayout.Label("AGL:", GUILayout.Width(40));
             _gearAglStr = GUILayout.TextField(_gearAglStr, GUILayout.ExpandWidth(true));
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("MaxSpd:", GUILayout.Width(70));
+            GUILayout.Label("MaxSpd:", GUILayout.Width(55));
             _gearMaxSpdStr = GUILayout.TextField(_gearMaxSpdStr, GUILayout.ExpandWidth(true));
             GUILayout.EndHorizontal();
         }
@@ -611,26 +820,26 @@ public class GlobalAlarmPanel : MonoBehaviour
         GUILayout.Space(6f);
 
         // Terrain ahead
-        bool newAhead = GUILayout.Toggle(terrainRunner.EnableTerrainAhead, " Terrain ahead (TTI)");
+        bool newAhead = GUILayout.Toggle(terrainRunner.EnableTerrainAhead, " Terrain ahead");
         if (newAhead)
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Label("MaxTime(s):", GUILayout.Width(90));
+            GUILayout.Label("MaxTime:", GUILayout.Width(60));
             _aheadMaxTimeStr = GUILayout.TextField(_aheadMaxTimeStr, GUILayout.ExpandWidth(true));
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Step(s):", GUILayout.Width(90));
+            GUILayout.Label("Step:", GUILayout.Width(60));
             _aheadStepStr = GUILayout.TextField(_aheadStepStr, GUILayout.ExpandWidth(true));
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Margin(m):", GUILayout.Width(90));
+            GUILayout.Label("Margin:", GUILayout.Width(60));
             _aheadMarginStr = GUILayout.TextField(_aheadMarginStr, GUILayout.ExpandWidth(true));
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("MinSpd:", GUILayout.Width(90));
+            GUILayout.Label("MinSpd:", GUILayout.Width(60));
             _aheadMinSpeedStr = GUILayout.TextField(_aheadMinSpeedStr, GUILayout.ExpandWidth(true));
             GUILayout.EndHorizontal();
         }
@@ -657,37 +866,57 @@ public class GlobalAlarmPanel : MonoBehaviour
             TerrainAlarmConfig.SaveFrom(terrainRunner);
         }
 
-        // Bottom help (short)
-        var wrap = new GUIStyle(HighLogic.Skin.label) { wordWrap = true };
-        GUILayout.Space(6f);
-        GUILayout.Label("[ ] Sink rate alarm: gear down + low AGL + high descent.", wrap);
-        GUILayout.Label("[ ] Counting out: callouts at 50/40/30/20/10m.", wrap);
-        GUILayout.Label("[ ] Gear not deployed: warns below GearAGL without gear.", wrap);
-        GUILayout.Label("[ ] Terrain ahead (TTI): straight-line impact prediction.", wrap);
-
-        GUILayout.Space(6f);
-        if (GUILayout.Button("Back", tabBtnStyle)) currentPage = Page.Menu;
+        GUILayout.Space(10f);
+        
+        // Volume slider at bottom - white/cream color
+        GUIStyle volumeStyle = new GUIStyle(HighLogic.Skin.label);
+        volumeStyle.normal.textColor = new Color(0.95f, 0.95f, 0.95f, 1f);
+        
+        GUILayout.Label($"Volume: {(int)(terrainRunner.Volume * 100)}%", volumeStyle);
+        GUILayout.BeginHorizontal();
+        float newVolume = GUILayout.HorizontalSlider(terrainRunner.Volume, 0f, 1f, GUILayout.ExpandWidth(true));
+        if (Mathf.Abs(newVolume - terrainRunner.Volume) > 0.01f)
+        {
+            terrainRunner.Volume = newVolume;
+            if (Time.realtimeSinceStartup - _lastTerrainConfigSaveTs > 0.5f)
+            {
+                _lastTerrainConfigSaveTs = Time.realtimeSinceStartup;
+                TerrainAlarmConfig.SaveFrom(terrainRunner);
+            }
+        }
+        GUILayout.EndHorizontal();
     }
 
     private void DrawReminderPage()
     {
-        GUILayout.Label("Time reminder (Kerbin calendar)", HighLogic.Skin.label);
+        // Back button at the top
+        if (GUILayout.Button("Back", tabBtnStyle)) 
+        {
+            currentPage = Page.Menu;
+            return;
+        }
+        
         GUILayout.Space(4f);
+        
+        // White/cream text style for all labels
+        GUIStyle textStyle = new GUIStyle(HighLogic.Skin.label);
+        textStyle.normal.textColor = new Color(0.95f, 0.95f, 0.95f, 1f);
+        
         // Use compact layout to avoid overflow; put inputs on separate lines
         GUILayout.BeginHorizontal();
-        GUILayout.Label("Year:", GUILayout.Width(40));
+        GUILayout.Label("Year:", textStyle, GUILayout.Width(40));
         remYear = ClampParseInt(GUILayout.TextField(remYear.ToString(), GUILayout.Width(50)), 1, 9999, remYear);
-        GUILayout.Label("Day:", GUILayout.Width(40));
+        GUILayout.Label("Day:", textStyle, GUILayout.Width(40));
         remDay = ClampParseInt(GUILayout.TextField(remDay.ToString(), GUILayout.Width(50)), 1, 426, remDay);
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
-        GUILayout.Label("Hour:", GUILayout.Width(45));
+        GUILayout.Label("Hour:", textStyle, GUILayout.Width(45));
         remHour = ClampParseInt(GUILayout.TextField(remHour.ToString(), GUILayout.Width(50)), 0, 5, remHour);
-        GUILayout.Label("Min:", GUILayout.Width(35));
+        GUILayout.Label("Min:", textStyle, GUILayout.Width(35));
         remMinute = ClampParseInt(GUILayout.TextField(remMinute.ToString(), GUILayout.Width(50)), 0, 59, remMinute);
         GUILayout.EndHorizontal();
         GUILayout.Space(4f);
-        GUILayout.Label("Note:", GUILayout.Width(45));
+        GUILayout.Label("Note:", textStyle, GUILayout.Width(45));
         remNote = GUILayout.TextArea(remNote ?? string.Empty, GUILayout.MinHeight(48));
         GUILayout.Space(6f);
         if (GUILayout.Button("Set reminder", tabBtnStyle))
@@ -697,7 +926,6 @@ public class GlobalAlarmPanel : MonoBehaviour
             DontDestroyOnLoad(go);
             r.ScheduleKerbin(remYear, remDay, remHour, remMinute, remNote);
         }
-        if (GUILayout.Button("Back", tabBtnStyle)) currentPage = Page.Menu;
     }
 
     private void DrawAlarmBarWindow(int id)

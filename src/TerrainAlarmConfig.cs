@@ -19,20 +19,64 @@ internal static class TerrainAlarmConfig
         }
     }
 
+    /// <summary>
+    /// Check if runner should be enabled according to config file (without creating a runner instance)
+    /// </summary>
+    public static bool ShouldRunnerBeEnabled()
+    {
+        try
+        {
+            string path = GetPath();
+            if (!File.Exists(path))
+            {
+                // No config file: default to disabled (terrain alarms off by default)
+                return false;
+            }
+
+            var node = ConfigNode.Load(path);
+            if (node == null) return false;
+
+            var n = node.GetNode("TERRAIN_ALARM");
+            if (n == null) return false;
+
+            // Read RunnerEnabled flag (default false if not specified)
+            return GetBool(n, "RunnerEnabled", false);
+        }
+        catch
+        {
+            // On error, default to disabled
+            return false;
+        }
+    }
+
     public static void LoadInto(TerrainAlarmRunner r)
     {
         if (r == null) return;
         try
         {
             string path = GetPath();
-            if (!File.Exists(path)) return;
+            if (!File.Exists(path))
+            {
+                // No config file: default to enabled
+                r.enabled = true;
+                return;
+            }
 
             var node = ConfigNode.Load(path);
-            if (node == null) return;
+            if (node == null)
+            {
+                r.enabled = true;
+                return;
+            }
             var n = node.GetNode("TERRAIN_ALARM");
-            if (n == null) return;
+            if (n == null)
+            {
+                r.enabled = true;
+                return;
+            }
 
-            bool enabledState = GetBool(n, "RunnerEnabled", false);
+            // Default to TRUE (runner should be active unless explicitly disabled)
+            bool enabledState = GetBool(n, "RunnerEnabled", true);
             r.enabled = enabledState;
 
             r.AltitudeAGL = GetFloat(n, "AltitudeAGL", r.AltitudeAGL);
@@ -55,10 +99,17 @@ internal static class TerrainAlarmConfig
             r.EnableSinkRate = GetBool(n, "EnableSinkRate", r.EnableSinkRate);
             r.SinkRateAGL = GetFloat(n, "SinkRateAGL", r.SinkRateAGL);
             r.SinkRateMinDescent = GetFloat(n, "SinkRateMinDescent", r.SinkRateMinDescent);
+
+            r.AircraftOnly = GetBool(n, "AircraftOnly", r.AircraftOnly);
+            
+            r.Volume = GetFloat(n, "Volume", 1.0f);
+            r.Volume = Mathf.Clamp01(r.Volume); // ensure 0-1 range
         }
         catch (Exception ex)
         {
             Debug.LogWarning("[KerbNote][TerrainAlarmConfig] Load failed: " + ex.Message);
+            // On error, default to enabled
+            r.enabled = true;
         }
     }
 
@@ -92,6 +143,10 @@ internal static class TerrainAlarmConfig
             n.AddValue("EnableSinkRate", r.EnableSinkRate);
             n.AddValue("SinkRateAGL", r.SinkRateAGL);
             n.AddValue("SinkRateMinDescent", r.SinkRateMinDescent);
+
+            n.AddValue("AircraftOnly", r.AircraftOnly);
+            
+            n.AddValue("Volume", r.Volume);
 
             string path = GetPath();
             var dir = Path.GetDirectoryName(path);

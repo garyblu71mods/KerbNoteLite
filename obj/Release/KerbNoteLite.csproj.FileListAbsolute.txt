@@ -1,6 +1,6 @@
-C:\Users\grzeg\Desktop\KerbCalcAndNote\KerbNoteLite\bin\Release\KerbNote_V1.2.3.dll
-C:\Users\grzeg\Desktop\KerbCalcAndNote\KerbNoteLite\bin\Release\KerbNote_V1.2.3.pdb
 C:\Users\grzeg\Desktop\KerbCalcAndNote\KerbNoteLite\obj\Release\KerbNoteLite.csproj.AssemblyReference.cache
 C:\Users\grzeg\Desktop\KerbCalcAndNote\KerbNoteLite\obj\Release\KerbNoteLite.csproj.CoreCompileInputs.cache
-C:\Users\grzeg\Desktop\KerbCalcAndNote\KerbNoteLite\obj\Release\KerbNote_V1.2.3.dll
-C:\Users\grzeg\Desktop\KerbCalcAndNote\KerbNoteLite\obj\Release\KerbNote_V1.2.3.pdb
+C:\Users\grzeg\Desktop\KerbCalcAndNote\KerbNoteLite\bin\Release\KerbNote_V1.3.dll
+C:\Users\grzeg\Desktop\KerbCalcAndNote\KerbNoteLite\bin\Release\KerbNote_V1.3.pdb
+C:\Users\grzeg\Desktop\KerbCalcAndNote\KerbNoteLite\obj\Release\KerbNote_V1.3.dll
+C:\Users\grzeg\Desktop\KerbCalcAndNote\KerbNoteLite\obj\Release\KerbNote_V1.3.pdb

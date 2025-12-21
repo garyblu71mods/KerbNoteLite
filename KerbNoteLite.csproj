@@ -59,6 +59,7 @@
     <Compile Include="src\AlarmRunner.cs" />
     <Compile Include="src\AlarmSelector.cs" />
     <Compile Include="src\AlarmSpaceCenterRunner.cs" />
+    <Compile Include="src\AlarmSystemBootstrap.cs" />
     <Compile Include="src\GlobalAlarmDefinition.cs" />
     <Compile Include="src\GlobalAlarmManager.cs" />
     <Compile Include="src\GlobalAlarmPanel.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="src\KerbNote.UI.Windows.cs" />
     <Compile Include="src\MiniNote.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\ResourcesAlarmConfig.cs" />
     <Compile Include="src\ResourcesAlarmRunner.cs" />
     <Compile Include="src\SettingWindow.cs" />
     <Compile Include="src\SkinAssets.cs" />
