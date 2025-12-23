@@ -87,9 +87,11 @@
     <Content Include="img\situation.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="CHANGELOG.md" />
     <None Include="GLOBAL_ALARMS_IMPLEMENTATION.md" />
     <None Include="KerbNoteLite.ckan" />
     <None Include="LICENSE" />
+    <None Include="QUICKSTART.md" />
     <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
