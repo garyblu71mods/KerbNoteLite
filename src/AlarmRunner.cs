@@ -23,6 +23,14 @@ public class AlarmRunner : MonoBehaviour
 	// Track last matching alarms per vessel to detect exit from alarm condition
 	private readonly Dictionary<string, List<AlarmDefinition>> lastMatchedAlarmsByVessel = new Dictionary<string, List<AlarmDefinition>>();
 
+	// Cache for expensive FindObjectsOfType calls
+	private KerbNote _cachedHost;
+	private float _lastHostCacheTime;
+	private const float HostCacheLifetime = 1f;
+	
+	// Reusable list to avoid allocations
+	private readonly List<AlarmDefinition> _matchBuffer = new List<AlarmDefinition>(16);
+
 	private void Awake()
 	{
 		GameEvents.onVesselSituationChange.Add(OnVesselSituationChange);
@@ -41,6 +49,8 @@ public class AlarmRunner : MonoBehaviour
 	{
 		// Reset cooldown timer when switching vessels to prevent false alarms
 		_sceneLoadTime = Time.realtimeSinceStartup;
+		// Invalidate cached host
+		_cachedHost = null;
 	}
 	
 	private void OnDestroy()
@@ -105,6 +115,17 @@ public class AlarmRunner : MonoBehaviour
 		}
 		catch { }
 	}
+	
+	private KerbNote GetCachedHost()
+	{
+		float now = Time.realtimeSinceStartup;
+		if (_cachedHost == null || (now - _lastHostCacheTime) > HostCacheLifetime)
+		{
+			_cachedHost = GameObject.FindObjectOfType<KerbNote>();
+			_lastHostCacheTime = now;
+		}
+		return _cachedHost;
+	}
 
 	private void TryTriggerFor(Vessel vessel, Vessel.Situations newSituation)
 	{
@@ -128,6 +149,7 @@ public class AlarmRunner : MonoBehaviour
 				lastStateByVessel.Clear();
 				lastMatchedAlarmsByVessel.Clear();
 				lastActiveSaveOverride = activeOverride;
+				_cachedHost = null; // Invalidate cache on save change
 			}
 
 			var body = vessel.mainBody; if (body == null) return; string bodyName = body.bodyName ?? string.Empty;
@@ -145,7 +167,17 @@ public class AlarmRunner : MonoBehaviour
 			lastStateByVessel[vesselKey] = new VesselState { Body = bodyName, Situation = newSituation };
 
 			var all = AlarmManager.Alarms; if (all == null) return;
-			var matches = all.Where(a => a.Enabled && string.Equals(a.BodyName, bodyName, StringComparison.OrdinalIgnoreCase) && a.Situation == newSituation).ToArray();
+			
+			// OPTIMIZATION: Use reusable list instead of LINQ Where().ToArray()
+			_matchBuffer.Clear();
+			for (int i = 0; i < all.Count; i++)
+			{
+				var a = all[i];
+				if (a.Enabled && string.Equals(a.BodyName, bodyName, StringComparison.OrdinalIgnoreCase) && a.Situation == newSituation)
+				{
+					_matchBuffer.Add(a);
+				}
+			}
 
 			// Compare with previous matches for this vessel to detect exit/enter
 			List<AlarmDefinition> prevMatches;
@@ -157,17 +189,33 @@ public class AlarmRunner : MonoBehaviour
 			{
 				if (prevMatches.Count >0)
 				{
+					// OPTIMIZATION: Cache MiniNote array lookup
+					MiniNote[] minis = null;
+					
 					// For each previously matched alarm, if it's no longer matched, process exit behavior
 					foreach (var prev in prevMatches)
 					{
-						bool stillMatched = matches.Any(m => string.Equals(m.TabGuid, prev.TabGuid, StringComparison.OrdinalIgnoreCase) && string.Equals(m.BodyName, prev.BodyName, StringComparison.OrdinalIgnoreCase) && m.Situation == prev.Situation);
+						bool stillMatched = false;
+						for (int i = 0; i < _matchBuffer.Count; i++)
+						{
+							var m = _matchBuffer[i];
+							if (string.Equals(m.TabGuid, prev.TabGuid, StringComparison.OrdinalIgnoreCase) && 
+								string.Equals(m.BodyName, prev.BodyName, StringComparison.OrdinalIgnoreCase) && 
+								m.Situation == prev.Situation)
+							{
+								stillMatched = true;
+								break;
+							}
+						}
+						
 						if (!stillMatched)
 						{
 							// On exit from this alarm condition
 							if (prev.MiniNote && prev.HideOnExit)
 							{
 								// Only hide MiniNote if the visible instance was spawned by an alarm
-								var minis = GameObject.FindObjectsOfType<MiniNote>();
+								if (minis == null) minis = GameObject.FindObjectsOfType<MiniNote>();
+								
 								for (int i =0; i < minis.Length; i++)
 								{
 									var mn = minis[i];
@@ -180,9 +228,9 @@ public class AlarmRunner : MonoBehaviour
 						}
 					}
 				}
-			} // <== FIX: close the stateChanged block before checking matches
+			}
 
-			if (matches.Length ==0)
+			if (_matchBuffer.Count == 0)
 			{
 				// update last matches and return
 				lastMatchedAlarmsByVessel[vesselKey] = new List<AlarmDefinition>();
@@ -192,68 +240,99 @@ public class AlarmRunner : MonoBehaviour
 			// If nothing changed and not forced, do not re-trigger the same condition (prevents re-fire on timewarp x1)
 			if (!stateChanged && !forced)
 			{
-				lastMatchedAlarmsByVessel[vesselKey] = matches.ToList();
+				lastMatchedAlarmsByVessel[vesselKey] = new List<AlarmDefinition>(_matchBuffer);
 				return;
 			}
 
 			float nowTs = Time.realtimeSinceStartup;
-			foreach (var grp in matches.GroupBy(m => m.TabGuid))
+			
+			// OPTIMIZATION: Group matches manually to avoid LINQ GroupBy allocations
+			var groups = new Dictionary<string, List<AlarmDefinition>>();
+			for (int i = 0; i < _matchBuffer.Count; i++)
 			{
-				string bodyKey = grp.Key + "|" + bodyName.ToLowerInvariant();
+				var m = _matchBuffer[i];
+				List<AlarmDefinition> grp;
+				if (!groups.TryGetValue(m.TabGuid, out grp))
+				{
+					grp = new List<AlarmDefinition>();
+					groups[m.TabGuid] = grp;
+				}
+				grp.Add(m);
+			}
+			
+			foreach (var kvp in groups)
+			{
+				string tabGuid = kvp.Key;
+				var grp = kvp.Value;
+				
+				string bodyKey = tabGuid + "|" + bodyName.ToLowerInvariant();
 				float lastBodyTs;
 				if (lastBodyTriggerTimes.TryGetValue(bodyKey, out lastBodyTs))
 				{
 					if (nowTs - lastBodyTs < BodyDebounceSeconds) continue;
 				}
-				foreach (var a in grp)
+				
+				// Cache host once per group
+				KerbNote host = null;
+				MiniNote[] minis = null;
+				
+				for (int i = 0; i < grp.Count; i++)
 				{
+					var a = grp[i];
 					string key = a.TabGuid + "|" + (a.BodyName ?? string.Empty) + "|" + a.Situation.ToString();
 					float now = Time.realtimeSinceStartup;
 					float lastTrig;
 					if (lastTriggerTimes.TryGetValue(key, out lastTrig)) { if (now - lastTrig < TriggerThrottleSeconds) continue; }
 					lastTriggerTimes[key] = now;
 					if (a.StopWarp) { try { if (TimeWarp.CurrentRateIndex !=0) TimeWarp.SetRate(0, true); } catch { } }
-					var host = GameObject.FindObjectsOfType<KerbNote>().FirstOrDefault();
-					if (host != null && a.MiniNote)
+					
+					if (a.MiniNote)
 					{
-						var minis = GameObject.FindObjectsOfType<MiniNote>();
-						MiniNote mn = null; 
-						for (int i =0; i < minis.Length; i++) 
-						{ 
-							if (minis[i] != null && string.Equals(minis[i].TabGuid, a.TabGuid, StringComparison.OrdinalIgnoreCase)) { mn = minis[i]; break; } 
-						}
-						if (mn == null) 
-						{ 
-							var go = new GameObject("MiniNote_Tab_" + a.TabGuid); 
-							mn = go.AddComponent<MiniNote>(); 
-							mn.InitWithGuid(host, a.TabGuid); 
-							DontDestroyOnLoad(go); 
-							mn.SpawnedByAlarm = true; 
-							mn.Show(); 
-							mn.BlinkTripleFast(); 
-						}
-						else 
-						{ 
-							if (!mn.IsVisible) 
+						if (host == null) host = GetCachedHost();
+						if (host != null)
+						{
+							if (minis == null) minis = GameObject.FindObjectsOfType<MiniNote>();
+							
+							MiniNote mn = null; 
+							for (int j = 0; j < minis.Length; j++) 
 							{ 
+								if (minis[j] != null && string.Equals(minis[j].TabGuid, a.TabGuid, StringComparison.OrdinalIgnoreCase)) 
+								{ 
+									mn = minis[j]; 
+									break; 
+								} 
+							}
+							if (mn == null) 
+							{ 
+								var go = new GameObject("MiniNote_Tab_" + a.TabGuid); 
+								mn = go.AddComponent<MiniNote>(); 
+								mn.InitWithGuid(host, a.TabGuid); 
+								DontDestroyOnLoad(go); 
 								mn.SpawnedByAlarm = true; 
 								mn.Show(); 
 								mn.BlinkTripleFast(); 
-							} 
+							}
 							else 
 							{ 
-								mn.BlinkFast(); 
-							} 
+								if (!mn.IsVisible) 
+								{ 
+									mn.SpawnedByAlarm = true; 
+									mn.Show(); 
+									mn.BlinkTripleFast(); 
+								} 
+								else 
+								{ 
+									mn.BlinkFast(); 
+								} 
+							}
 						}
 					}
 					if (a.PlaySound) { SoundManager.PlayRandomKerbalVocal(); }
 				}
-				lastBodyTriggerTimes[grp.Key + "|" + bodyName.ToLowerInvariant()] = nowTs;
+				lastBodyTriggerTimes[bodyKey] = nowTs;
 			}
-
-			// store current matches
-			lastMatchedAlarmsByVessel[vesselKey] = matches.ToList();
+			lastMatchedAlarmsByVessel[vesselKey] = new List<AlarmDefinition>(_matchBuffer);
 		}
-		catch (Exception ex) { Debug.LogError("[KerbNote][AlarmRunner] Error triggering alarm: " + ex.Message); }
+		catch { }
 	}
 }

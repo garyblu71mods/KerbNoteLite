@@ -15,6 +15,9 @@ public class SoundManager : MonoBehaviour
  private MethodInfo _stopMethod;
  private MethodInfo _playMethod;
  private MethodInfo _playOneShotMethod;
+ private MethodInfo _playOneShotWithVolumeMethod;
+ private PropertyInfo _isPlayingProperty;
+ private static MethodInfo _getAudioClipMethod;
 
  // PullUp playback model
  // - Requests are reference-counted (Acquire/Release)
@@ -81,6 +84,9 @@ public class SoundManager : MonoBehaviour
  		_playMethod = _source.GetType().GetMethod("Play", BindingFlags.Public | BindingFlags.Instance, null, Type.EmptyTypes, null);
  		_playOneShotMethod = _source.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
  			.FirstOrDefault(m => m.Name == "PlayOneShot" && m.GetParameters().Length == 1);
+ 		_playOneShotWithVolumeMethod = _source.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
+ 			.FirstOrDefault(m => m.Name == "PlayOneShot" && m.GetParameters().Length == 2);
+ 		_isPlayingProperty = _source.GetType().GetProperty("isPlaying", BindingFlags.Public | BindingFlags.Instance);
  	}
  }
  }
@@ -107,8 +113,7 @@ public class SoundManager : MonoBehaviour
  		bool isPlaying = false;
  		try
  		{
- 			var p = _source.GetType().GetProperty("isPlaying", BindingFlags.Public | BindingFlags.Instance);
- 			if (p != null) isPlaying = (bool)p.GetValue(_source, null);
+ 			if (_isPlayingProperty != null) isPlaying = (bool)_isPlayingProperty.GetValue(_source, null);
  		}
  		catch { }
  		if (!isPlaying)
@@ -192,18 +197,13 @@ public class SoundManager : MonoBehaviour
  if (_instance == null || clip == null || _instance._source == null) return;
  
  // Try PlayOneShot with 2 parameters (clip, volume)
- var playWithVolume = _instance._source.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
- .FirstOrDefault(m => m.Name == "PlayOneShot" && m.GetParameters().Length == 2);
- 
- if (playWithVolume != null)
+ if (_instance._playOneShotWithVolumeMethod != null)
  {
-  try { playWithVolume.Invoke(_instance._source, new object[] { clip, volume }); return; } catch { }
+  try { _instance._playOneShotWithVolumeMethod.Invoke(_instance._source, new object[] { clip, volume }); return; } catch { }
  }
  
  // Fallback: PlayOneShot with 1 parameter (no volume control)
- var play = _instance._source.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
- .FirstOrDefault(m => m.Name == "PlayOneShot" && m.GetParameters().Length == 1);
- try { play?.Invoke(_instance._source, new object[] { clip }); } catch { }
+ try { _instance._playOneShotMethod?.Invoke(_instance._source, new object[] { clip }); } catch { }
  }
 
  private static object TryLoadClip(string dbPath)
@@ -211,9 +211,13 @@ public class SoundManager : MonoBehaviour
  if (string.IsNullOrEmpty(dbPath) || GameDatabase.Instance == null) return null;
  try
  {
- 	var m = typeof(GameDatabase).GetMethods(BindingFlags.Public | BindingFlags.Instance)
- 		.FirstOrDefault(mm => mm.Name == "GetAudioClip" && mm.GetParameters().Length == 1 && mm.GetParameters()[0].ParameterType == typeof(string));
- 	return m != null ? m.Invoke(GameDatabase.Instance, new object[] { dbPath }) : null;
+			// OPTIMIZATION: Cache MethodInfo to avoid repeated reflection
+			if (_getAudioClipMethod == null)
+			{
+				_getAudioClipMethod = typeof(GameDatabase).GetMethods(BindingFlags.Public | BindingFlags.Instance)
+					.FirstOrDefault(mm => mm.Name == "GetAudioClip" && mm.GetParameters().Length == 1 && mm.GetParameters()[0].ParameterType == typeof(string));
+			}
+			return _getAudioClipMethod != null ? _getAudioClipMethod.Invoke(GameDatabase.Instance, new object[] { dbPath }) : null;
  }
  catch { return null; }
  }
@@ -222,7 +226,11 @@ public class SoundManager : MonoBehaviour
  {
  try
  {
- 	var audioClipType = Type.GetType("UnityEngine.AudioClip, UnityEngine.AudioModule") ?? Type.GetType("UnityEngine.AudioClip, UnityEngine");
+ 	var audioClipType = _instance?._audioClipType;
+ 	if (audioClipType == null) 
+ 	{
+ 		audioClipType = Type.GetType("UnityEngine.AudioClip, UnityEngine.AudioModule") ?? Type.GetType("UnityEngine.AudioClip, UnityEngine");
+ 	}
  	if (audioClipType == null) return null;
 
  	int sampleRate = 44100;

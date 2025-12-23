@@ -83,6 +83,11 @@ public class TerrainAlarmRunner : MonoBehaviour
     private const float LoadPhysicsSettleTime = 20f; // Ignore first landing within this time if never airborne
     private const float MinAglToConfirmFlight = 5f; // Vessel must reach at least 5m AGL to confirm it was flying
 
+    // Cache for expensive aircraft type check
+    private bool? _cachedIsAircraft;
+    private float _lastAircraftCheckTime;
+    private const float AircraftCheckCacheTime = 2f; // Cache for 2 seconds
+
     private void ResetCalloutSequence()
     {
         _prevCalloutAgl = null;
@@ -117,6 +122,9 @@ public class TerrainAlarmRunner : MonoBehaviour
         _hasBeenAirborneAfterLoad = false;
         _maxAglAfterLoad = 0f;
         _lastAgl = null;
+        
+        // Invalidate aircraft cache on vessel change
+        _cachedIsAircraft = null;
         
         // Release any active alarms
         ReleaseAll();
@@ -177,6 +185,7 @@ public class TerrainAlarmRunner : MonoBehaviour
         if (v.isEVA)
         {
             ReleaseAll(); // Release any active alarms
+            _cachedIsAircraft = null; // Invalidate cache
             return; // Skip all terrain alarm processing during EVA
         }
 
@@ -372,11 +381,22 @@ public class TerrainAlarmRunner : MonoBehaviour
 
         // Aircraft filter: skip terrain alarms (Pull Up, Gear, Terrain Ahead) if configured and vessel is not aircraft
         // Callouts above run regardless of filter.
-        if (AircraftOnly && !IsAircraftType(v))
+        if (AircraftOnly)
         {
-            ReleaseAll();
-            // Don't reset callout sequence here - callouts should continue
-            return;
+            // Cache aircraft type check to avoid expensive part iteration every frame
+            float nowTime = Time.realtimeSinceStartup;
+            if (!_cachedIsAircraft.HasValue || (nowTime - _lastAircraftCheckTime) > AircraftCheckCacheTime)
+            {
+                _cachedIsAircraft = IsAircraftType(v);
+                _lastAircraftCheckTime = nowTime;
+            }
+            
+            if (!_cachedIsAircraft.Value)
+            {
+                ReleaseAll();
+                // Don't reset callout sequence here - callouts should continue
+                return;
+            }
         }
 
         // Additional suppression: never play Pull_Up terrain warnings when gear is deployed
@@ -562,6 +582,7 @@ public class TerrainAlarmRunner : MonoBehaviour
         return false;
     }
 
+    // OPTIMIZATION: Cache aircraft type detection results
     // Check if vessel is aircraft-type: first check VesselType, then use scoring system
     private bool IsAircraftType(Vessel v)
     {
@@ -586,17 +607,24 @@ public class TerrainAlarmRunner : MonoBehaviour
             bool hasWheelLandingGear = false;
             bool hasIntakeAir = false;
 
-            foreach (var part in v.parts)
+            // OPTIMIZATION: Use for loop instead of foreach to reduce allocator overhead
+            var parts = v.parts;
+            for (int idx = 0; idx < parts.Count; idx++)
             {
+                var part = parts[idx];
                 if (part == null) continue;
                 var modules = part.Modules;
                 if (modules == null) continue;
+                
+                // Early exit optimization: if we've already hit the threshold (3 points), stop checking
+                if (score >= 3) return true;
                 
                 // Wings (strong signal: +2)
                 if (!hasWings && modules.Contains("ModuleLiftingSurface"))
                 {
                     hasWings = true;
                     score += 2;
+                    if (score >= 3) return true;
                 }
                 
                 // Aircraft cockpit (strong signal: +2, higher priority than control surfaces)
@@ -609,6 +637,7 @@ public class TerrainAlarmRunner : MonoBehaviour
                     {
                         hasAircraftCockpit = true;
                         score += 2;
+                        if (score >= 3) return true;
                     }
                 }
                 
@@ -681,11 +710,6 @@ public class TerrainAlarmRunner : MonoBehaviour
             }
             
             // Threshold: need at least 3 points to qualify as aircraft
-            // Examples:
-            //  - Wings + Cockpit = 4 (definitely aircraft)
-            //  - Cockpit + Control Surfaces + Gear = 4 (aircraft)
-            //  - Wings + Jet Engine = 3 (aircraft)
-            //  - Just control surfaces + gear = 1-2 (not enough, could be rocket)
             return score >= 3;
         }
         catch { }

@@ -33,6 +33,11 @@ public class ResourcesAlarmRunner : MonoBehaviour
     private float lastAlarmTs;
     private const float ThrottleSeconds = 8f;
 
+	// OPTIMIZATION: Cache vessel resource names to avoid repeated part iteration
+	private string[] _cachedResourceNames;
+	private float _lastResourceNamesCacheTime;
+	private const float ResourceNamesCacheLifetime = 5f;
+
     public void Enable() 
     { 
         enabled = true; 
@@ -63,28 +68,45 @@ public class ResourcesAlarmRunner : MonoBehaviour
         if (!ThresholdByResource.ContainsKey(name)) ThresholdByResource[name] = value;
     }
 
-    public string[] GetCurrentVesselResourceNames()
-    {
-        var v = FlightGlobals.ActiveVessel; if (v == null || v.parts == null) return new string[0];
-        var set = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
-        try
-        {
-            foreach (var p in v.parts)
-            {
-                if (p == null || p.Resources == null) continue;
-                foreach (PartResource r in p.Resources)
-                {
-                    if (r == null) continue;
-                    if (!string.IsNullOrEmpty(r.resourceName)) set.Add(r.resourceName);
-                }
-            }
-        }
-        catch { }
-        // Ensure threshold defaults included as editable entries
-        EnsureDefaults();
-        foreach (var k in ThresholdByResource.Keys) set.Add(k);
-        return set.ToArray();
-    }
+	public string[] GetCurrentVesselResourceNames()
+	{
+		// OPTIMIZATION: Return cached result if still valid
+		float now = Time.realtimeSinceStartup;
+		if (_cachedResourceNames != null && (now - _lastResourceNamesCacheTime) < ResourceNamesCacheLifetime)
+		{
+			return _cachedResourceNames;
+		}
+		
+		var v = FlightGlobals.ActiveVessel; if (v == null || v.parts == null) return new string[0];
+		var set = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+		try
+		{
+			// OPTIMIZATION: Use for loop instead of foreach
+			var parts = v.parts;
+			for (int i = 0; i < parts.Count; i++)
+			{
+				var p = parts[i];
+				if (p == null || p.Resources == null) continue;
+				
+				// OPTIMIZATION: Direct iteration over PartResourceList
+				var resources = p.Resources;
+				for (int j = 0; j < resources.Count; j++)
+				{
+					var r = resources[j];
+					if (r == null) continue;
+					if (!string.IsNullOrEmpty(r.resourceName)) set.Add(r.resourceName);
+				}
+			}
+		}
+		catch { }
+		// Ensure threshold defaults included as editable entries
+		EnsureDefaults();
+		foreach (var k in ThresholdByResource.Keys) set.Add(k);
+		
+		_cachedResourceNames = set.ToArray();
+		_lastResourceNamesCacheTime = now;
+		return _cachedResourceNames;
+	}
 
     void Update()
     {
@@ -188,25 +210,30 @@ public class ResourcesAlarmRunner : MonoBehaviour
         }
     }
 
-    private static void GetResourceTotals(Vessel v, string resName, out double amount, out double maxAmount)
-    {
-        amount = 0; maxAmount = 0;
-        try
-        {
-            var parts = v.parts; if (parts == null) return;
-            for (int i = 0; i < parts.Count; i++)
-            {
-                var p = parts[i]; if (p == null || p.Resources == null) continue;
-                var pr = p.Resources[resName];
-                if (pr != null)
-                {
-                    amount += pr.amount;
-                    maxAmount += pr.maxAmount;
-                }
-            }
-        }
-        catch { }
-    }
+	private static void GetResourceTotals(Vessel v, string resName, out double amount, out double maxAmount)
+	{
+		amount = 0; maxAmount = 0;
+		try
+		{
+			// OPTIMIZATION: Use vessel.resourcePartSet if available (faster than iterating all parts)
+			v.GetConnectedResourceTotals(PartResourceLibrary.Instance.GetDefinition(resName).id, out amount, out maxAmount);
+		}
+		catch
+		{
+			// Fallback to manual iteration if GetConnectedResourceTotals fails
+			try
+			{
+				var parts = v.parts; if (parts == null) return;
+				for (int i = 0; i < parts.Count; i++)
+				{
+					var p = parts[i]; if (p == null || p.Resources == null) continue;
+					var pr = p.Resources[resName];
+					if (pr != null) { amount += pr.amount; maxAmount += pr.maxAmount; }
+				}
+			}
+			catch { }
+		}
+	}
 
     private void TriggerAlarm(string res, double frac, bool isSilent)
     {
@@ -270,9 +297,13 @@ public class ResourcesAlarmRunner : MonoBehaviour
                 _commBelowThreshold = false; // Reset threshold tracking
             }
             // Trigger recovery message on connection restored (transition from false to true)
+            // Skip this message during cooldown (first 20s after load/vessel change)
             else if (hasComm && !_lastCommState)
             {
-                TriggerCommRestoredMessage();
+                if (!isInCooldown)
+                {
+                    TriggerCommRestoredMessage();
+                }
                 _commBelowThreshold = isBelowThreshold; // Update threshold state
             }
             // Trigger alarm when signal drops below threshold
@@ -357,8 +388,11 @@ public class ResourcesAlarmRunner : MonoBehaviour
         _belowThreshold.Clear();
         _depleted.Clear();
         _commBelowThreshold = false;
+        
+        // Reset comm state to prevent false "restored" messages
+        // Assume comm is available on new vessel (will be updated in next check)
+        _lastCommState = true;
     }
-
     void OnDisable()
     {
         // Persist state on teardown so RunnerEnabled survives restart

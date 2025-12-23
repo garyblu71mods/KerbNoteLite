@@ -446,7 +446,9 @@ public class GlobalAlarmPanel : MonoBehaviour
             _aheadStepStr = null;
             _aheadMinSpeedStr = null;
         }
-        if (GUILayout.Button("Time reminder", tabBtnStyle)) currentPage = Page.Reminder;
+        
+        // TODO: Time reminder feature - hidden for now, will be developed in next version
+        // if (GUILayout.Button("Time reminder", tabBtnStyle)) currentPage = Page.Reminder;
     }
 
     private void DrawResourcesPage()
@@ -662,8 +664,6 @@ public class GlobalAlarmPanel : MonoBehaviour
                 resourcesRunner.SilenceAlarms = newSilence;
             }
         }
-        GUILayout.Space(8f);
-        if (GUILayout.Button("Back", tabBtnStyle)) currentPage = Page.Menu;
     }
 
     // Terrain UI input buffers (prevent TextField from being overwritten every frame)
