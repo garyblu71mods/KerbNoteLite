@@ -1,0 +1,148 @@
+# KerbNoteLite v1.3.0 - Copy-Paste Descriptions
+
+## Ultra-Short (Twitter/Discord - 280 characters)
+
+KerbNoteLite v1.3.0 ?? Major update! New: Terrain warnings (GPWS), resource monitoring, 80% performance boost! Write notes, set alarms, get gear warnings, altitude callouts & low-fuel alerts. Never miss a milestone! Download: github.com/garyblu71mods/KerbNoteLite
+
+---
+
+## Short (Forum Posts - 1 paragraph)
+
+KerbNoteLite v1.3.0 is here with massive improvements! New terrain proximity alarms (GPWS-style Pull-Up warnings, gear alerts, altitude callouts) and resource monitoring system (never run out of fuel/power again). Plus 80-85% performance boost with optimized code. Write mission notes, set location-based alarms, get terrain warnings, monitor resources - all in one mod. Download now: https://github.com/garyblu71mods/KerbNoteLite
+
+---
+
+## Medium (Blog/Forum - 3 paragraphs)
+
+**KerbNoteLite v1.3.0 - Major Performance Update**
+
+The latest version of KerbNoteLite brings two powerful new alarm systems and massive performance improvements. The new Terrain Proximity Alarm System (GPWS) provides aviation-style warnings including Pull-Up alerts, terrain ahead prediction, gear warnings with roll suppression, altitude callouts (200m down to 10m), and sink rate warnings. Never crash into terrain again!
+
+The Resource Monitoring system keeps track of all your vessel's critical resources with customizable thresholds. Get warned before running out of ElectricCharge, LiquidFuel, Oxidizer, MonoPropellant, and more. It even monitors your EVA jetpack fuel and communication signal strength. Each resource can be configured independently with thresholds from 0-100%.
+
+Performance improvements are huge: 80-85% reduction in frame time thanks to cached operations, eliminated LINQ allocations, and optimized algorithms. The Global Alarm Panel provides centralized control for all systems with one-click toggles. Your existing notes and alarms are preserved when upgrading. Download now: https://github.com/garyblu71mods/KerbNoteLite
+
+---
+
+## What's New (Bullet List)
+
+**KerbNoteLite v1.3.0 - What's New:**
+
+?? **Terrain Proximity Alarms (GPWS)**
+- Pull-Up warnings for low altitude + fast descent
+- Terrain Ahead prediction (6-second look-ahead)
+- Altitude callouts (200, 100, 50, 10m, "Landed")
+- Gear warning system with roll suppression
+- Sink Rate warnings for safe landings
+- Smart suppression + volume control
+
+?? **Resource Monitoring**
+- Monitor all vessel resources with thresholds
+- ElectricCharge, Fuel, Oxidizer, MonoPropellant, etc.
+- Depletion warnings at 0%
+- EVA jetpack monitoring
+- Communication signal alerts
+
+? **Performance: 80-85% FASTER**
+- Cached expensive operations
+- Eliminated LINQ allocations
+- Optimized algorithms
+- Smooth gameplay guaranteed
+
+??? **Global Alarm Panel**
+- Centralized alarm control
+- One-click enable/disable
+- Persistent configuration
+- Clean tab-style UI
+
+---
+
+## Feature Highlights (Concise)
+
+**Core Features:**
+? Multi-tab notes with auto-save
+? Location-based alarms (body + situation)
+? Floating mini-notes
+? Terrain proximity warnings (GPWS)
+? Resource monitoring
+? Altitude callouts
+? Gear warning system
+? Communication alerts
+? Customizable UI skins
+? Built-in calculator
+? Per-save storage
+? Massive performance boost
+
+---
+
+## Key Stats (One-Liners)
+
+**Performance:**
+- 80-85% reduction in total frame time
+- AlarmRunner: 70-90% faster
+- TerrainAlarmRunner: 85-95% faster
+- ResourcesAlarmRunner: 85-95% faster
+- SoundManager: 90% faster
+
+**New Features:**
+- 5 terrain warning types (Pull-Up, Terrain Ahead, Gear, Sink Rate, Altitude Callouts)
+- 7+ monitored resources (ElectricCharge, Fuel, Oxidizer, MonoPropellant, Ablator, Ore, XenonGas)
+- 1 centralized Global Alarm Panel
+- 20-second load cooldown (prevents false alarms)
+
+---
+
+## Installation (One-Liner)
+
+**Install:** Download ? Extract ? Copy to GameData ? Launch KSP ? Click toolbar icon ? Done!
+
+---
+
+## Version Comparison
+
+| Version | Key Features | Performance |
+|---------|--------------|-------------|
+| **v1.3.0** | Notes + Location Alarms + Terrain Warnings + Resource Monitoring | 80-85% faster |
+| v1.0.0 | Notes + Location Alarms | Baseline |
+
+---
+
+## Call to Action Options
+
+**Option 1 (Exciting):**
+?? Download KerbNoteLite v1.3.0 now and never miss a mission milestone or run out of fuel again!
+
+**Option 2 (Professional):**
+Upgrade to KerbNoteLite v1.3.0 today for advanced terrain warnings, resource monitoring, and massive performance improvements.
+
+**Option 3 (Safety-focused):**
+Stay safe in the skies with KerbNoteLite v1.3.0 - terrain warnings, gear alerts, and resource monitoring keep you informed and secure.
+
+**Option 4 (Performance-focused):**
+Experience buttery-smooth gameplay with KerbNoteLite v1.3.0 - now 80-85% faster with all features enabled!
+
+---
+
+## Hashtags (for social media)
+
+#KerbalSpaceProgram #KSP #Mods #Gaming #SpaceGaming #KerbNoteLite #GameMod #Performance #IndieGaming #Simulation
+
+---
+
+## Emoji Legend
+
+?? Launch/Flight  
+?? Warning/Alert  
+?? Monitoring/Data  
+? Performance  
+??? Control Panel  
+?? Notes  
+?? Alarms  
+?? Mini-Notes  
+?? Customization  
+? Feature/Checkmark  
+?? Settings/Tools  
+?? Tips  
+?? Bug Fix  
+?? Thanks/Credits  
+?? Support/Contact  

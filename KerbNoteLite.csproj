@@ -84,13 +84,21 @@
     <Compile Include="src\TimeReminderAlarm.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DESCRIPTIONS_v1.3.0.txt" />
     <Content Include="img\situation.png" />
+    <Content Include="SPACEDOCK_DESCRIPTION_v1.3.0.txt" />
+    <Content Include="SPACEDOCK_SHORT_v1.3.0.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="CHANGELOG.md" />
+    <None Include="GameData\KerbNoteLite\About_Help.md" />
+    <None Include="GITHUB_RELEASE_v1.3.0.md" />
     <None Include="GLOBAL_ALARMS_IMPLEMENTATION.md" />
     <None Include="KerbNoteLite.ckan" />
     <None Include="LICENSE" />
+    <None Include="QUICKSTART.md" />
     <None Include="README.md" />
+    <None Include="RELEASE_NOTES_v1.3.0.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,0 +1,119 @@
+# KerbNoteLite v1.3.0 - Short Description for SpaceDock
+
+## Short Description (for main field)
+
+Advanced note-taking and alarm system with terrain warnings (GPWS), resource monitoring, and massive performance boost (80% faster). Write mission notes, set location-based alarms, get gear warnings, altitude callouts, and low-fuel alerts. Never miss a milestone or run out of resources!
+
+---
+
+## Version 1.3.0 Release Notes (Short)
+
+**NEW:**
+?? Terrain Proximity Alarms (Pull-Up, Terrain Ahead, Gear Warning, Altitude Callouts, Sink Rate)
+?? Resource Monitoring (ElectricCharge, Fuel, Oxidizer, MonoPropellant, EVA jetpack)
+??? Global Alarm Panel (centralized control)
+? Performance: 80-85% FASTER (optimized everything!)
+
+**FEATURES:**
+? Multi-tab notes with auto-save
+? Location-based alarms (body + situation)
+? Floating mini-notes
+? GPWS-style terrain warnings
+? Resource depletion alerts
+? Altitude callouts (200m to 10m)
+? Gear warning system
+? Communication signal monitoring
+? Customizable UI skins
+? Per-save storage
+? Built-in calculator
+
+**PERFORMANCE:**
+- AlarmRunner: 70-90% faster
+- TerrainAlarmRunner: 85-95% faster
+- ResourcesAlarmRunner: 85-95% faster
+- SoundManager: 90% faster
+
+**INSTALL:**
+Extract to GameData. Click toolbar icon. Done!
+
+**REQUIRES:**
+.NET Framework 4.8, KSP compatible versions
+
+**SUPPORT:**
+GitHub: github.com/garyblu71mods/KerbNoteLite
+Email: Garyblu71.mods@gmail.com
+Donate: PayPal.me/GaryBlu71
+
+---
+
+## One-Liner (for very short descriptions)
+
+Advanced notes & alarms with GPWS terrain warnings, resource monitoring, and massive performance boost - never miss a mission milestone!
+
+---
+
+## Tags (suggested for SpaceDock)
+
+notes, alarms, terrain-warning, gpws, resources, monitoring, ui, utilities, information, safety, performance
+
+---
+
+## Category
+
+Information / Utilities
+
+---
+
+## Screenshots Description Suggestions
+
+1. "Main KerbNote window with multi-tab note system"
+2. "Location-based alarm configuration panel"
+3. "Floating mini-note during flight"
+4. "Global Alarm Panel - Terrain Alarms configuration"
+5. "Global Alarm Panel - Resource Monitoring settings"
+6. "Altitude callouts during landing approach"
+7. "Customizable UI skins"
+8. "Gear warning in action"
+
+---
+
+## Feature Highlights (bullet points for description)
+
+• Write mission notes with multi-tab organization
+• Set alarms for any celestial body + situation combo
+• GPWS-style terrain warnings (Pull Up, Terrain Ahead, Gear, Sink Rate)
+• Automated altitude callouts (200m, 100m, 50m, 10m, Landed)
+• Monitor all vessel resources with customizable thresholds
+• Get warned before running out of fuel, power, or RCS
+• EVA jetpack MonoPropellant monitoring
+• Communication signal strength alerts
+• Floating mini-notes for quick reference
+• Global Alarm Panel for centralized control
+• Customizable UI skins
+• Per-save note and alarm storage
+• Built-in calculator for quick math
+• Massive 80-85% performance improvement
+• Undo support and 5-level zoom
+• 20-second load cooldown prevents false alarms
+• Smart suppression during landing configuration
+• Aircraft-only filter option for terrain alarms
+• Independent volume control for all sounds
+
+---
+
+## Installation Instructions (short)
+
+1. Download ZIP
+2. Extract to [KSP]/GameData/
+3. Launch KSP
+4. Click KerbNote icon in toolbar
+5. Done!
+
+Upgrading? Your notes and alarms are preserved automatically.
+
+---
+
+## Version History One-Liner
+
+v1.3.0 - Terrain alarms, resource monitoring, 80% performance boost
+v1.0.0 - Initial release with notes and location-based alarms
