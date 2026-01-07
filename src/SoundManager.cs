@@ -45,6 +45,7 @@ public class SoundManager : MonoBehaviour
  private static object _cachedGearBeepClip;
  private static object _cachedSinkRateClip;
  private static object _cachedLandedClip;
+ private static object _cachedStallWarningClip;
 
  private static readonly System.Collections.Generic.Dictionary<int, object> _cachedAltitudeCallouts = new System.Collections.Generic.Dictionary<int, object>();
 
@@ -377,6 +378,19 @@ public class SoundManager : MonoBehaviour
                             ?? GenerateBeepClip(0.07f, 1100f);
  	}
  	PlayClip(_cachedLandedClip, volume);
+ }
+
+ public static void PlayStallWarning(float volume = 1.0f)
+ {
+ 	if (_instance == null) Init();
+ 	if (_cachedStallWarningClip == null)
+ 	{
+ 		_cachedStallWarningClip = TryLoadClip("KerbNoteLite/Sounds/Stall")
+                                  ?? TryLoadClip("KerbNoteLite/Sounds/stall")
+                                  ?? TryLoadClip("KerbNoteLite/Sounds/STALL")
+                                  ?? GenerateBeepClip(0.15f, 800f); // Fallback: deeper beep for stall
+  	}
+  	PlayClip(_cachedStallWarningClip, volume);
  }
 
  public static void SetTerrainVolume(float volume)

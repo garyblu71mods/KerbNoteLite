@@ -95,10 +95,26 @@ internal static class TerrainAlarmConfig
             r.TerrainAheadMinSpeed = GetFloat(n, "TerrainAheadMinSpeed", r.TerrainAheadMinSpeed);
 
             r.EnableAltitudeCallouts = GetBool(n, "EnableAltitudeCallouts", r.EnableAltitudeCallouts);
+            
+            // Landed callout (separate toggle, defaults to true for backward compatibility)
+            r.EnableLandedCallout = GetBool(n, "EnableLandedCallout", true);
 
             r.EnableSinkRate = GetBool(n, "EnableSinkRate", r.EnableSinkRate);
             r.SinkRateAGL = GetFloat(n, "SinkRateAGL", r.SinkRateAGL);
             r.SinkRateMinDescent = GetFloat(n, "SinkRateMinDescent", r.SinkRateMinDescent);
+
+            // Stall Warning
+            r.EnableStallWarning = GetBool(n, "EnableStallWarning", r.EnableStallWarning);
+            string stallModeStr = GetString(n, "StallWarningMode", r.StallWarningMode.ToString());
+            if (System.Enum.TryParse<TerrainAlarmRunner.StallMode>(stallModeStr, out var stallMode))
+            {
+                r.StallWarningMode = stallMode;
+            }
+            r.StallMinHorizontalSpeed = GetFloat(n, "StallMinHorizontalSpeed", r.StallMinHorizontalSpeed);
+            r.StallDescentRatio = GetFloat(n, "StallDescentRatio", r.StallDescentRatio);
+            r.StallMinAGL = GetFloat(n, "StallMinAGL", r.StallMinAGL);
+            r.StallMaxPitchDegrees = GetFloat(n, "StallMaxPitchDegrees", r.StallMaxPitchDegrees);
+            r.StallMinHorizontalSpeedAuto = GetFloat(n, "StallMinHorizontalSpeedAuto", r.StallMinHorizontalSpeedAuto);
 
             r.AircraftOnly = GetBool(n, "AircraftOnly", r.AircraftOnly);
             
@@ -139,10 +155,21 @@ internal static class TerrainAlarmConfig
             n.AddValue("TerrainAheadMinSpeed", r.TerrainAheadMinSpeed);
 
             n.AddValue("EnableAltitudeCallouts", r.EnableAltitudeCallouts);
+            
+            n.AddValue("EnableLandedCallout", r.EnableLandedCallout);
 
             n.AddValue("EnableSinkRate", r.EnableSinkRate);
             n.AddValue("SinkRateAGL", r.SinkRateAGL);
             n.AddValue("SinkRateMinDescent", r.SinkRateMinDescent);
+
+            // Stall Warning
+            n.AddValue("EnableStallWarning", r.EnableStallWarning);
+            n.AddValue("StallWarningMode", r.StallWarningMode.ToString());
+            n.AddValue("StallMinHorizontalSpeed", r.StallMinHorizontalSpeed);
+            n.AddValue("StallDescentRatio", r.StallDescentRatio);
+            n.AddValue("StallMinAGL", r.StallMinAGL);
+            n.AddValue("StallMaxPitchDegrees", r.StallMaxPitchDegrees);
+            n.AddValue("StallMinHorizontalSpeedAuto", r.StallMinHorizontalSpeedAuto);
 
             n.AddValue("AircraftOnly", r.AircraftOnly);
             
@@ -178,6 +205,17 @@ internal static class TerrainAlarmConfig
             if (!n.HasValue(key)) return fallback;
             bool v;
             if (bool.TryParse(n.GetValue(key), out v)) return v;
+        }
+        catch { }
+        return fallback;
+    }
+
+    private static string GetString(ConfigNode n, string key, string fallback)
+    {
+        try
+        {
+            if (!n.HasValue(key)) return fallback;
+            return n.GetValue(key) ?? fallback;
         }
         catch { }
         return fallback;

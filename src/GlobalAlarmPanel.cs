@@ -293,8 +293,8 @@ public class GlobalAlarmPanel : MonoBehaviour
         _wasModActive = modNowVisible;
         isModActive = modNowVisible;
 
-        if (!isModActive) { ClearInputLock(); return; }
-        if (SettingWindow.IsAboutVisible) { ClearInputLock(); return; }
+        if (!isModActive) { ClearInputLock(); TooltipManager.ResetTooltip(); return; }
+        if (SettingWindow.IsAboutVisible) { ClearInputLock(); TooltipManager.ResetTooltip(); return; }
 
         Rect currentMainRect = mainWindow.WindowRect;
         if (currentMainRect.x != mainWindowRect.x || currentMainRect.y != mainWindowRect.y ||
@@ -309,6 +309,7 @@ public class GlobalAlarmPanel : MonoBehaviour
         if (_forceHiddenThisFrame)
         {
             ClearInputLock();
+            TooltipManager.ResetTooltip();
             return;
         }
 
@@ -342,6 +343,9 @@ public class GlobalAlarmPanel : MonoBehaviour
         }
 
         UpdateInputLock();
+        
+        // Draw tooltips last (on top of everything)
+        TooltipManager.DrawTooltip();
     }
 
     private void DrawPanelWindow(int id)
@@ -457,6 +461,7 @@ public class GlobalAlarmPanel : MonoBehaviour
         if (GUILayout.Button("Back", tabBtnStyle)) 
         {
             currentPage = Page.Menu;
+            TooltipManager.ResetTooltip();
             return;
         }
         
@@ -503,11 +508,6 @@ public class GlobalAlarmPanel : MonoBehaviour
         }
         else
         {
-            // Communication alarm as first resource-like entry
-            bool commAlarm = resourcesRunner != null && resourcesRunner.EnableCommAlarm;
-            float commThreshold = resourcesRunner != null ? resourcesRunner.CommSignalThreshold : 0.25f;
-            bool isCommExpanded = (_expandedResourceSlider == "Communication");
-            
             // Style for resource labels: no wrapping, clip overflow, white/cream color
             GUIStyle resourceLabelStyle = new GUIStyle(GUI.skin.label);
             resourceLabelStyle.wordWrap = false;
@@ -515,12 +515,35 @@ public class GlobalAlarmPanel : MonoBehaviour
             resourceLabelStyle.alignment = TextAnchor.MiddleLeft;
             resourceLabelStyle.normal.textColor = new Color(0.95f, 0.95f, 0.95f, 1f);
             
+            // Header style - smaller font for compact headers
+            GUIStyle headerLabelStyle = new GUIStyle(resourceLabelStyle);
+            headerLabelStyle.fontSize = 9; // Smaller font for headers
+            
+            // Header with column labels (Active first, then Mute)
+            GUILayout.BeginHorizontal(GUILayout.Height(20));
+            GUILayout.Label("Active", headerLabelStyle, GUILayout.Width(25)); // Active first
+            GUILayout.Label("Mute", headerLabelStyle, GUILayout.Width(25));   // Mute second
+            GUILayout.Label("Resource", resourceLabelStyle, GUILayout.Width(55));
+            GUILayout.Label("Value", resourceLabelStyle, GUILayout.Width(35));
+            GUILayout.EndHorizontal();
+            
+            GUILayout.Space(2f);
+            
+            // Communication alarm as first resource-like entry
+            bool commAlarm = resourcesRunner != null && resourcesRunner.EnableCommAlarm;
+            float commThreshold = resourcesRunner != null ? resourcesRunner.CommSignalThreshold : 0.25f;
+            bool isCommExpanded = (_expandedResourceSlider == "Communication");
+            
             if (!isCommExpanded)
             {
-                // Compact line: checkbox (20) + label (70) + percent (30) + Set button (35)
+                // Compact line: active (20) + mute (20) + label (55) + value (35) + Set (30)
                 GUILayout.BeginHorizontal(GUILayout.Height(20));
                 
+                // Active checkbox first
                 bool newCommAlarm = GUILayout.Toggle(commAlarm, "", GUILayout.Width(20));
+                if (Event.current.type == EventType.Repaint)
+                    TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "comm_alarm");
+                
                 if (resourcesRunner != null)
                 {
                     resourcesRunner.EnableCommAlarm = newCommAlarm;
@@ -530,11 +553,22 @@ public class GlobalAlarmPanel : MonoBehaviour
                     }
                 }
                 
-                GUILayout.Space(-4);
-                GUILayout.Label("Communicat..", resourceLabelStyle, GUILayout.Width(70));
-                GUILayout.Label(((int)(commThreshold * 100)).ToString() + "%", resourceLabelStyle, GUILayout.Width(30));
+                // Mute checkbox second
+                bool commMuted = resourcesRunner != null && resourcesRunner.MuteCommAlarm;
+                bool newCommMuted = GUILayout.Toggle(commMuted, "", GUILayout.Width(20));
+                if (Event.current.type == EventType.Repaint)
+                    TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "resource_mute");
                 
-                if (GUILayout.Button("Set", GUILayout.Width(35)))
+                if (resourcesRunner != null && commMuted != newCommMuted)
+                {
+                    resourcesRunner.MuteCommAlarm = newCommMuted;
+                    ResourcesAlarmConfig.SaveFrom(resourcesRunner);
+                }
+                
+                GUILayout.Label("Communic..", resourceLabelStyle, GUILayout.Width(55));
+                GUILayout.Label(((int)(commThreshold * 100)).ToString() + "%", resourceLabelStyle, GUILayout.Width(35));
+                
+                if (GUILayout.Button("Set", GUILayout.Width(30)))
                 {
                     _expandedResourceSlider = "Communication";
                 }
@@ -548,6 +582,9 @@ public class GlobalAlarmPanel : MonoBehaviour
                 GUILayout.Label($"Communication: {(int)(commThreshold * 100)}%", textStyle);
                 GUILayout.BeginHorizontal();
                 float newThreshold = GUILayout.HorizontalSlider(commThreshold, 0.05f, 0.75f, GUILayout.ExpandWidth(true));
+                if (Event.current.type == EventType.Repaint)
+                    TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "comm_threshold");
+                
                 if (resourcesRunner != null && Mathf.Abs(newThreshold - commThreshold) > 0.01f)
                 {
                     resourcesRunner.CommSignalThreshold = newThreshold;
@@ -556,6 +593,96 @@ public class GlobalAlarmPanel : MonoBehaviour
                 if (GUILayout.Button("OK", GUILayout.Width(40)))
                 {
                     _expandedResourceSlider = null;
+                }
+                GUILayout.EndHorizontal();
+                GUILayout.EndVertical();
+                GUILayout.Space(2f);
+            }
+            
+            // Delta-V alarm
+            bool deltaVAlarm = resourcesRunner != null && resourcesRunner.EnableDeltaVAlarm;
+            float deltaVThreshold = resourcesRunner != null ? resourcesRunner.DeltaVThreshold : 100f;
+            bool isDeltaVExpanded = (_expandedResourceSlider == "DeltaV");
+            
+            if (!isDeltaVExpanded)
+            {
+                // Compact line: active (20) + mute (20) + label (55) + value (35) + Set (30)
+                GUILayout.BeginHorizontal(GUILayout.Height(20));
+                
+                // Active checkbox first
+                bool newDeltaVAlarm = GUILayout.Toggle(deltaVAlarm, "", GUILayout.Width(20));
+                if (Event.current.type == EventType.Repaint)
+                    TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "deltav_alarm");
+                
+                if (resourcesRunner != null)
+                {
+                    resourcesRunner.EnableDeltaVAlarm = newDeltaVAlarm;
+                    if (newDeltaVAlarm != deltaVAlarm)
+                    {
+                        ResourcesAlarmConfig.SaveFrom(resourcesRunner);
+                    }
+                }
+                
+                // Mute checkbox second
+                bool deltaVMuted = resourcesRunner != null && resourcesRunner.MuteDeltaVAlarm;
+                bool newDeltaVMuted = GUILayout.Toggle(deltaVMuted, "", GUILayout.Width(20));
+                if (Event.current.type == EventType.Repaint)
+                    TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "resource_mute");
+                
+                if (resourcesRunner != null && deltaVMuted != newDeltaVMuted)
+                {
+                    resourcesRunner.MuteDeltaVAlarm = newDeltaVMuted;
+                    ResourcesAlarmConfig.SaveFrom(resourcesRunner);
+                }
+                
+                GUILayout.Label("Delta-V", resourceLabelStyle, GUILayout.Width(55));
+                if (Event.current.type == EventType.Repaint)
+                    TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "deltav_alarm");
+                
+                GUILayout.Label(((int)deltaVThreshold).ToString() + "m/s", resourceLabelStyle, GUILayout.Width(35));
+                
+                if (GUILayout.Button("Set", GUILayout.Width(30)))
+                {
+                    _expandedResourceSlider = "DeltaV";
+                }
+                
+                GUILayout.EndHorizontal();
+            }
+            else
+            {
+                // Expanded text input view: TextField with OK button
+                GUILayout.BeginVertical();
+                
+                // Initialize buffer on first expand
+                if (_deltaVThresholdStr == null)
+                {
+                    _deltaVThresholdStr = ((int)deltaVThreshold).ToString();
+                }
+                
+                GUILayout.Label("Delta-V threshold (m/s):", textStyle);
+                GUILayout.BeginHorizontal();
+                
+                // Text field for manual input
+                _deltaVThresholdStr = GUILayout.TextField(_deltaVThresholdStr, GUILayout.ExpandWidth(true));
+                if (Event.current.type == EventType.Repaint)
+                    TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "deltav_threshold");
+                
+                // Parse and apply value
+                if (resourcesRunner != null && float.TryParse(_deltaVThresholdStr, out float parsed))
+                {
+                    // Clamp to reasonable range (50-10000 m/s)
+                    float clamped = Mathf.Clamp(parsed, 50f, 10000f);
+                    if (Mathf.Abs(clamped - deltaVThreshold) > 1f)
+                    {
+                        resourcesRunner.DeltaVThreshold = clamped;
+                        ResourcesAlarmConfig.SaveFrom(resourcesRunner);
+                    }
+                }
+                
+                if (GUILayout.Button("OK", GUILayout.Width(40)))
+                {
+                    _expandedResourceSlider = null;
+                    _deltaVThresholdStr = null; // Reset buffer
                 }
                 GUILayout.EndHorizontal();
                 GUILayout.EndVertical();
@@ -604,25 +731,47 @@ public class GlobalAlarmPanel : MonoBehaviour
                 
                 if (!isExpanded)
                 {
-                    // Compact line: checkbox (20) + label (70) + percent (30) + Set button (35)
+                    // Compact line: active (20) + mute (20) + label (55) + value (35) + Set (30)
                     GUILayout.BeginHorizontal(GUILayout.Height(20));
                     
+                    // Active checkbox first
                     bool newOn = GUILayout.Toggle(isOn, "", GUILayout.Width(20));
+                    if (Event.current.type == EventType.Repaint)
+                        TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "resource_alarm");
+                    
                     if (resourcesRunner != null)
                     {
                         if (newOn) resourcesRunner.EnabledResources.Add(n); 
                         else resourcesRunner.EnabledResources.Remove(n);
                     }
                     
-                    GUILayout.Space(-4); // Reduce space between checkbox and label
+                    // Mute checkbox second
+                    bool isMuted = resourcesRunner != null && resourcesRunner.MutedResources.Contains(n);
+                    bool newMuted = GUILayout.Toggle(isMuted, "", GUILayout.Width(20));
+                    if (Event.current.type == EventType.Repaint)
+                        TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "resource_mute");
                     
-                    // Truncate long resource names to fit, use non-wrapping style
-                    string displayName = n.Length > 13 ? n.Substring(0, 11) + ".." : n;
-                    GUILayout.Label(displayName, resourceLabelStyle, GUILayout.Width(70));
+                    if (resourcesRunner != null)
+                    {
+                        if (newMuted && !isMuted)
+                        {
+                            resourcesRunner.MutedResources.Add(n);
+                            ResourcesAlarmConfig.SaveFrom(resourcesRunner);
+                        }
+                        else if (!newMuted && isMuted)
+                        {
+                            resourcesRunner.MutedResources.Remove(n);
+                            ResourcesAlarmConfig.SaveFrom(resourcesRunner);
+                        }
+                    }
                     
-                    GUILayout.Label(((int)(cur*100)).ToString() + "%", resourceLabelStyle, GUILayout.Width(30));
+                    // Truncate long resource names to fit
+                    string displayName = n.Length > 11 ? n.Substring(0, 9) + ".." : n;
+                    GUILayout.Label(displayName, resourceLabelStyle, GUILayout.Width(55));
                     
-                    if (GUILayout.Button("Set", GUILayout.Width(35)))
+                    GUILayout.Label(((int)(cur*100)).ToString() + "%", resourceLabelStyle, GUILayout.Width(35));
+                    
+                    if (GUILayout.Button("Set", GUILayout.Width(30)))
                     {
                         _expandedResourceSlider = n;
                     }
@@ -641,6 +790,9 @@ public class GlobalAlarmPanel : MonoBehaviour
                     
                     // Full-width slider
                     float newThr = GUILayout.HorizontalSlider(cur, 0.01f, 0.8f, GUILayout.ExpandWidth(true));
+                    if (Event.current.type == EventType.Repaint)
+                        TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "resource_threshold");
+                    
                     if (resourcesRunner != null) resourcesRunner.ThresholdByResource[n] = newThr;
                     
                     // OK button to close
@@ -648,10 +800,82 @@ public class GlobalAlarmPanel : MonoBehaviour
                     {
                         _expandedResourceSlider = null;
                     }
-                    
                     GUILayout.EndHorizontal();
                     GUILayout.EndVertical();
                     GUILayout.Space(2f);
+                }
+                
+                // Show EVA Jetpack alarm right after MonoPropellant
+                if (string.Equals(n, "MonoPropellant", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    bool evaMonoPropAlarm = resourcesRunner != null && resourcesRunner.EnableEvaMonoPropAlarm;
+                    float evaMonoPropThreshold = resourcesRunner != null ? resourcesRunner.EvaMonoPropThreshold : 0.15f;
+                    bool isEvaMonoPropExpanded = (_expandedResourceSlider == "EVA_MonoPropellant");
+                    
+                    if (!isEvaMonoPropExpanded)
+                    {
+                        // Compact line for EVA Jetpack: active (20) + mute (20) + label (55) + value (35) + Set (30)
+                        GUILayout.BeginHorizontal(GUILayout.Height(20));
+                        
+                        // Active checkbox first
+                        bool newEvaMonoPropAlarm = GUILayout.Toggle(evaMonoPropAlarm, "", GUILayout.Width(20));
+                        if (Event.current.type == EventType.Repaint)
+                            TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "eva_monoprop_alarm");
+                        
+                        if (resourcesRunner != null)
+                        {
+                            resourcesRunner.EnableEvaMonoPropAlarm = newEvaMonoPropAlarm;
+                            if (newEvaMonoPropAlarm != evaMonoPropAlarm)
+                            {
+                                ResourcesAlarmConfig.SaveFrom(resourcesRunner);
+                            }
+                        }
+                        
+                        // Mute checkbox second
+                        bool evaMuted = resourcesRunner != null && resourcesRunner.MuteEvaMonoPropAlarm;
+                        bool newEvaMuted = GUILayout.Toggle(evaMuted, "", GUILayout.Width(20));
+                        if (Event.current.type == EventType.Repaint)
+                            TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "resource_mute");
+                        
+                        if (resourcesRunner != null && evaMuted != newEvaMuted)
+                        {
+                            resourcesRunner.MuteEvaMonoPropAlarm = newEvaMuted;
+                            ResourcesAlarmConfig.SaveFrom(resourcesRunner);
+                        }
+                        
+                        GUILayout.Label("EVA Jetpack", resourceLabelStyle, GUILayout.Width(55));
+                        GUILayout.Label(((int)(evaMonoPropThreshold * 100)).ToString() + "%", resourceLabelStyle, GUILayout.Width(35));
+                        
+                        if (GUILayout.Button("Set", GUILayout.Width(30)))
+                        {
+                            _expandedResourceSlider = "EVA_MonoPropellant";
+                        }
+                        
+                        GUILayout.EndHorizontal();
+                    }
+                    else
+                    {
+                        // Expanded slider view for EVA Jetpack
+                        GUILayout.BeginVertical();
+                        GUILayout.Label($"EVA Jetpack Fuel: {(int)(evaMonoPropThreshold * 100)}%", textStyle);
+                        GUILayout.BeginHorizontal();
+                        float newThreshold = GUILayout.HorizontalSlider(evaMonoPropThreshold, 0.05f, 0.8f, GUILayout.ExpandWidth(true));
+                        if (Event.current.type == EventType.Repaint)
+                            TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "eva_monoprop_threshold");
+                        
+                        if (resourcesRunner != null && Mathf.Abs(newThreshold - evaMonoPropThreshold) > 0.01f)
+                        {
+                            resourcesRunner.EvaMonoPropThreshold = newThreshold;
+                            ResourcesAlarmConfig.SaveFrom(resourcesRunner);
+                        }
+                        if (GUILayout.Button("OK", GUILayout.Width(40)))
+                        {
+                            _expandedResourceSlider = null;
+                        }
+                        GUILayout.EndHorizontal();
+                        GUILayout.EndVertical();
+                        GUILayout.Space(2f);
+                    }
                 }
             }
             
@@ -659,6 +883,9 @@ public class GlobalAlarmPanel : MonoBehaviour
             GUILayout.Space(8f);
             bool silence = resourcesRunner != null && resourcesRunner.SilenceAlarms;
             bool newSilence = GUILayout.Toggle(silence, " Silence all resource alarms");
+            if (Event.current.type == EventType.Repaint)
+                TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "silence_all");
+            
             if (resourcesRunner != null)
             {
                 resourcesRunner.SilenceAlarms = newSilence;
@@ -678,8 +905,16 @@ public class GlobalAlarmPanel : MonoBehaviour
     private bool _sinkRateToggle;
     private float _lastTerrainConfigSaveTs;
     
+    // Stall Warning UI input buffers
+    private string _stallMinSpeedStr;
+    private string _stallDescentRatioStr;
+    private string _stallMinAglStr;
+    
     // Resources page: expanded slider state
     private string _expandedResourceSlider; // null = none expanded, or resource name
+    
+    // Delta-V input buffer
+    private string _deltaVThresholdStr;
 
     private void DrawTerrainPage()
     {
@@ -687,6 +922,7 @@ public class GlobalAlarmPanel : MonoBehaviour
         if (GUILayout.Button("Back", tabBtnStyle)) 
         {
             currentPage = Page.Menu;
+            TooltipManager.ResetTooltip();
             return;
         }
         
@@ -725,8 +961,11 @@ public class GlobalAlarmPanel : MonoBehaviour
                 _gearMaxSpdStr = null;
                 _aheadMarginStr = null;
                 _aheadMaxTimeStr = null;
-                _aheadStepStr = null;
+                // _aheadStepStr remains hidden - no UI control
                 _aheadMinSpeedStr = null;
+                _stallMinSpeedStr = null;
+                _stallDescentRatioStr = null;
+                _stallMinAglStr = null;
                 _sinkRateToggle = terrainRunner.EnableSinkRate;
             }
             else
@@ -743,13 +982,19 @@ public class GlobalAlarmPanel : MonoBehaviour
             return;
         }
 
-        // Vessel type filter: Aircraft only vs All vessels (radio buttons)
+        // Vessel type filter: All vessels vs Plane only (radio buttons)
         GUILayout.BeginHorizontal();
         bool allVessels = !terrainRunner.AircraftOnly;
         bool aircraftOnly = terrainRunner.AircraftOnly;
         
-        bool newAllVessels = GUILayout.Toggle(allVessels, " All vessels", GUILayout.Width(120));
-        bool newAircraftOnly = GUILayout.Toggle(aircraftOnly, " Aircraft only", GUILayout.Width(120));
+        bool newAllVessels = GUILayout.Toggle(allVessels, " All vessels", GUILayout.ExpandWidth(true));
+        if (Event.current.type == EventType.Repaint)
+            TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "vessel_filter_all");
+        
+        GUILayout.Space(4f);
+        bool newAircraftOnly = GUILayout.Toggle(aircraftOnly, " Plane only", GUILayout.ExpandWidth(true));
+        if (Event.current.type == EventType.Repaint)
+            TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "vessel_filter_plane");
         
         // Apply changes immediately with proper radio button behavior
         if (newAllVessels && !allVessels)
@@ -774,46 +1019,87 @@ public class GlobalAlarmPanel : MonoBehaviour
 
         if (_aheadMarginStr == null) _aheadMarginStr = terrainRunner.TerrainAheadMarginMeters.ToString("F0");
         if (_aheadMaxTimeStr == null) _aheadMaxTimeStr = terrainRunner.TerrainAheadMaxTime.ToString("F1");
+        // Step field remains in config but hidden from UI
         if (_aheadStepStr == null) _aheadStepStr = terrainRunner.TerrainAheadStep.ToString("F2");
         if (_aheadMinSpeedStr == null) _aheadMinSpeedStr = terrainRunner.TerrainAheadMinSpeed.ToString("F0");
 
+        // Create text style for labels
+        GUIStyle labelStyle = new GUIStyle(HighLogic.Skin.label);
+        labelStyle.normal.textColor = new Color(0.95f, 0.95f, 0.95f, 1f);
+        
+        // Create style for units (slightly dimmer)
+        GUIStyle unitStyle = new GUIStyle(HighLogic.Skin.label);
+        unitStyle.normal.textColor = new Color(0.75f, 0.75f, 0.75f, 1f);
+        unitStyle.fontSize = 11;
+
         // Base terrain threshold (always relevant)
         terrainRunner.EnableTerrainBase = GUILayout.Toggle(terrainRunner.EnableTerrainBase, " Terrain (Pull Up)");
+        if (Event.current.type == EventType.Repaint)
+            TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "terrain_base");
 
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("AGL:", GUILayout.Width(40));
-        _terrainAglStr = GUILayout.TextField(_terrainAglStr, GUILayout.ExpandWidth(true));
-        GUILayout.EndHorizontal();
+        if (terrainRunner.EnableTerrainBase)
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Altitude AGL:", labelStyle, GUILayout.Width(90));
+            _terrainAglStr = GUILayout.TextField(_terrainAglStr, GUILayout.Width(50));
+            if (Event.current.type == EventType.Repaint)
+                TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "terrain_agl");
+            GUILayout.Label("m", unitStyle, GUILayout.Width(20));
+            GUILayout.EndHorizontal();
 
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("VSp:", GUILayout.Width(40));
-        _terrainVsStr = GUILayout.TextField(_terrainVsStr, GUILayout.ExpandWidth(true));
-        GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Vertical Speed:", labelStyle, GUILayout.Width(90));
+            _terrainVsStr = GUILayout.TextField(_terrainVsStr, GUILayout.Width(50));
+            if (Event.current.type == EventType.Repaint)
+                TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "terrain_vs");
+            GUILayout.Label("m/s", unitStyle, GUILayout.Width(30));
+            GUILayout.EndHorizontal();
+        }
 
         GUILayout.Space(6f);
 
         // Counting out
         terrainRunner.EnableAltitudeCallouts = GUILayout.Toggle(terrainRunner.EnableAltitudeCallouts, " Counting out");
+        if (Event.current.type == EventType.Repaint)
+            TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "counting_out");
+
+        GUILayout.Space(6f);
+        
+        // Landed callout (separate toggle under Counting out)
+        terrainRunner.EnableLandedCallout = GUILayout.Toggle(terrainRunner.EnableLandedCallout, " Landed callout");
+        if (Event.current.type == EventType.Repaint)
+            TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "landed_callout");
 
         GUILayout.Space(6f);
 
         // Sink rate
         terrainRunner.EnableSinkRate = GUILayout.Toggle(terrainRunner.EnableSinkRate, " Sink rate");
+        if (Event.current.type == EventType.Repaint)
+            TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "sink_rate");
 
         GUILayout.Space(6f);
 
         // Gear
         bool newGearOn = GUILayout.Toggle(terrainRunner.EnableGearAlarm, " Gear alarm");
+        if (Event.current.type == EventType.Repaint)
+            TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "gear_alarm");
+        
         if (newGearOn)
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Label("AGL:", GUILayout.Width(40));
-            _gearAglStr = GUILayout.TextField(_gearAglStr, GUILayout.ExpandWidth(true));
+            GUILayout.Label("Altitude AGL:", labelStyle, GUILayout.Width(90));
+            _gearAglStr = GUILayout.TextField(_gearAglStr, GUILayout.Width(50));
+            if (Event.current.type == EventType.Repaint)
+                TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "gear_agl");
+            GUILayout.Label("m", unitStyle, GUILayout.Width(20));
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("MaxSpd:", GUILayout.Width(55));
-            _gearMaxSpdStr = GUILayout.TextField(_gearMaxSpdStr, GUILayout.ExpandWidth(true));
+            GUILayout.Label("Max speed:", labelStyle, GUILayout.Width(90));
+            _gearMaxSpdStr = GUILayout.TextField(_gearMaxSpdStr, GUILayout.Width(50));
+            if (Event.current.type == EventType.Repaint)
+                TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "gear_maxspeed");
+            GUILayout.Label("m/s", unitStyle, GUILayout.Width(30));
             GUILayout.EndHorizontal();
         }
 
@@ -821,26 +1107,40 @@ public class GlobalAlarmPanel : MonoBehaviour
 
         // Terrain ahead
         bool newAhead = GUILayout.Toggle(terrainRunner.EnableTerrainAhead, " Terrain ahead");
+        if (Event.current.type == EventType.Repaint)
+            TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "terrain_ahead");
+        
         if (newAhead)
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Label("MaxTime:", GUILayout.Width(60));
-            _aheadMaxTimeStr = GUILayout.TextField(_aheadMaxTimeStr, GUILayout.ExpandWidth(true));
+            GUILayout.Label("Time to crash:", labelStyle, GUILayout.Width(90));
+            _aheadMaxTimeStr = GUILayout.TextField(_aheadMaxTimeStr, GUILayout.Width(50));
+            if (Event.current.type == EventType.Repaint)
+                TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "ahead_time");
+            GUILayout.Label("sec", unitStyle, GUILayout.Width(30));
+            GUILayout.EndHorizontal();
+
+            // Step field HIDDEN from UI - value preserved in config
+            // GUILayout.BeginHorizontal();
+            // GUILayout.Label("Scan step:", labelStyle, GUILayout.Width(90));
+            // _aheadStepStr = GUILayout.TextField(_aheadStepStr, GUILayout.Width(50));
+            // GUILayout.Label("sec", unitStyle, GUILayout.Width(30));
+            // GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Safety margin:", labelStyle, GUILayout.Width(90));
+            _aheadMarginStr = GUILayout.TextField(_aheadMarginStr, GUILayout.Width(50));
+            if (Event.current.type == EventType.Repaint)
+                TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "ahead_margin");
+            GUILayout.Label("m", unitStyle, GUILayout.Width(20));
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Step:", GUILayout.Width(60));
-            _aheadStepStr = GUILayout.TextField(_aheadStepStr, GUILayout.ExpandWidth(true));
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Margin:", GUILayout.Width(60));
-            _aheadMarginStr = GUILayout.TextField(_aheadMarginStr, GUILayout.ExpandWidth(true));
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("MinSpd:", GUILayout.Width(60));
-            _aheadMinSpeedStr = GUILayout.TextField(_aheadMinSpeedStr, GUILayout.ExpandWidth(true));
+            GUILayout.Label("Min speed:", labelStyle, GUILayout.Width(90));
+            _aheadMinSpeedStr = GUILayout.TextField(_aheadMinSpeedStr, GUILayout.Width(50));
+            if (Event.current.type == EventType.Repaint)
+                TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "ahead_minspeed");
+            GUILayout.Label("m/s", unitStyle, GUILayout.Width(30));
             GUILayout.EndHorizontal();
         }
 
@@ -856,8 +1156,91 @@ public class GlobalAlarmPanel : MonoBehaviour
 
         if (float.TryParse(_aheadMarginStr, out var margin)) terrainRunner.TerrainAheadMarginMeters = Mathf.Clamp(margin, 0f, 5000f);
         if (float.TryParse(_aheadMaxTimeStr, out var maxTime)) terrainRunner.TerrainAheadMaxTime = Mathf.Clamp(maxTime, 0.5f, 30f);
+        // Step parsing still present but hidden from UI
         if (float.TryParse(_aheadStepStr, out var step)) terrainRunner.TerrainAheadStep = Mathf.Clamp(step, 0.05f, 2f);
         if (float.TryParse(_aheadMinSpeedStr, out var minSpd)) terrainRunner.TerrainAheadMinSpeed = Mathf.Clamp(minSpd, 0f, 2000f);
+
+        GUILayout.Space(6f);
+
+        // Stall Warning
+        bool newStallOn = GUILayout.Toggle(terrainRunner.EnableStallWarning, " Stall warning");
+        if (Event.current.type == EventType.Repaint)
+            TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "stall_warning");
+        
+        if (newStallOn)
+        {
+            // Initialize text fields on first display
+            if (_stallMinSpeedStr == null) _stallMinSpeedStr = terrainRunner.StallMinHorizontalSpeed.ToString("F0");
+            if (_stallDescentRatioStr == null) _stallDescentRatioStr = (terrainRunner.StallDescentRatio * 100f).ToString("F0");
+            if (_stallMinAglStr == null) _stallMinAglStr = terrainRunner.StallMinAGL.ToString("F0");
+
+            // Mode selection: Auto vs Manual (radio buttons)
+            GUILayout.BeginHorizontal();
+            bool isAuto = (terrainRunner.StallWarningMode == TerrainAlarmRunner.StallMode.Auto);
+            bool isManual = (terrainRunner.StallWarningMode == TerrainAlarmRunner.StallMode.Manual);
+            
+            bool newAuto = GUILayout.Toggle(isAuto, " Auto", GUILayout.ExpandWidth(true));
+            if (Event.current.type == EventType.Repaint)
+                TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "stall_mode_auto");
+            
+            GUILayout.Space(4f);
+            bool newManual = GUILayout.Toggle(isManual, " Manual", GUILayout.ExpandWidth(true));
+            if (Event.current.type == EventType.Repaint)
+                TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "stall_mode_manual");
+            
+            // Apply radio button behavior
+            if (newAuto && !isAuto)
+            {
+                terrainRunner.StallWarningMode = TerrainAlarmRunner.StallMode.Auto;
+            }
+            else if (newManual && !isManual)
+            {
+                terrainRunner.StallWarningMode = TerrainAlarmRunner.StallMode.Manual;
+            }
+            GUILayout.EndHorizontal();
+
+            // Mode-specific settings
+            if (terrainRunner.StallWarningMode == TerrainAlarmRunner.StallMode.Manual)
+            {
+                // Manual mode: minimum horizontal speed threshold
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Min speed:", labelStyle, GUILayout.Width(90));
+                _stallMinSpeedStr = GUILayout.TextField(_stallMinSpeedStr, GUILayout.Width(50));
+                if (Event.current.type == EventType.Repaint)
+                    TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "stall_min_speed");
+                GUILayout.Label("m/s", unitStyle, GUILayout.Width(30));
+                GUILayout.EndHorizontal();
+            }
+            else
+            {
+                // Auto mode: descent ratio threshold (as percentage)
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Descent ratio:", labelStyle, GUILayout.Width(90));
+                _stallDescentRatioStr = GUILayout.TextField(_stallDescentRatioStr, GUILayout.Width(50));
+                if (Event.current.type == EventType.Repaint)
+                    TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "stall_descent_ratio");
+                GUILayout.Label("%", unitStyle, GUILayout.Width(30));
+                GUILayout.EndHorizontal();
+            }
+
+            // Common setting: minimum AGL
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Min altitude:", labelStyle, GUILayout.Width(90));
+            _stallMinAglStr = GUILayout.TextField(_stallMinAglStr, GUILayout.Width(50));
+            if (Event.current.type == EventType.Repaint)
+                TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "stall_min_agl");
+            GUILayout.Label("m", unitStyle, GUILayout.Width(20));
+            GUILayout.EndHorizontal();
+        }
+
+        // Apply parsed Stall Warning settings
+        terrainRunner.EnableStallWarning = newStallOn;
+        if (float.TryParse(_stallMinSpeedStr, out var stallMinSpeed)) 
+            terrainRunner.StallMinHorizontalSpeed = Mathf.Clamp(stallMinSpeed, 0f, 500f);
+        if (float.TryParse(_stallDescentRatioStr, out var stallRatioPercent)) 
+            terrainRunner.StallDescentRatio = Mathf.Clamp(stallRatioPercent / 100f, 0.1f, 1.0f);
+        if (float.TryParse(_stallMinAglStr, out var stallMinAgl)) 
+            terrainRunner.StallMinAGL = Mathf.Clamp(stallMinAgl, 0f, 1000f);
 
         // Persist settings (debounced)
         if (Time.realtimeSinceStartup - _lastTerrainConfigSaveTs > 0.5f)
@@ -868,13 +1251,16 @@ public class GlobalAlarmPanel : MonoBehaviour
 
         GUILayout.Space(10f);
         
-        // Volume slider at bottom - white/cream color
+        // Volume slider at bottom
         GUIStyle volumeStyle = new GUIStyle(HighLogic.Skin.label);
         volumeStyle.normal.textColor = new Color(0.95f, 0.95f, 0.95f, 1f);
         
         GUILayout.Label($"Volume: {(int)(terrainRunner.Volume * 100)}%", volumeStyle);
         GUILayout.BeginHorizontal();
         float newVolume = GUILayout.HorizontalSlider(terrainRunner.Volume, 0f, 1f, GUILayout.ExpandWidth(true));
+        if (Event.current.type == EventType.Repaint)
+            TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "volume");
+        
         if (Mathf.Abs(newVolume - terrainRunner.Volume) > 0.01f)
         {
             terrainRunner.Volume = newVolume;
@@ -893,6 +1279,7 @@ public class GlobalAlarmPanel : MonoBehaviour
         if (GUILayout.Button("Back", tabBtnStyle)) 
         {
             currentPage = Page.Menu;
+            TooltipManager.ResetTooltip();
             return;
         }
         

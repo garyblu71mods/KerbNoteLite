@@ -22,6 +22,9 @@ public class TerrainAlarmRunner : MonoBehaviour
     public float LandingSuppressMaxAGL = 300f;
 
     public bool EnableAltitudeCallouts = false;
+    
+    // Separate toggle for "Landed" callout (can be annoying on repeated landings)
+    public bool EnableLandedCallout = true;
 
     public bool EnableSinkRate = true;
 
@@ -31,6 +34,16 @@ public class TerrainAlarmRunner : MonoBehaviour
     // Sink rate callout
     public float SinkRateAGL = 70f;
     public float SinkRateMinDescent = 7f;
+
+    // Stall Warning (Loss of airspeed / energy decay detection)
+    public bool EnableStallWarning = false;
+    public enum StallMode { Auto, Manual }
+    public StallMode StallWarningMode = StallMode.Auto;
+    public float StallMinHorizontalSpeed = 50f;      // Manual mode: min safe horizontal speed (m/s)
+    public float StallDescentRatio = 0.35f;          // Auto mode: alarm when descent/horizontal > ratio (0.35 = 35%)
+    public float StallMinAGL = 100f;                 // Don't alarm below this altitude (prevents landing warnings)
+    public float StallMaxPitchDegrees = 30f;         // Auto mode: ignore high pitch maneuvers (cobra, etc)
+    public float StallMinHorizontalSpeedAuto = 20f;  // Auto mode: minimum speed to consider (avoid false alarms when slow)
 
     // Filter: aircraft only vs all vessels
     public bool AircraftOnly = false;
@@ -55,6 +68,9 @@ public class TerrainAlarmRunner : MonoBehaviour
 
     private float _lastSinkRateTs;
     private const float SinkRateCooldown = 1.6f;
+    
+    private float _lastStallWarningTs;
+    private const float StallWarningCooldown = 2.5f;
 
     // Callouts
     private float _lastCalloutTs;
@@ -122,6 +138,7 @@ public class TerrainAlarmRunner : MonoBehaviour
         _hasBeenAirborneAfterLoad = false;
         _maxAglAfterLoad = 0f;
         _lastAgl = null;
+        _lastStallWarningTs = 0f;
         
         // Invalidate aircraft cache on vessel change
         _cachedIsAircraft = null;
@@ -290,8 +307,8 @@ public class TerrainAlarmRunner : MonoBehaviour
                             }
                             catch { }
                             
-                            // Play sound only if callouts enabled
-                            if (EnableAltitudeCallouts)
+                            // Play sound only if both callouts AND landed callout are enabled
+                            if (EnableAltitudeCallouts && EnableLandedCallout)
                             {
                                 SoundManager.PlayLandedCallout(Volume);
                             }
@@ -500,6 +517,85 @@ public class TerrainAlarmRunner : MonoBehaviour
                 }
                 // Screen message always shown when condition met
                 ScreenMessages.PostScreenMessage("Sink Rate!", 2f, ScreenMessageStyle.UPPER_CENTER);
+            }
+        }
+
+        // Stall Warning: high descent rate with low horizontal speed
+        if (EnableStallWarning && !suppressPullUp && !suppressTerrain)
+        {
+            bool stallCondition = false;
+            
+            // Manual mode: check if below manual horizontal speed
+            if (StallWarningMode == StallMode.Manual)
+            {
+                stallCondition = (spd < StallMinHorizontalSpeed) && (agl > StallMinAGL);
+            }
+            // Auto mode: check descent-to-horizontal speed ratio
+            else
+            {
+                bool isDescending = vsAsl < -0.1f;
+                bool aboveMinAltitude = (agl > StallMinAGL);
+                
+                // Get horizontal speed from vessel (excludes vertical component)
+                double horizontalSpeed = 0;
+                try { horizontalSpeed = v.horizontalSrfSpeed; } catch { }
+                
+                // Only check if moving forward at reasonable speed (avoid division by zero and slow taxi false alarms)
+                bool movingForward = horizontalSpeed > StallMinHorizontalSpeedAuto;
+                
+                // Ratio alarm: descent rate too high relative to horizontal speed
+                // Example: if descending 15 m/s while moving 40 m/s horizontally = 15/40 = 0.375 (37.5%)
+                // If StallDescentRatio = 0.35 (35%), this triggers alarm
+                bool descentRatioAlarm = false;
+                if (movingForward && isDescending && aboveMinAltitude)
+                {
+                    float ratio = Mathf.Abs(vsAsl) / (float)horizontalSpeed;
+                    descentRatioAlarm = ratio > StallDescentRatio;
+                }
+                
+                // Pitch suppression: ignore high pitch maneuvers (prevents cobra/loop false alarms)
+                // Calculate pitch angle relative to horizon (0° = level flight, 90° = vertical)
+                float pitchDegrees = 0f;
+                try
+                {
+                    // Get vessel's forward direction
+                    Vector3 vesselForward = v.transform.up; // In KSP, "up" is vessel's forward
+                    
+                    // Get horizon plane (perpendicular to gravity)
+                    Vector3 gravityUp = (v.transform.position - v.mainBody.position).normalized;
+                    
+                    // Project forward vector onto horizon plane
+                    Vector3 forwardOnHorizon = Vector3.ProjectOnPlane(vesselForward, gravityUp);
+                    
+                    // Calculate pitch angle
+                    if (forwardOnHorizon.magnitude > 0.01f)
+                    {
+                        pitchDegrees = Vector3.Angle(vesselForward, forwardOnHorizon);
+                        // Determine if pitch is up or down
+                        if (Vector3.Dot(vesselForward, gravityUp) > 0)
+                        {
+                            pitchDegrees = -pitchDegrees; // Negative = nose down
+                        }
+                    }
+                }
+                catch { }
+
+                bool pitchSuppress = Mathf.Abs(pitchDegrees) > StallMaxPitchDegrees;
+                
+                stallCondition = descentRatioAlarm && !pitchSuppress;
+            }
+
+            // Play stall warning with cooldown (similar to sink rate)
+            if (stallCondition)
+            {
+                if (Time.realtimeSinceStartup - _lastStallWarningTs > StallWarningCooldown)
+                {
+                    _lastStallWarningTs = Time.realtimeSinceStartup;
+                    // Play stall warning sound
+                    SoundManager.PlayStallWarning(Volume);
+                    // Screen message always shown when condition met
+                    ScreenMessages.PostScreenMessage("Stall Warning!", 2f, ScreenMessageStyle.UPPER_CENTER);
+                }
             }
         }
 

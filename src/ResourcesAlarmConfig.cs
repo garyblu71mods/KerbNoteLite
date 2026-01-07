@@ -61,6 +61,7 @@ internal static class ResourcesAlarmConfig
                 r.enabled = true;
                 r.SilenceAlarms = false;
                 r.EnableCommAlarm = false;
+                r.EnableEvaMonoPropAlarm = true;
                 r.EnsureDefaults();
                 return;
             }
@@ -71,6 +72,7 @@ internal static class ResourcesAlarmConfig
                 r.enabled = true;
                 r.SilenceAlarms = false;
                 r.EnableCommAlarm = false;
+                r.EnableEvaMonoPropAlarm = true;
                 r.EnsureDefaults();
                 return;
             }
@@ -80,6 +82,7 @@ internal static class ResourcesAlarmConfig
                 r.enabled = true;
                 r.SilenceAlarms = false;
                 r.EnableCommAlarm = false;
+                r.EnableEvaMonoPropAlarm = true;
                 r.EnsureDefaults();
                 return;
             }
@@ -93,9 +96,24 @@ internal static class ResourcesAlarmConfig
             
             // Load communication alarm flag
             r.EnableCommAlarm = GetBool(n, "EnableCommAlarm", false);
+            r.MuteCommAlarm = GetBool(n, "MuteCommAlarm", false);
             
             // Load communication signal threshold (default 25%)
             r.CommSignalThreshold = GetFloat(n, "CommSignalThreshold", 0.25f);
+            
+            // Load EVA MonoPropellant alarm flag (default true)
+            r.EnableEvaMonoPropAlarm = GetBool(n, "EnableEvaMonoPropAlarm", true);
+            r.MuteEvaMonoPropAlarm = GetBool(n, "MuteEvaMonoPropAlarm", false);
+            
+            // Load EVA MonoPropellant threshold (default 15%)
+            r.EvaMonoPropThreshold = GetFloat(n, "EvaMonoPropThreshold", 0.15f);
+            
+            // Load Delta-V alarm flag (default false)
+            r.EnableDeltaVAlarm = GetBool(n, "EnableDeltaVAlarm", false);
+            r.MuteDeltaVAlarm = GetBool(n, "MuteDeltaVAlarm", false);
+            
+            // Load Delta-V threshold (default 100 m/s)
+            r.DeltaVThreshold = GetFloat(n, "DeltaVThreshold", 100f);
 
             // Load enabled resources
             r.EnabledResources.Clear();
@@ -121,6 +139,20 @@ internal static class ResourcesAlarmConfig
                 if (!string.IsNullOrEmpty(resName))
                     r.ThresholdByResource[resName] = threshold;
             }
+            
+            // Load muted resources
+            r.MutedResources.Clear();
+            string mutedList = n.GetValue("MutedResources");
+            if (!string.IsNullOrEmpty(mutedList))
+            {
+                var names = mutedList.Split(',');
+                foreach (var name in names)
+                {
+                    string trimmed = name.Trim();
+                    if (!string.IsNullOrEmpty(trimmed))
+                        r.MutedResources.Add(trimmed);
+                }
+            }
 
             // Ensure defaults are present
             r.EnsureDefaults();
@@ -131,6 +163,7 @@ internal static class ResourcesAlarmConfig
             r.enabled = true;
             r.SilenceAlarms = false;
             r.EnableCommAlarm = false;
+            r.EnableEvaMonoPropAlarm = true;
             r.EnsureDefaults();
         }
     }
@@ -146,13 +179,27 @@ internal static class ResourcesAlarmConfig
             n.AddValue("RunnerEnabled", r.enabled);
             n.AddValue("SilenceAlarms", r.SilenceAlarms);
             n.AddValue("EnableCommAlarm", r.EnableCommAlarm);
+            n.AddValue("MuteCommAlarm", r.MuteCommAlarm);
             n.AddValue("CommSignalThreshold", r.CommSignalThreshold);
+            n.AddValue("EnableEvaMonoPropAlarm", r.EnableEvaMonoPropAlarm);
+            n.AddValue("MuteEvaMonoPropAlarm", r.MuteEvaMonoPropAlarm);
+            n.AddValue("EvaMonoPropThreshold", r.EvaMonoPropThreshold);
+            n.AddValue("EnableDeltaVAlarm", r.EnableDeltaVAlarm);
+            n.AddValue("MuteDeltaVAlarm", r.MuteDeltaVAlarm);
+            n.AddValue("DeltaVThreshold", r.DeltaVThreshold);
 
             // Save enabled resources as comma-separated list
             if (r.EnabledResources.Count > 0)
             {
                 string enabledList = string.Join(",", r.EnabledResources.ToArray());
                 n.AddValue("EnabledResources", enabledList);
+            }
+            
+            // Save muted resources as comma-separated list
+            if (r.MutedResources.Count > 0)
+            {
+                string mutedList = string.Join(",", r.MutedResources.ToArray());
+                n.AddValue("MutedResources", mutedList);
             }
 
             // Save thresholds

@@ -7,7 +7,7 @@
     <ProjectGuid>{9AF87A0D-B5FC-471B-BD16-418E60607D1C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>KerbCalc</RootNamespace>
-    <AssemblyName>KerbNote_V1.3</AssemblyName>
+    <AssemblyName>KerbNote_V1.3.1</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -82,9 +82,11 @@
     <Compile Include="src\TerrainAlarmConfig.cs" />
     <Compile Include="src\TerrainAlarmRunner.cs" />
     <Compile Include="src\TimeReminderAlarm.cs" />
+    <Compile Include="src\TooltipManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="DESCRIPTIONS_v1.3.0.txt" />
+    <Content Include="GameData\KerbNoteLite\Sounds\PLACE_STALL_OGG_HERE.txt" />
     <Content Include="img\situation.png" />
     <Content Include="SPACEDOCK_DESCRIPTION_v1.3.0.txt" />
     <Content Include="SPACEDOCK_SHORT_v1.3.0.txt" />
@@ -92,6 +94,7 @@
   <ItemGroup>
     <None Include="CHANGELOG.md" />
     <None Include="GameData\KerbNoteLite\About_Help.md" />
+    <None Include="GameData\KerbNoteLite\Sounds\README.md" />
     <None Include="GITHUB_RELEASE_v1.3.0.md" />
     <None Include="GLOBAL_ALARMS_IMPLEMENTATION.md" />
     <None Include="KerbNoteLite.ckan" />
@@ -99,6 +102,7 @@
     <None Include="QUICKSTART.md" />
     <None Include="README.md" />
     <None Include="RELEASE_NOTES_v1.3.0.md" />
+    <None Include="STALL_SOUND_INSTALLATION.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

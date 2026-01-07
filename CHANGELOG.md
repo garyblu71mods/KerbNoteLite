@@ -10,6 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Stall Warning System (Loss of Airspeed Detection)**
+  - Two detection modes:
+    - **AUTO**: Detects energy decay by monitoring descent-to-horizontal speed ratio (default 35%)
+    - **MANUAL**: Simple minimum horizontal speed threshold (user configurable)
+  - Configurable minimum altitude (default 100m) to prevent landing false alarms
+  - Pitch angle suppression (ignores high-angle maneuvers like cobra or loops)
+  - Smart filtering: only triggers when moving forward at reasonable speed
+  - Dedicated "STALL!" audio warning with custom sound file support
+  - Automatic fallback beep if sound file not present
+  - 2.5 second cooldown between warnings
+  - Independent enable/disable toggle
+  - Full configuration persistence
+
 - ?? **Terrain Proximity Alarm System (GPWS)**
   - Pull-Up warning for low altitude + high descent rate
   - Terrain Ahead prediction with look-ahead collision detection

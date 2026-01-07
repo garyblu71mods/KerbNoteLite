@@ -66,6 +66,23 @@ Advanced terrain collision avoidance system with realistic aviation-inspired war
 - Configurable threshold (default: -7 m/s below 70m AGL)
 - Helps prevent hard landings
 
+#### Stall Warning System
+- **Loss of airspeed detection** with two modes:
+  - **AUTO mode**: Intelligent energy decay detection
+    - Monitors descent-to-horizontal speed ratio
+    - Example: Alarm if descending 15 m/s while flying 40 m/s horizontally (37.5% ratio)
+    - Default threshold: 35% (configurable)
+    - Ignores high-pitch maneuvers (cobra, loops, etc.)
+    - Only active when moving forward at reasonable speed (>20 m/s)
+  - **MANUAL mode**: Simple minimum speed threshold
+    - User sets minimum safe horizontal speed (default: 50 m/s)
+    - Alarm when below threshold
+- Configurable minimum altitude (default: 100m)
+- Prevents false alarms during landing approach
+- Dedicated "STALL!" audio warning (custom sound file supported)
+- Automatic fallback beep if sound file not present
+- See `STALL_SOUND_INSTALLATION.md` for audio file setup
+
 #### Smart Suppression
 - **Landing mode detection** - suppresses alarms when gear is out and slow
 - **Aircraft-only filter** - optional restriction to aircraft vessels
@@ -280,10 +297,19 @@ The Global Alarm Panel provides centralized control for advanced alarm systems.
    - **AGL threshold** (default: 70m)
    - **Min Descent** (default: -7 m/s)
    - **Enable** checkbox
-7. Enable **Altitude Callouts** for automated altitude announcements
-8. Toggle **Aircraft Only** to restrict alarms to aircraft vessels
-9. Adjust **Volume** slider (0-100%) for all terrain sounds
-10. Click **Back** to return to menu
+7. Configure **Stall Warning**:
+   - **Enable** checkbox
+   - **Mode selection**:
+     - **AUTO**: Energy decay detection
+       - **Descent Ratio**: % threshold (default: 35%)
+       - Triggers when descent/horizontal speed ratio exceeds threshold
+     - **MANUAL**: Speed threshold
+       - **Min Speed**: Minimum safe horizontal speed (default: 50 m/s)
+   - **Min Altitude**: Don't alarm below this (default: 100m)
+8. Enable **Altitude Callouts** for automated altitude announcements
+9. Toggle **Aircraft Only** to restrict alarms to aircraft vessels
+10. Adjust **Volume** slider (0-100%) for all terrain sounds
+11. Click **Back** to return to menu
 
 #### Landing Suppression Settings
 - **Landing Suppress Max Speed**: 150 m/s (default)
@@ -441,7 +467,7 @@ Contributions are welcome! Please:
 ### Performance Issues
 - Latest version includes major performance optimizations (see Performance section)
 - Disable unused alarm systems in Global Alarm Panel
-- Reduce number of active note tabs
+- Reduce the number of active note tabs
 - Lower terrain alarm update frequency (increase "Step" value)
 
 ### Notes Not Saving
@@ -491,6 +517,7 @@ For issues, suggestions, or questions:
 - ✨ Added **Altitude Callouts** during landing
 - ✨ Added **Gear Warning System** with roll suppression
 - ✨ Added **Sink Rate Warning** for safe landings
+- ✨ Added **Stall Warning System** for aerodynamic safety
 - ⚡ **Major Performance Optimizations** (80-85% faster)
 - 🔧 Cached expensive Unity API calls
 - 🔧 Eliminated LINQ allocations in hot paths
