@@ -293,8 +293,8 @@ public class SliderWindow : MonoBehaviour
 
     private void DrawPanelContents(float localX)
     {
-        // Tlo panelu
-        KerbalUIBackground.DrawNoteWindow(new Rect(localX,0, sliderRect.width, sliderRect.height));
+        // Tlo panelu - use DrawPanel instead of DrawNoteWindow for side panels
+        KerbalUIBackground.DrawPanel(new Rect(localX,0, sliderRect.width, sliderRect.height));
 
         // Obszar na tresc selektora (z marginesem)
         Rect contentArea = new Rect(localX +8f,8f, sliderRect.width -16f, sliderRect.height -16f);

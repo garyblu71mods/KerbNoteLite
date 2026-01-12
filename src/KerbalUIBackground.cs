@@ -6,14 +6,30 @@ public static class KerbalUIBackground
 {
     private static Texture2D backgroundTexture;
     private static Texture2D noteWindowTexture;
+    private static Texture2D panelTexture;
 
     public static void LoadTexture()
     {
         // Prefer SkinAssets-resolved textures if available (file-based), else fallback to default DB textures
         var bgFromSkin = SkinAssets.Get("BackgroundWindow");
         var noteFromSkin = SkinAssets.Get("NoteWindow");
+        var panelFromSkin = SkinAssets.Get("Panel");
+        
         if (bgFromSkin != null) backgroundTexture = bgFromSkin; else backgroundTexture = GameDatabase.Instance.GetTexture("KerbNoteLite/Textures/BackgroundWindow", false);
         if (noteFromSkin != null) noteWindowTexture = noteFromSkin; else noteWindowTexture = GameDatabase.Instance.GetTexture("KerbNoteLite/Textures/NoteWindow", false);
+        
+        // Load Panel.png, fallback to NoteWindow.png if not found
+        if (panelFromSkin != null) 
+            panelTexture = panelFromSkin; 
+        else 
+        {
+            panelTexture = GameDatabase.Instance.GetTexture("KerbNoteLite/Textures/Panel", false);
+            if (panelTexture == null)
+            {
+                // Fallback to NoteWindow
+                panelTexture = noteFromSkin ?? GameDatabase.Instance.GetTexture("KerbNoteLite/Textures/NoteWindow", false);
+            }
+        }
 
         if (backgroundTexture == null)
         {
@@ -24,6 +40,11 @@ public static class KerbalUIBackground
         {
             Debug.LogWarning("[KerbalUIBackground] Nie udalo sie zaladowac Textures/NoteWindow");
         }
+        
+        if (panelTexture == null)
+        {
+            Debug.LogWarning("[KerbalUIBackground] Nie udalo sie zaladowac Textures/Panel (using fallback)");
+        }
     }
 
     // Inject pre-resolved textures
@@ -33,6 +54,8 @@ public static class KerbalUIBackground
         {
             if (note != null) noteWindowTexture = note;
             if (background != null) backgroundTexture = background;
+            // When overriding, also set panel to note if panel wasn't explicitly set
+            if (note != null && panelTexture == null) panelTexture = note;
         }
         catch (Exception ex)
         {
@@ -42,6 +65,7 @@ public static class KerbalUIBackground
 
     public static Texture2D CurrentBackground => backgroundTexture;
     public static Texture2D CurrentNote => noteWindowTexture;
+    public static Texture2D CurrentPanel => panelTexture;
 
     // Prefer GameDatabase (supports .dds/.png), fallback to direct file loading from a given Textures folder (exact names only)
     public static void OverrideFromFolderOrUrl(string texturesFolder)
@@ -57,7 +81,7 @@ public static class KerbalUIBackground
         {
             OverrideFromFolderExact(texturesFolder);
         }
-        Debug.Log("[KerbalUIBackground] Background set: bg=" + (backgroundTexture!=null) + ", note=" + (noteWindowTexture!=null));
+        Debug.Log("[KerbalUIBackground] Background set: bg=" + (backgroundTexture!=null) + ", note=" + (noteWindowTexture!=null) + ", panel=" + (panelTexture!=null));
     }
 
     // Folder-based override: only exact file names
@@ -75,6 +99,7 @@ public static class KerbalUIBackground
             {
                 Debug.LogWarning("[KerbalUIBackground] Missing NoteWindow.png in: " + texturesFolder);
             }
+            
             var bgPath = Path.Combine(texturesFolder, "BackgroundWindow.png");
             if (File.Exists(bgPath))
             {
@@ -84,6 +109,22 @@ public static class KerbalUIBackground
             else
             {
                 Debug.LogWarning("[KerbalUIBackground] Missing BackgroundWindow.png in: " + texturesFolder);
+            }
+            
+            // Load Panel.png, fallback to NoteWindow.png
+            var panelPath = Path.Combine(texturesFolder, "Panel.png");
+            if (File.Exists(panelPath))
+            {
+                var panel = TryLoadTextureFromFile(panelPath);
+                if (panel != null) panelTexture = panel;
+            }
+            else
+            {
+                // Fallback to NoteWindow texture
+                if (noteWindowTexture != null)
+                    panelTexture = noteWindowTexture;
+                else
+                    Debug.LogWarning("[KerbalUIBackground] Missing Panel.png in: " + texturesFolder + " (and no NoteWindow fallback)");
             }
         }
         catch (Exception ex)
@@ -98,9 +139,25 @@ public static class KerbalUIBackground
         var noteUrl = urlRoot.TrimEnd('/') + "/NoteWindow";
         var note = GameDatabase.Instance.GetTexture(noteUrl, false);
         if (note != null) { noteWindowTexture = note; ok = true; }
+        
         var bgUrl = urlRoot.TrimEnd('/') + "/BackgroundWindow";
         var bg = GameDatabase.Instance.GetTexture(bgUrl, false);
         if (bg != null) { backgroundTexture = bg; ok = true; }
+        
+        // Load Panel.png, fallback to NoteWindow
+        var panelUrl = urlRoot.TrimEnd('/') + "/Panel";
+        var panel = GameDatabase.Instance.GetTexture(panelUrl, false);
+        if (panel != null) 
+        { 
+            panelTexture = panel; 
+            ok = true; 
+        }
+        else if (note != null)
+        {
+            // Fallback to NoteWindow
+            panelTexture = note;
+        }
+        
         return ok;
     }
 
@@ -187,5 +244,25 @@ public static class KerbalUIBackground
         }
 
         GUI.DrawTexture(rect, noteWindowTexture);
+    }
+    
+    public static void DrawPanel(Rect rect)
+    {
+        if (panelTexture == null)
+        {
+            // Final fallback: create a simple texture or use noteWindowTexture
+            if (noteWindowTexture != null)
+            {
+                panelTexture = noteWindowTexture;
+            }
+            else
+            {
+                panelTexture = new Texture2D(1,1);
+                panelTexture.SetPixel(0,0, new Color(0.12f,0.12f,0.12f,0.85f));
+                panelTexture.Apply();
+            }
+        }
+
+        GUI.DrawTexture(rect, panelTexture);
     }
 }

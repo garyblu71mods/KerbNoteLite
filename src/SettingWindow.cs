@@ -328,8 +328,8 @@ public class SettingWindow : MonoBehaviour
 
  private void DrawPanelContents(float localY)
  {
- // Tlo panelu (styl jak w innych oknach)
- KerbalUIBackground.DrawNoteWindow(new Rect(0, localY, panelRect.width, panelRect.height));
+ // Tlo panelu (styl jak w innych oknach) - use DrawPanel instead of DrawNoteWindow for settings panel
+ KerbalUIBackground.DrawPanel(new Rect(0, localY, panelRect.width, panelRect.height));
 
  float margin =10f;
  // Mniejszy górny padding na stronie glównej, aby zlikwidowac zbedna przestrzen

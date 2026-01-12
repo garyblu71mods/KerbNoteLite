@@ -355,7 +355,7 @@ public class GlobalAlarmPanel : MonoBehaviour
         float protrusion = Mathf.Clamp(mainWindowRect.x - sliderRect.x, 0f, sliderRect.width);
         float localX = 0f;
 
-        KerbalUIBackground.DrawNoteWindow(new Rect(localX, 0, sliderRect.width, sliderRect.height));
+        KerbalUIBackground.DrawPanel(new Rect(localX, 0, sliderRect.width, sliderRect.height));
 
         float y = 8f; // Start content from top (no header needed)
         // Increase right margin to accommodate thin scrollbar (8px scrollbar + 8px padding = 16px total)
