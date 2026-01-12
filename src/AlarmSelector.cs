@@ -518,16 +518,14 @@ public class AlarmSelector : MonoBehaviour
 		}
 		y += rowH + itemStyle.margin.vertical;
 
-		Action<string, Action> drawToggle = (label, onClick) =>
-		{
-			if (GUI.Button(new Rect(0, y, viewRect.width -16f, rowH), label, itemStyle)) onClick();
-			y += rowH + itemStyle.margin.vertical;
-		};
-
-		drawToggle(string.Format("{0} Mini Note", actionMiniNote ? "[x]" : "[ ]"), () => actionMiniNote = !actionMiniNote);
-		drawToggle(string.Format("{0} Play Sound", actionPlaySound ? "[x]" : "[ ]"), () => actionPlaySound = !actionPlaySound);
-		drawToggle(string.Format("{0} Stop Warp", actionStopWarp ? "[x]" : "[ ]"), () => actionStopWarp = !actionStopWarp);
-		drawToggle(actionHideOnExit ? "HideOnExit" : "KeepOnExit", () => actionHideOnExit = !actionHideOnExit);
+		// Checkbox toggles instead of buttons
+		GUILayout.BeginArea(new Rect(0, y, viewRect.width -16f, 4 * (rowH + itemStyle.margin.vertical)));
+		actionMiniNote = GUILayout.Toggle(actionMiniNote, " Mini Note");
+		actionPlaySound = GUILayout.Toggle(actionPlaySound, " Kerbal Voice");
+		actionStopWarp = GUILayout.Toggle(actionStopWarp, " Kill Warp");
+		actionHideOnExit = GUILayout.Toggle(actionHideOnExit, " Hide on Exit");
+		GUILayout.EndArea();
+		y += 4 * (rowH + itemStyle.margin.vertical);
 
 		bool anySelected = actionMiniNote || actionPlaySound || actionStopWarp;
 		if (!anySelected)
@@ -611,19 +609,23 @@ public class AlarmSelector : MonoBehaviour
 			AlarmManager.SaveOrUpdateAlarm(def);
 		};
 
-		Action<string, Action> drawToggle = (label, onClick) =>
-		{
-			if (GUI.Button(new Rect(0, y, viewRect.width -16f, rowH), label, itemStyle))
-			{
-				onClick();
-				saveCurrent();
-			}
-			y += rowH + itemStyle.margin.vertical;
-		};
-		drawToggle(string.Format("{0} Mini Note", actionMiniNote ? "[x]" : "[ ]"), () => actionMiniNote = !actionMiniNote);
-		drawToggle(string.Format("{0} Play Sound", actionPlaySound ? "[x]" : "[ ]"), () => actionPlaySound = !actionPlaySound);
-		drawToggle(string.Format("{0} Stop Warp", actionStopWarp ? "[x]" : "[ ]"), () => actionStopWarp = !actionStopWarp);
-		drawToggle(actionHideOnExit ? "HideOnExit" : "KeepOnExit", () => actionHideOnExit = !actionHideOnExit);
+		// Checkbox toggles with immediate save
+		GUILayout.BeginArea(new Rect(0, y, viewRect.width -16f, 4 * (rowH + itemStyle.margin.vertical)));
+		
+		bool newMiniNote = GUILayout.Toggle(actionMiniNote, " Mini Note");
+		if (newMiniNote != actionMiniNote) { actionMiniNote = newMiniNote; saveCurrent(); }
+		
+		bool newPlaySound = GUILayout.Toggle(actionPlaySound, " Kerbal Voice");
+		if (newPlaySound != actionPlaySound) { actionPlaySound = newPlaySound; saveCurrent(); }
+		
+		bool newStopWarp = GUILayout.Toggle(actionStopWarp, " Kill Warp");
+		if (newStopWarp != actionStopWarp) { actionStopWarp = newStopWarp; saveCurrent(); }
+		
+		bool newHideOnExit = GUILayout.Toggle(actionHideOnExit, " Hide on Exit");
+		if (newHideOnExit != actionHideOnExit) { actionHideOnExit = newHideOnExit; saveCurrent(); }
+		
+		GUILayout.EndArea();
+		y += 4 * (rowH + itemStyle.margin.vertical);
 
 		// Extra spacing to push Close panel lower
 		y += rowH;
