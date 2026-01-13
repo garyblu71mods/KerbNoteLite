@@ -40,9 +40,8 @@ public class TerrainAlarmRunner : MonoBehaviour
     public enum StallMode { Auto, Manual }
     public StallMode StallWarningMode = StallMode.Auto;
     public float StallMinHorizontalSpeed = 50f;      // Manual mode: min safe horizontal speed (m/s)
-    public float StallDescentRatio = 0.35f;          // Auto mode: alarm when descent/horizontal > ratio (0.35 = 35%)
+    public float StallAngleThreshold = 45f;          // Auto mode: angle between nose and velocity vector (degrees, 0-90)
     public float StallMinAGL = 100f;                 // Don't alarm below this altitude (prevents landing warnings)
-    public float StallMaxPitchDegrees = 30f;         // Auto mode: ignore high pitch maneuvers (cobra, etc)
     public float StallMinHorizontalSpeedAuto = 20f;  // Auto mode: minimum speed to consider (avoid false alarms when slow)
 
     // Filter: aircraft only vs all vessels
@@ -520,80 +519,61 @@ public class TerrainAlarmRunner : MonoBehaviour
             }
         }
 
-        // Stall Warning: high descent rate with low horizontal speed
+        // Stall Warning: detects loss of lift by comparing nose direction vs actual flight direction
         if (EnableStallWarning && !suppressPullUp && !suppressTerrain)
         {
             bool stallCondition = false;
             
-            // Manual mode: check if below manual horizontal speed
+            // Manual mode: simple speed check
             if (StallWarningMode == StallMode.Manual)
             {
                 stallCondition = (spd < StallMinHorizontalSpeed) && (agl > StallMinAGL);
             }
-            // Auto mode: check descent-to-horizontal speed ratio
+            // Auto mode: angle between nose direction and velocity vector
             else
             {
-                bool isDescending = vsAsl < -0.1f;
                 bool aboveMinAltitude = (agl > StallMinAGL);
                 
-                // Get horizontal speed from vessel (excludes vertical component)
+                // Get velocity vector (direction vessel is actually moving)
+                Vector3 velocityVector = Vector3.zero;
+                try { velocityVector = v.srf_velocity; } catch { }
+                
+                // Get horizontal speed (to filter out slow taxi)
                 double horizontalSpeed = 0;
                 try { horizontalSpeed = v.horizontalSrfSpeed; } catch { }
-                
-                // Only check if moving forward at reasonable speed (avoid division by zero and slow taxi false alarms)
                 bool movingForward = horizontalSpeed > StallMinHorizontalSpeedAuto;
                 
-                // Ratio alarm: descent rate too high relative to horizontal speed
-                // Example: if descending 15 m/s while moving 40 m/s horizontally = 15/40 = 0.375 (37.5%)
-                // If StallDescentRatio = 0.35 (35%), this triggers alarm
-                bool descentRatioAlarm = false;
-                if (movingForward && isDescending && aboveMinAltitude)
+                // Calculate angle between nose and velocity only if moving forward at reasonable speed
+                bool angleAlarm = false;
+                if (movingForward && aboveMinAltitude && velocityVector.sqrMagnitude > 0.1f)
                 {
-                    float ratio = Mathf.Abs(vsAsl) / (float)horizontalSpeed;
-                    descentRatioAlarm = ratio > StallDescentRatio;
-                }
-                
-                // Pitch suppression: ignore high pitch maneuvers (prevents cobra/loop false alarms)
-                // Calculate pitch angle relative to horizon (0° = level flight, 90° = vertical)
-                float pitchDegrees = 0f;
-                try
-                {
-                    // Get vessel's forward direction
-                    Vector3 vesselForward = v.transform.up; // In KSP, "up" is vessel's forward
-                    
-                    // Get horizon plane (perpendicular to gravity)
-                    Vector3 gravityUp = (v.transform.position - v.mainBody.position).normalized;
-                    
-                    // Project forward vector onto horizon plane
-                    Vector3 forwardOnHorizon = Vector3.ProjectOnPlane(vesselForward, gravityUp);
-                    
-                    // Calculate pitch angle
-                    if (forwardOnHorizon.magnitude > 0.01f)
+                    try
                     {
-                        pitchDegrees = Vector3.Angle(vesselForward, forwardOnHorizon);
-                        // Determine if pitch is up or down
-                        if (Vector3.Dot(vesselForward, gravityUp) > 0)
-                        {
-                            pitchDegrees = -pitchDegrees; // Negative = nose down
-                        }
+                        // Get vessel's forward direction (nose)
+                        Vector3 vesselForward = v.transform.up; // In KSP, "up" is vessel's forward axis
+                        
+                        // Calculate angle between nose direction and velocity vector
+                        float angle = Vector3.Angle(vesselForward, velocityVector);
+                        
+                        // Clamp to 0-90 degrees (we only care about deviation, not if it's up/down)
+                        angle = Mathf.Clamp(angle, 0f, 90f);
+                        
+                        // Trigger alarm if angle exceeds threshold
+                        angleAlarm = angle >= StallAngleThreshold;
                     }
+                    catch { }
                 }
-                catch { }
-
-                bool pitchSuppress = Mathf.Abs(pitchDegrees) > StallMaxPitchDegrees;
                 
-                stallCondition = descentRatioAlarm && !pitchSuppress;
+                stallCondition = angleAlarm;
             }
 
-            // Play stall warning with cooldown (similar to sink rate)
+            // Play stall warning with cooldown
             if (stallCondition)
             {
                 if (Time.realtimeSinceStartup - _lastStallWarningTs > StallWarningCooldown)
                 {
                     _lastStallWarningTs = Time.realtimeSinceStartup;
-                    // Play stall warning sound
                     SoundManager.PlayStallWarning(Volume);
-                    // Screen message always shown when condition met
                     ScreenMessages.PostScreenMessage("Stall Warning!", 2f, ScreenMessageStyle.UPPER_CENTER);
                 }
             }

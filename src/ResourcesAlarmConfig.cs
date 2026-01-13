@@ -59,7 +59,8 @@ internal static class ResourcesAlarmConfig
             {
                 // No config file: default to enabled with standard resources
                 r.enabled = true;
-                r.SilenceAlarms = false;
+                r.UseKerbalVoiceAlarm = true;
+                r.UseBeepAlarm = false;
                 r.EnableCommAlarm = false;
                 r.EnableEvaMonoPropAlarm = true;
                 r.EnsureDefaults();
@@ -70,7 +71,8 @@ internal static class ResourcesAlarmConfig
             if (node == null)
             {
                 r.enabled = true;
-                r.SilenceAlarms = false;
+                r.UseKerbalVoiceAlarm = true;
+                r.UseBeepAlarm = false;
                 r.EnableCommAlarm = false;
                 r.EnableEvaMonoPropAlarm = true;
                 r.EnsureDefaults();
@@ -80,7 +82,8 @@ internal static class ResourcesAlarmConfig
             if (n == null)
             {
                 r.enabled = true;
-                r.SilenceAlarms = false;
+                r.UseKerbalVoiceAlarm = true;
+                r.UseBeepAlarm = false;
                 r.EnableCommAlarm = false;
                 r.EnableEvaMonoPropAlarm = true;
                 r.EnsureDefaults();
@@ -91,8 +94,19 @@ internal static class ResourcesAlarmConfig
             bool enabledState = GetBool(n, "RunnerEnabled", true);
             r.enabled = enabledState;
 
-            // Load silence flag
-            r.SilenceAlarms = GetBool(n, "SilenceAlarms", false);
+            // Load alarm sound mode (only one can be true)
+            r.UseKerbalVoiceAlarm = GetBool(n, "UseKerbalVoiceAlarm", true);
+            r.UseBeepAlarm = GetBool(n, "UseBeepAlarm", false);
+            // Ensure mutual exclusivity: if both are true, prefer Kerbal Voice
+            if (r.UseKerbalVoiceAlarm && r.UseBeepAlarm)
+            {
+                r.UseBeepAlarm = false;
+            }
+            // If both are false, default to Kerbal Voice
+            if (!r.UseKerbalVoiceAlarm && !r.UseBeepAlarm)
+            {
+                r.UseKerbalVoiceAlarm = true;
+            }
             
             // Load communication alarm flag
             r.EnableCommAlarm = GetBool(n, "EnableCommAlarm", false);
@@ -161,7 +175,8 @@ internal static class ResourcesAlarmConfig
         {
             Debug.LogWarning("[KerbNote][ResourcesAlarmConfig] Load failed: " + ex.Message);
             r.enabled = true;
-            r.SilenceAlarms = false;
+            r.UseKerbalVoiceAlarm = true;
+            r.UseBeepAlarm = false;
             r.EnableCommAlarm = false;
             r.EnableEvaMonoPropAlarm = true;
             r.EnsureDefaults();
@@ -177,7 +192,8 @@ internal static class ResourcesAlarmConfig
             var n = root.AddNode("RESOURCES_ALARM");
 
             n.AddValue("RunnerEnabled", r.enabled);
-            n.AddValue("SilenceAlarms", r.SilenceAlarms);
+            n.AddValue("UseKerbalVoiceAlarm", r.UseKerbalVoiceAlarm);
+            n.AddValue("UseBeepAlarm", r.UseBeepAlarm);
             n.AddValue("EnableCommAlarm", r.EnableCommAlarm);
             n.AddValue("MuteCommAlarm", r.MuteCommAlarm);
             n.AddValue("CommSignalThreshold", r.CommSignalThreshold);

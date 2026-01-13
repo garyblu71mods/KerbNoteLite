@@ -111,9 +111,8 @@ internal static class TerrainAlarmConfig
                 r.StallWarningMode = stallMode;
             }
             r.StallMinHorizontalSpeed = GetFloat(n, "StallMinHorizontalSpeed", r.StallMinHorizontalSpeed);
-            r.StallDescentRatio = GetFloat(n, "StallDescentRatio", r.StallDescentRatio);
+            r.StallAngleThreshold = GetFloat(n, "StallAngleThreshold", r.StallAngleThreshold);
             r.StallMinAGL = GetFloat(n, "StallMinAGL", r.StallMinAGL);
-            r.StallMaxPitchDegrees = GetFloat(n, "StallMaxPitchDegrees", r.StallMaxPitchDegrees);
             r.StallMinHorizontalSpeedAuto = GetFloat(n, "StallMinHorizontalSpeedAuto", r.StallMinHorizontalSpeedAuto);
 
             r.AircraftOnly = GetBool(n, "AircraftOnly", r.AircraftOnly);
@@ -166,9 +165,8 @@ internal static class TerrainAlarmConfig
             n.AddValue("EnableStallWarning", r.EnableStallWarning);
             n.AddValue("StallWarningMode", r.StallWarningMode.ToString());
             n.AddValue("StallMinHorizontalSpeed", r.StallMinHorizontalSpeed);
-            n.AddValue("StallDescentRatio", r.StallDescentRatio);
+            n.AddValue("StallAngleThreshold", r.StallAngleThreshold);
             n.AddValue("StallMinAGL", r.StallMinAGL);
-            n.AddValue("StallMaxPitchDegrees", r.StallMaxPitchDegrees);
             n.AddValue("StallMinHorizontalSpeedAuto", r.StallMinHorizontalSpeedAuto);
 
             n.AddValue("AircraftOnly", r.AircraftOnly);

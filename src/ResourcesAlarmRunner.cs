@@ -17,6 +17,10 @@ public class ResourcesAlarmRunner : MonoBehaviour
     // Track resources completely depleted (separate from threshold alarms)
     private readonly HashSet<string> _depleted = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
 
+    // Alarm sound mode - only one can be true at a time (mutually exclusive)
+    public bool UseKerbalVoiceAlarm = true;  // Default: Kerbal voice
+    public bool UseBeepAlarm = false;        // Fallback: Beep sound
+    
     // Global silence flag for all resource alarms
     public bool SilenceAlarms = false;
     
@@ -410,10 +414,17 @@ public class ResourcesAlarmRunner : MonoBehaviour
         {
             ScreenMessages.PostScreenMessage($"[Global Alarm] Low Delta-V: {deltaV:F0} m/s remaining", 12f, ScreenMessageStyle.UPPER_CENTER);
             
-            // Play sound only if NOT in cooldown, NOT globally silenced, and NOT DeltaV-muted
-            if (!isSilent && !SilenceAlarms && !MuteDeltaVAlarm)
+            // Play sound only if NOT in cooldown and NOT DeltaV-muted
+            if (!isSilent && !MuteDeltaVAlarm)
             {
-                SoundManager.PlayRandomKerbalVocal();
+                if (UseKerbalVoiceAlarm)
+                {
+                    SoundManager.PlayRandomKerbalVocal();
+                }
+                else if (UseBeepAlarm)
+                {
+                    SoundManager.PlayDefaultAlarm();
+                }
             }
         }
         catch { }
@@ -453,10 +464,17 @@ public class ResourcesAlarmRunner : MonoBehaviour
             // Check if this specific resource is muted
             bool isResourceMuted = MutedResources.Contains(res);
             
-            // Play sound only if NOT in cooldown, NOT globally silenced, and NOT resource-muted
-            if (!isSilent && !SilenceAlarms && !isResourceMuted)
+            // Play sound only if NOT in cooldown and NOT resource-muted
+            if (!isSilent && !isResourceMuted)
             {
-                SoundManager.PlayRandomKerbalVocal();
+                if (UseKerbalVoiceAlarm)
+                {
+                    SoundManager.PlayRandomKerbalVocal();
+                }
+                else if (UseBeepAlarm)
+                {
+                    SoundManager.PlayDefaultAlarm();
+                }
             }
         }
         catch { }
@@ -478,10 +496,17 @@ public class ResourcesAlarmRunner : MonoBehaviour
         {
             ScreenMessages.PostScreenMessage($"[Global Alarm] Low {res}: {(int)(frac*100)}%", 12f, ScreenMessageStyle.UPPER_CENTER);
             
-            // Play sound only if NOT in cooldown, NOT globally silenced, and NOT EVA-muted
-            if (!isSilent && !SilenceAlarms && !MuteEvaMonoPropAlarm)
+            // Play sound only if NOT in cooldown and NOT EVA-muted
+            if (!isSilent && !MuteEvaMonoPropAlarm)
             {
-                SoundManager.PlayRandomKerbalVocal();
+                if (UseKerbalVoiceAlarm)
+                {
+                    SoundManager.PlayRandomKerbalVocal();
+                }
+                else if (UseBeepAlarm)
+                {
+                    SoundManager.PlayDefaultAlarm();
+                }
             }
         }
         catch { }
@@ -560,10 +585,17 @@ public class ResourcesAlarmRunner : MonoBehaviour
         {
             ScreenMessages.PostScreenMessage("[Global Alarm] Communication lost!", 12f, ScreenMessageStyle.UPPER_CENTER);
             
-            // Play sound only if NOT in cooldown, NOT globally silenced, and NOT comm-muted
-            if (!isSilent && !SilenceAlarms && !MuteCommAlarm)
+            // Play sound only if NOT in cooldown and NOT comm-muted
+            if (!isSilent && !MuteCommAlarm)
             {
-                SoundManager.PlayRandomKerbalVocal();
+                if (UseKerbalVoiceAlarm)
+                {
+                    SoundManager.PlayRandomKerbalVocal();
+                }
+                else if (UseBeepAlarm)
+                {
+                    SoundManager.PlayDefaultAlarm();
+                }
             }
         }
         catch { }
@@ -585,10 +617,17 @@ public class ResourcesAlarmRunner : MonoBehaviour
             int percent = (int)(strength * 100);
             ScreenMessages.PostScreenMessage($"[Global Alarm] Weak signal: {percent}%", 12f, ScreenMessageStyle.UPPER_CENTER);
             
-            // Play sound only if NOT in cooldown, NOT globally silenced, and NOT comm-muted
-            if (!isSilent && !SilenceAlarms && !MuteCommAlarm)
+            // Play sound only if NOT in cooldown and NOT comm-muted
+            if (!isSilent && !MuteCommAlarm)
             {
-                SoundManager.PlayRandomKerbalVocal();
+                if (UseKerbalVoiceAlarm)
+                {
+                    SoundManager.PlayRandomKerbalVocal();
+                }
+                else if (UseBeepAlarm)
+                {
+                    SoundManager.PlayDefaultAlarm();
+                }
             }
         }
         catch { }

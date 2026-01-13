@@ -64,12 +64,12 @@ public static class TooltipManager
         _tooltips["ahead_minspeed"] = "Minimum speed to activate terrain ahead scanning. Prevents false alarms during slow flight/taxi.";
         
         // Stall warning
-        _tooltips["stall_warning"] = "Warns when losing too much airspeed/energy. Helps prevent aerodynamic stalls.";
-        _tooltips["stall_mode_auto"] = "Automatic: triggers when descent-to-horizontal speed ratio is too high (energy decay).";
-        _tooltips["stall_mode_manual"] = "Manual: triggers when horizontal speed drops below threshold.";
-        _tooltips["stall_descent_ratio"] = "Auto mode: alarm when descent/horizontal speed exceeds this % (e.g., 35% = descending 35m/s while moving 100m/s horizontally).";
-        _tooltips["stall_min_speed"] = "Manual mode: minimum safe horizontal speed. Alarm when below this speed.";
-        _tooltips["stall_min_agl"] = "Don't trigger stall warning below this altitude (prevents landing approach false alarms).";
+        _tooltips["stall_warning"] = "Warns when losing lift (angle between nose and flight direction too large). Helps prevent aerodynamic stalls.";
+        _tooltips["stall_mode_auto"] = "Automatic: triggers when angle between nose direction and actual flight path exceeds threshold (loss of lift detection).";
+        _tooltips["stall_mode_manual"] = "Manual: triggers when horizontal speed drops below threshold (simple speed check).";
+        _tooltips["stall_angle_threshold"] = "Auto mode: Maximum angle between nose and flight direction before alarm (0°=perfect, 45°=moderate deviation, 90°=sideways/falling). Lower = more sensitive.";
+        _tooltips["stall_min_speed"] = "Manual mode: Minimum safe horizontal speed. Alarm triggers when below this speed (in m/s).";
+        _tooltips["stall_min_agl"] = "Don't trigger stall warning below this altitude (prevents false alarms during landing approach).";
         
         // Vessel filter
         _tooltips["vessel_filter_all"] = "Enable terrain alarms for all vessel types (rockets, planes, rovers).";
@@ -86,7 +86,8 @@ public static class TooltipManager
         _tooltips["eva_monoprop_threshold"] = "EVA jetpack fuel threshold. Alarm triggers when MonoPropellant falls below this during EVA.";
         _tooltips["comm_alarm"] = "Alarm when communication signal strength drops below threshold. Prevents loss of contact with KSC!";
         _tooltips["comm_threshold"] = "Communication signal strength threshold (0-75%). Alarm warns before losing connection.";
-        _tooltips["silence_all"] = "Temporarily silence all resource alarms. Useful during long missions when you don't need warnings.";
+        _tooltips["kerbal_voice_alarm"] = "Use Kerbal voice sounds for resource alarms (default). Adds character to warnings with various Kerbal exclamations!";
+        _tooltips["beep_alarm"] = "Use simple beep sound for resource alarms (fallback). Clean electronic tone without voice samples.";
         
         // Delta-V alarm
         _tooltips["deltav_alarm"] = "Alarm when vessel's remaining Delta-V drops below threshold. Helps prevent getting stranded without fuel for maneuvers!";

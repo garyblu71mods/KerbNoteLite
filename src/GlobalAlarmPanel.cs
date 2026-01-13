@@ -879,16 +879,43 @@ public class GlobalAlarmPanel : MonoBehaviour
                 }
             }
             
-            // Silence all alarms checkbox at the bottom
+            // Sound mode selection at the bottom (mutually exclusive radio buttons)
             GUILayout.Space(8f);
-            bool silence = resourcesRunner != null && resourcesRunner.SilenceAlarms;
-            bool newSilence = GUILayout.Toggle(silence, " Silence all resource alarms");
-            if (Event.current.type == EventType.Repaint)
-                TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "silence_all");
             
-            if (resourcesRunner != null)
+            // Current sound mode
+            bool useKerbalVoice = resourcesRunner != null && resourcesRunner.UseKerbalVoiceAlarm;
+            bool useBeep = resourcesRunner != null && resourcesRunner.UseBeepAlarm;
+            
+            // Radio button for Kerbal Voice (default)
+            bool newKerbalVoice = GUILayout.Toggle(useKerbalVoice, " Kerbal Voice alarm");
+            if (Event.current.type == EventType.Repaint)
+                TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "kerbal_voice_alarm");
+            
+            if (newKerbalVoice && !useKerbalVoice)
             {
-                resourcesRunner.SilenceAlarms = newSilence;
+                // User switched to Kerbal Voice
+                if (resourcesRunner != null)
+                {
+                    resourcesRunner.UseKerbalVoiceAlarm = true;
+                    resourcesRunner.UseBeepAlarm = false;
+                    ResourcesAlarmConfig.SaveFrom(resourcesRunner);
+                }
+            }
+            
+            // Radio button for Beep Sound (fallback)
+            bool newBeep = GUILayout.Toggle(useBeep, " Beep Sound alarm");
+            if (Event.current.type == EventType.Repaint)
+                TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "beep_alarm");
+            
+            if (newBeep && !useBeep)
+            {
+                // User switched to Beep
+                if (resourcesRunner != null)
+                {
+                    resourcesRunner.UseKerbalVoiceAlarm = false;
+                    resourcesRunner.UseBeepAlarm = true;
+                    ResourcesAlarmConfig.SaveFrom(resourcesRunner);
+                }
             }
         }
     }
@@ -907,7 +934,7 @@ public class GlobalAlarmPanel : MonoBehaviour
     
     // Stall Warning UI input buffers
     private string _stallMinSpeedStr;
-    private string _stallDescentRatioStr;
+    private string _stallAngleStr;
     private string _stallMinAglStr;
     
     // Resources page: expanded slider state
@@ -964,7 +991,7 @@ public class GlobalAlarmPanel : MonoBehaviour
                 // _aheadStepStr remains hidden - no UI control
                 _aheadMinSpeedStr = null;
                 _stallMinSpeedStr = null;
-                _stallDescentRatioStr = null;
+                _stallAngleStr = null;
                 _stallMinAglStr = null;
                 _sinkRateToggle = terrainRunner.EnableSinkRate;
             }
@@ -1171,7 +1198,7 @@ public class GlobalAlarmPanel : MonoBehaviour
         {
             // Initialize text fields on first display
             if (_stallMinSpeedStr == null) _stallMinSpeedStr = terrainRunner.StallMinHorizontalSpeed.ToString("F0");
-            if (_stallDescentRatioStr == null) _stallDescentRatioStr = (terrainRunner.StallDescentRatio * 100f).ToString("F0");
+            if (_stallAngleStr == null) _stallAngleStr = terrainRunner.StallAngleThreshold.ToString("F0");
             if (_stallMinAglStr == null) _stallMinAglStr = terrainRunner.StallMinAGL.ToString("F0");
 
             // Mode selection: Auto vs Manual (radio buttons)
@@ -1213,13 +1240,13 @@ public class GlobalAlarmPanel : MonoBehaviour
             }
             else
             {
-                // Auto mode: descent ratio threshold (as percentage)
+                // Auto mode: angle threshold (degrees)
                 GUILayout.BeginHorizontal();
-                GUILayout.Label("Descent ratio:", labelStyle, GUILayout.Width(90));
-                _stallDescentRatioStr = GUILayout.TextField(_stallDescentRatioStr, GUILayout.Width(50));
+                GUILayout.Label("Angle limit:", labelStyle, GUILayout.Width(90));
+                _stallAngleStr = GUILayout.TextField(_stallAngleStr, GUILayout.Width(50));
                 if (Event.current.type == EventType.Repaint)
-                    TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "stall_descent_ratio");
-                GUILayout.Label("%", unitStyle, GUILayout.Width(30));
+                    TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "stall_angle_threshold");
+                GUILayout.Label("deg", unitStyle, GUILayout.Width(30));
                 GUILayout.EndHorizontal();
             }
 
@@ -1237,8 +1264,8 @@ public class GlobalAlarmPanel : MonoBehaviour
         terrainRunner.EnableStallWarning = newStallOn;
         if (float.TryParse(_stallMinSpeedStr, out var stallMinSpeed)) 
             terrainRunner.StallMinHorizontalSpeed = Mathf.Clamp(stallMinSpeed, 0f, 500f);
-        if (float.TryParse(_stallDescentRatioStr, out var stallRatioPercent)) 
-            terrainRunner.StallDescentRatio = Mathf.Clamp(stallRatioPercent / 100f, 0.1f, 1.0f);
+        if (float.TryParse(_stallAngleStr, out var stallAngleDegrees)) 
+            terrainRunner.StallAngleThreshold = Mathf.Clamp(stallAngleDegrees, 0f, 90f);
         if (float.TryParse(_stallMinAglStr, out var stallMinAgl)) 
             terrainRunner.StallMinAGL = Mathf.Clamp(stallMinAgl, 0f, 1000f);
 
