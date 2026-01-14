@@ -16,6 +16,10 @@ public class AlarmRunner : MonoBehaviour
 	private string lastActiveSaveOverride = null;
 	private static bool forceNextEvaluation = false;
 	
+	// Track last triggered state per vessel to prevent re-firing on same state after warp
+	private struct TriggeredAlarmState { public string Body; public Vessel.Situations Situation; }
+	private readonly Dictionary<string, TriggeredAlarmState> lastTriggeredStateByVessel = new Dictionary<string, TriggeredAlarmState>();
+	
 	// Global load cooldown - suppress all alarms for first 20 seconds after scene load
 	private float _sceneLoadTime;
 	private const float LoadCooldownSeconds = 20f;
@@ -148,6 +152,7 @@ public class AlarmRunner : MonoBehaviour
 				lastBodyTriggerTimes.Clear();
 				lastStateByVessel.Clear();
 				lastMatchedAlarmsByVessel.Clear();
+				lastTriggeredStateByVessel.Clear();
 				lastActiveSaveOverride = activeOverride;
 				_cachedHost = null; // Invalidate cache on save change
 			}
@@ -163,6 +168,18 @@ public class AlarmRunner : MonoBehaviour
 			// consume the one-shot force flag after capturing
 			bool forced = forceNextEvaluation;
 			if (forceNextEvaluation) forceNextEvaluation = false;
+
+			// Check if we already triggered alarm for this exact state (vessel + body + situation)
+			// This prevents re-firing after warp when situation hasn't actually changed
+			TriggeredAlarmState lastTriggered;
+			bool alreadyTriggeredForThisState = false;
+			if (lastTriggeredStateByVessel.TryGetValue(vesselKey, out lastTriggered))
+			{
+				if (string.Equals(lastTriggered.Body, bodyName, StringComparison.OrdinalIgnoreCase) && lastTriggered.Situation == newSituation)
+				{
+					alreadyTriggeredForThisState = true;
+				}
+			}
 
 			lastStateByVessel[vesselKey] = new VesselState { Body = bodyName, Situation = newSituation };
 
@@ -187,6 +204,9 @@ public class AlarmRunner : MonoBehaviour
 			// If there were previous matches and now there are none for some alarms -> exit condition for those alarms
 			if (stateChanged)
 			{
+				// When state changes, clear triggered state so alarms can fire again on re-entry
+				lastTriggeredStateByVessel.Remove(vesselKey);
+				
 				if (prevMatches.Count >0)
 				{
 					// OPTIMIZATION: Cache MiniNote array lookup
@@ -210,8 +230,11 @@ public class AlarmRunner : MonoBehaviour
 						
 						if (!stillMatched)
 						{
-							// On exit from this alarm condition
-							if (prev.MiniNote && prev.HideOnExit)
+						// On exit from this alarm condition
+						// IMPORTANT: Only hide if we're actually in a DIFFERENT situation now
+						bool actuallyExited = prev.Situation != newSituation || 
+						                      !string.Equals(prev.BodyName, bodyName, StringComparison.OrdinalIgnoreCase);
+						if (actuallyExited && prev.MiniNote && prev.HideOnExit)
 							{
 								// Only hide MiniNote if the visible instance was spawned by an alarm
 								if (minis == null) minis = GameObject.FindObjectsOfType<MiniNote>();
@@ -232,6 +255,8 @@ public class AlarmRunner : MonoBehaviour
 
 			if (_matchBuffer.Count == 0)
 			{
+				// No matching alarms - clear triggered state so alarms can fire again when we re-enter this condition
+				lastTriggeredStateByVessel.Remove(vesselKey);
 				// update last matches and return
 				lastMatchedAlarmsByVessel[vesselKey] = new List<AlarmDefinition>();
 				return;
@@ -239,6 +264,13 @@ public class AlarmRunner : MonoBehaviour
 
 			// If nothing changed and not forced, do not re-trigger the same condition (prevents re-fire on timewarp x1)
 			if (!stateChanged && !forced)
+			{
+				lastMatchedAlarmsByVessel[vesselKey] = new List<AlarmDefinition>(_matchBuffer);
+				return;
+			}
+
+			// Additional check: if we already triggered alarms for this exact state and state hasn't changed, skip
+			if (alreadyTriggeredForThisState && !stateChanged && !forced)
 			{
 				lastMatchedAlarmsByVessel[vesselKey] = new List<AlarmDefinition>(_matchBuffer);
 				return;
@@ -331,6 +363,10 @@ public class AlarmRunner : MonoBehaviour
 				}
 				lastBodyTriggerTimes[bodyKey] = nowTs;
 			}
+			
+			// Mark this state as triggered so we don't re-fire on warp/rails events
+			lastTriggeredStateByVessel[vesselKey] = new TriggeredAlarmState { Body = bodyName, Situation = newSituation };
+			
 			lastMatchedAlarmsByVessel[vesselKey] = new List<AlarmDefinition>(_matchBuffer);
 		}
 		catch { }

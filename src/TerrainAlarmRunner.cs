@@ -42,6 +42,7 @@ public class TerrainAlarmRunner : MonoBehaviour
     public float StallMinHorizontalSpeed = 50f;      // Manual mode: min safe horizontal speed (m/s)
     public float StallAngleThreshold = 45f;          // Auto mode: angle between nose and velocity vector (degrees, 0-90)
     public float StallMinAGL = 100f;                 // Don't alarm below this altitude (prevents landing warnings)
+    public float StallMaxAltitudeASL = 25000f;       // Maximum altitude ASL for stall warning (atmosphere boundary)
     public float StallMinHorizontalSpeedAuto = 20f;  // Auto mode: minimum speed to consider (avoid false alarms when slow)
 
     // Filter: aircraft only vs all vessels
@@ -520,51 +521,69 @@ public class TerrainAlarmRunner : MonoBehaviour
         }
 
         // Stall Warning: detects loss of lift by comparing nose direction vs actual flight direction
+        // ONLY works in atmosphere and below max altitude
         if (EnableStallWarning && !suppressPullUp && !suppressTerrain)
         {
             bool stallCondition = false;
             
-            // Manual mode: simple speed check
-            if (StallWarningMode == StallMode.Manual)
+            // Check if we're in atmosphere and below max altitude
+            bool inAtmosphere = false;
+            double altitudeASL = 0;
+            try 
+            { 
+                altitudeASL = v.altitude; 
+                // Check if vessel is in atmosphere (dynamic pressure > 0 means we have air resistance)
+                inAtmosphere = v.atmDensity > 0.001; // Small threshold to account for thin atmosphere
+            } 
+            catch { }
+            
+            bool withinAltitudeRange = (altitudeASL <= StallMaxAltitudeASL);
+            
+            // Only check stall if in atmosphere and within altitude range
+            if (inAtmosphere && withinAltitudeRange)
             {
-                stallCondition = (spd < StallMinHorizontalSpeed) && (agl > StallMinAGL);
-            }
-            // Auto mode: angle between nose direction and velocity vector
-            else
-            {
-                bool aboveMinAltitude = (agl > StallMinAGL);
-                
-                // Get velocity vector (direction vessel is actually moving)
-                Vector3 velocityVector = Vector3.zero;
-                try { velocityVector = v.srf_velocity; } catch { }
-                
-                // Get horizontal speed (to filter out slow taxi)
-                double horizontalSpeed = 0;
-                try { horizontalSpeed = v.horizontalSrfSpeed; } catch { }
-                bool movingForward = horizontalSpeed > StallMinHorizontalSpeedAuto;
-                
-                // Calculate angle between nose and velocity only if moving forward at reasonable speed
-                bool angleAlarm = false;
-                if (movingForward && aboveMinAltitude && velocityVector.sqrMagnitude > 0.1f)
+                // Manual mode: simple speed check
+                if (StallWarningMode == StallMode.Manual)
                 {
-                    try
-                    {
-                        // Get vessel's forward direction (nose)
-                        Vector3 vesselForward = v.transform.up; // In KSP, "up" is vessel's forward axis
-                        
-                        // Calculate angle between nose direction and velocity vector
-                        float angle = Vector3.Angle(vesselForward, velocityVector);
-                        
-                        // Clamp to 0-90 degrees (we only care about deviation, not if it's up/down)
-                        angle = Mathf.Clamp(angle, 0f, 90f);
-                        
-                        // Trigger alarm if angle exceeds threshold
-                        angleAlarm = angle >= StallAngleThreshold;
-                    }
-                    catch { }
+                    stallCondition = (spd < StallMinHorizontalSpeed) && (agl > StallMinAGL);
                 }
-                
-                stallCondition = angleAlarm;
+                // Auto mode: angle between nose direction and velocity vector
+                else
+                {
+                    bool aboveMinAltitude = (agl > StallMinAGL);
+                    
+                    // Get velocity vector (direction vessel is actually moving)
+                    Vector3 velocityVector = Vector3.zero;
+                    try { velocityVector = v.srf_velocity; } catch { }
+                    
+                    // Get horizontal speed (to filter out slow taxi)
+                    double horizontalSpeed = 0;
+                    try { horizontalSpeed = v.horizontalSrfSpeed; } catch { }
+                    bool movingForward = horizontalSpeed > StallMinHorizontalSpeedAuto;
+                    
+                    // Calculate angle between nose and velocity only if moving forward at reasonable speed
+                    bool angleAlarm = false;
+                    if (movingForward && aboveMinAltitude && velocityVector.sqrMagnitude > 0.1f)
+                    {
+                        try
+                        {
+                            // Get vessel's forward direction (nose)
+                            Vector3 vesselForward = v.transform.up; // In KSP, "up" is vessel's forward axis
+                            
+                            // Calculate angle between nose direction and velocity vector
+                            float angle = Vector3.Angle(vesselForward, velocityVector);
+                            
+                            // Clamp to 0-90 degrees (we only care about deviation, not if it's up/down)
+                            angle = Mathf.Clamp(angle, 0f, 90f);
+                            
+                            // Trigger alarm if angle exceeds threshold
+                            angleAlarm = angle >= StallAngleThreshold;
+                        }
+                        catch { }
+                    }
+                    
+                    stallCondition = angleAlarm;
+                }
             }
 
             // Play stall warning with cooldown

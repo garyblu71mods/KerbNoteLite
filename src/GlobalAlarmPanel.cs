@@ -936,6 +936,7 @@ public class GlobalAlarmPanel : MonoBehaviour
     private string _stallMinSpeedStr;
     private string _stallAngleStr;
     private string _stallMinAglStr;
+    private string _stallMaxAltitudeStr;
     
     // Resources page: expanded slider state
     private string _expandedResourceSlider; // null = none expanded, or resource name
@@ -993,6 +994,7 @@ public class GlobalAlarmPanel : MonoBehaviour
                 _stallMinSpeedStr = null;
                 _stallAngleStr = null;
                 _stallMinAglStr = null;
+                _stallMaxAltitudeStr = null;
                 _sinkRateToggle = terrainRunner.EnableSinkRate;
             }
             else
@@ -1200,6 +1202,7 @@ public class GlobalAlarmPanel : MonoBehaviour
             if (_stallMinSpeedStr == null) _stallMinSpeedStr = terrainRunner.StallMinHorizontalSpeed.ToString("F0");
             if (_stallAngleStr == null) _stallAngleStr = terrainRunner.StallAngleThreshold.ToString("F0");
             if (_stallMinAglStr == null) _stallMinAglStr = terrainRunner.StallMinAGL.ToString("F0");
+            if (_stallMaxAltitudeStr == null) _stallMaxAltitudeStr = terrainRunner.StallMaxAltitudeASL.ToString("F0");
 
             // Mode selection: Auto vs Manual (radio buttons)
             GUILayout.BeginHorizontal();
@@ -1258,6 +1261,15 @@ public class GlobalAlarmPanel : MonoBehaviour
                 TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "stall_min_agl");
             GUILayout.Label("m", unitStyle, GUILayout.Width(20));
             GUILayout.EndHorizontal();
+
+            // Common setting: maximum altitude ASL
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Max altitude:", labelStyle, GUILayout.Width(90));
+            _stallMaxAltitudeStr = GUILayout.TextField(_stallMaxAltitudeStr, GUILayout.Width(50));
+            if (Event.current.type == EventType.Repaint)
+                TooltipManager.CheckHover(GUILayoutUtility.GetLastRect(), "stall_max_altitude");
+            GUILayout.Label("m", unitStyle, GUILayout.Width(20));
+            GUILayout.EndHorizontal();
         }
 
         // Apply parsed Stall Warning settings
@@ -1268,6 +1280,8 @@ public class GlobalAlarmPanel : MonoBehaviour
             terrainRunner.StallAngleThreshold = Mathf.Clamp(stallAngleDegrees, 0f, 90f);
         if (float.TryParse(_stallMinAglStr, out var stallMinAgl)) 
             terrainRunner.StallMinAGL = Mathf.Clamp(stallMinAgl, 0f, 1000f);
+        if (float.TryParse(_stallMaxAltitudeStr, out var stallMaxAltitude)) 
+            terrainRunner.StallMaxAltitudeASL = Mathf.Clamp(stallMaxAltitude, 1000f, 100000f);
 
         // Persist settings (debounced)
         if (Time.realtimeSinceStartup - _lastTerrainConfigSaveTs > 0.5f)
@@ -1459,7 +1473,13 @@ public class GlobalAlarmPanel : MonoBehaviour
             {
                 if (!inputLockSet)
                 {
-                    InputLockManager.SetControlLock(ControlTypes.All, INPUT_LOCK_ID);
+                    // Use selective locking to avoid interfering with other mods (e.g. KerbVision post-processing)
+                    // Block UI interaction and camera controls, but leave other systems free
+                    InputLockManager.SetControlLock(
+                        ControlTypes.UI | 
+                        ControlTypes.CAMERACONTROLS | 
+                        ControlTypes.KEYBOARDINPUT,
+                        INPUT_LOCK_ID);
                     inputLockSet = true;
                 }
             }

@@ -70,6 +70,7 @@ public static class TooltipManager
         _tooltips["stall_angle_threshold"] = "Auto mode: Maximum angle between nose and flight direction before alarm (0°=perfect, 45°=moderate deviation, 90°=sideways/falling). Lower = more sensitive.";
         _tooltips["stall_min_speed"] = "Manual mode: Minimum safe horizontal speed. Alarm triggers when below this speed (in m/s).";
         _tooltips["stall_min_agl"] = "Don't trigger stall warning below this altitude (prevents false alarms during landing approach).";
+        _tooltips["stall_max_altitude"] = "Maximum altitude ASL for stall warning. Alarm only works in atmosphere below this altitude (prevents false alarms in space).";
         
         // Vessel filter
         _tooltips["vessel_filter_all"] = "Enable terrain alarms for all vessel types (rockets, planes, rovers).";

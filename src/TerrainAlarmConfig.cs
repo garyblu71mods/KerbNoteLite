@@ -113,6 +113,7 @@ internal static class TerrainAlarmConfig
             r.StallMinHorizontalSpeed = GetFloat(n, "StallMinHorizontalSpeed", r.StallMinHorizontalSpeed);
             r.StallAngleThreshold = GetFloat(n, "StallAngleThreshold", r.StallAngleThreshold);
             r.StallMinAGL = GetFloat(n, "StallMinAGL", r.StallMinAGL);
+            r.StallMaxAltitudeASL = GetFloat(n, "StallMaxAltitudeASL", r.StallMaxAltitudeASL);
             r.StallMinHorizontalSpeedAuto = GetFloat(n, "StallMinHorizontalSpeedAuto", r.StallMinHorizontalSpeedAuto);
 
             r.AircraftOnly = GetBool(n, "AircraftOnly", r.AircraftOnly);
@@ -167,6 +168,7 @@ internal static class TerrainAlarmConfig
             n.AddValue("StallMinHorizontalSpeed", r.StallMinHorizontalSpeed);
             n.AddValue("StallAngleThreshold", r.StallAngleThreshold);
             n.AddValue("StallMinAGL", r.StallMinAGL);
+            n.AddValue("StallMaxAltitudeASL", r.StallMaxAltitudeASL);
             n.AddValue("StallMinHorizontalSpeedAuto", r.StallMinHorizontalSpeedAuto);
 
             n.AddValue("AircraftOnly", r.AircraftOnly);

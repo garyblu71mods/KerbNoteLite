@@ -369,7 +369,13 @@ public class SliderWindow : MonoBehaviour
             {
                 if (!inputLockSet)
                 {
-                    InputLockManager.SetControlLock(ControlTypes.All, INPUT_LOCK_ID);
+                    // Use selective locking to avoid interfering with other mods (e.g. KerbVision post-processing)
+                    // Block UI interaction and camera controls, but leave other systems free
+                    InputLockManager.SetControlLock(
+                        ControlTypes.UI | 
+                        ControlTypes.CAMERACONTROLS | 
+                        ControlTypes.KEYBOARDINPUT,
+                        INPUT_LOCK_ID);
                     inputLockSet = true;
                 }
             }

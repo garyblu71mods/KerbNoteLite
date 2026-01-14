@@ -1019,14 +1019,20 @@ public class SettingWindow : MonoBehaviour
          if (lastBarRect.width > 0 && lastBarRect.height > 0 && lastBarRect.Contains(mouse)) hover = true;
          if (!hover && lastPanelWinRect.width > 0 && lastPanelWinRect.height > 0 && lastPanelWinRect.Contains(mouse)) hover = true;
          if (!hover && showAbout && lastAboutRect.width > 0 && lastAboutRect.height > 0 && lastAboutRect.Contains(mouse)) hover = true;
-         if (hover)
-         {
-             if (!inputLockSet)
-             {
-                 InputLockManager.SetControlLock(ControlTypes.All, INPUT_LOCK_ID);
-                 inputLockSet = true;
-             }
-         }
+          if (hover)
+          {
+              if (!inputLockSet)
+              {
+                  // Use selective locking to avoid interfering with other mods (e.g. KerbVision post-processing)
+                  // Block UI interaction and camera controls, but leave other systems free
+                  InputLockManager.SetControlLock(
+                      ControlTypes.UI | 
+                      ControlTypes.CAMERACONTROLS | 
+                      ControlTypes.KEYBOARDINPUT,
+                      INPUT_LOCK_ID);
+                  inputLockSet = true;
+              }
+          }
          else
          {
              ClearInputLock();
