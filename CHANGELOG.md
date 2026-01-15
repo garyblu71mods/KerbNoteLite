@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Prevents premature hiding during physics settling after touchdown
 
 ### Changed
+- **DLL Naming Convention**: Changed from versioned name (`KerbNote_V1.3.1.dll`) to standard name (`KerbNoteLite.dll`)
+  - CKAN now handles updates automatically
+  - Old versions auto-removed on update
+  - Cleanup script still available for manual installations upgrading from v1.3.1 or earlier
 - StallMaxAltitudeASL field added to TerrainAlarmConfig for better altitude filtering
 
 ---
@@ -265,4 +269,4 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ---
 
-*Last Updated: 2024*
+

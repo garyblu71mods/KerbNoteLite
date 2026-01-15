@@ -50,20 +50,22 @@ See [CHANGELOG.md](CHANGELOG.md) for full version history.
 4. Copy `GameData/KerbNoteLite/` folder into your KSP `GameData/` directory
 5. Launch KSP
 
-#### 🧹 Cleaning Old Versions (Manual Updates Only)
+#### 🧹 Cleaning Old Versions (For updates from v1.3.1 and earlier)
+
+**From v1.3.2 onwards**, KerbNoteLite uses a standard DLL name (`KerbNoteLite.dll`) that CKAN handles automatically.
+
+**If upgrading from v1.3.1 or earlier** (which used `KerbNote_V*.dll`):
 
 **Windows:**
 - Double-click `cleanup_old_versions.bat` in the extracted folder
 - Or run in PowerShell: `.\cleanup_old_versions.ps1`
 
 **Manual cleanup:**
-- Navigate to `KSP/GameData/KerbNoteLite/`
-- Delete all `KerbNote_V*.dll` files **except** the newest version
-- Keep only the highest version number
+- Navigate to `KSP/GameData/KerbNoteLite/Plugins/`
+- Delete all old `KerbNote_V*.dll` files
+- The new version is simply `KerbNoteLite.dll`
 
-**Why?** KerbNoteLite uses versioned DLL names (`KerbNote_V1.3.1.dll`). Old versions are not automatically removed and may cause conflicts.
-
-**CKAN users:** Update through CKAN normally - it handles cleanup automatically.
+**CKAN users:** CKAN handles everything automatically from v1.3.2 onwards.
 
 ### Requirements
 - **KSP Version:** 1.8.0 - 1.12.5
