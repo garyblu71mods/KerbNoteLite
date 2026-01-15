@@ -9,13 +9,13 @@
 
 ---
 
-## ?? What is KerbNote?
+## What is KerbNote?
 
 KerbNote is a comprehensive note-taking and alarm system for Kerbal Space Program. Write mission notes, set location-based alarms, monitor resources, and get terrain warnings - all integrated seamlessly into your game.
 
 ---
 
-## ?? Note System
+## Note System
 
 ### Basic Usage
 - **Click toolbar icon** to open KerbNote window
@@ -38,7 +38,7 @@ KerbNote is a comprehensive note-taking and alarm system for Kerbal Space Progra
 
 ---
 
-## ?? Location-Based Alarms
+## Location-Based Alarms
 
 ### How They Work
 Alarms trigger when your vessel reaches specific **celestial body + situation** combinations.
@@ -64,14 +64,14 @@ Alarms trigger when your vessel reaches specific **celestial body + situation** 
 5. **Enable alarm** - Check the enable box
 
 ### Examples
-- **Mun + Orbiting** ? Reminder to start landing burn
-- **Kerbin + Landed** ? Mission debrief checklist
-- **VAB** ? Rocket design notes
-- **Duna + Flying** ? Atmospheric entry procedure
+- **Mun + Orbiting** - Reminder to start landing burn
+- **Kerbin + Landed** - Mission debrief checklist
+- **VAB** - Rocket design notes
+- **Duna + Flying** - Atmospheric entry procedure
 
 ---
 
-## ?? MiniNotes
+## MiniNotes
 
 ### What Are They?
 Floating semi-transparent windows that show your notes during flight.
@@ -90,7 +90,7 @@ Floating semi-transparent windows that show your notes during flight.
 
 ---
 
-## ?? Terrain Proximity Alarms (GPWS)
+## Terrain Proximity Alarms (GPWS)
 
 Aviation-style warnings to prevent crashes.
 
@@ -151,7 +151,7 @@ Aviation-style warnings to prevent crashes.
 
 ---
 
-## ?? Resource Monitoring Alarms
+## Resource Monitoring Alarms
 
 Get warned before running out of critical resources.
 
@@ -184,7 +184,7 @@ Get warned before running out of critical resources.
 
 ---
 
-## ?? Customization
+## Customization
 
 ### Changing Skins
 1. **Open Settings** (bottom of KerbNote window)
@@ -209,7 +209,7 @@ Get warned before running out of critical resources.
 
 ---
 
-## ?? Keyboard Shortcuts
+## Keyboard Shortcuts
 
 | Key | Action |
 |-----|--------|
@@ -220,7 +220,7 @@ Get warned before running out of critical resources.
 
 ---
 
-## ?? Pro Tips
+## Pro Tips
 
 1. **Mission Checklists** - Create tab with steps, set alarm for target body
 2. **Safety Net** - Enable all terrain alarms for landing approach
@@ -235,32 +235,32 @@ Get warned before running out of critical resources.
 
 ---
 
-## ?? Troubleshooting
+## Troubleshooting
 
 ### Alarms Not Triggering
-- ? Wait 20 seconds after scene load (cooldown period)
-- ? Check alarm enabled (green indicator on tab)
-- ? Verify correct body and situation selected
-- ? For terrain/resource alarms: Check Global Alarm Panel enabled
+- Wait 20 seconds after scene load (cooldown period)
+- Check alarm enabled (green indicator on tab)
+- Verify correct body and situation selected
+- For terrain/resource alarms: Check Global Alarm Panel enabled
 
 ### No Sound
-- ? Check KSP audio settings (not muted)
-- ? Check volume slider in Global Alarm Panel
-- ? Verify sound files exist in GameData/KerbNoteLite/Sounds/
+- Check KSP audio settings (not muted)
+- Check volume slider in Global Alarm Panel
+- Verify sound files exist in GameData/KerbNoteLite/Sounds/
 
 ### Window Won't Open
-- ? Look for icon in application launcher (toolbar)
-- ? Check KSP logs: KSP_Data/output_log.txt
-- ? Verify mod installed correctly in GameData/KerbNoteLite/
+- Look for icon in application launcher (toolbar)
+- Check KSP logs: KSP_Data/output_log.txt
+- Verify mod installed correctly in GameData/KerbNoteLite/
 
 ### Performance Issues
-- ? Latest version is highly optimized (80% faster)
-- ? Disable unused alarm systems in Global Alarm Panel
-- ? Reduce number of active note tabs
+- Latest version is highly optimized (80% faster)
+- Disable unused alarm systems in Global Alarm Panel
+- Reduce number of active note tabs
 
 ---
 
-## ?? File Locations
+## File Locations
 
 ### Notes (per save)
 ```
@@ -284,7 +284,7 @@ GameData/KerbNoteLite/AlarmsAndNotes/ResourcesAlarmConfig.cfg
 
 ---
 
-## ?? Quick Start Examples
+## Quick Start Examples
 
 ### Example 1: Mun Landing Checklist
 1. Create note: "Mun Landing Steps"
@@ -306,7 +306,7 @@ GameData/KerbNoteLite/AlarmsAndNotes/ResourcesAlarmConfig.cfg
 
 ---
 
-## ? FAQ
+## FAQ
 
 **Q: Are notes saved automatically?**  
 A: Yes! Every change is saved immediately.
@@ -334,7 +334,7 @@ A: Stall Warning system with altitude filtering, KerbVision compatibility fix, a
 
 ---
 
-## ?? Support & Feedback
+## Support & Feedback
 
 **Found a bug? Got an idea? Want to say hi?**
 
@@ -350,4 +350,4 @@ Your suggestions, bug reports, and feature requests make this mod better for eve
 
 ---
 
-*Safe flights and happy note-taking, Kerbanaut!* ???
+*Safe flights and happy note-taking, Kerbanaut!*
