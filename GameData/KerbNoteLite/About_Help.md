@@ -1,6 +1,6 @@
 # KerbNote - User Guide
 
-**Version:** 1.2.2  
+**Version:** 1.3.1  
 **Author:** GaryBlu71  
 **GitHub:** https://github.com/garyblu71mods/KerbNoteLite  
 **License:** MIT  
@@ -131,6 +131,16 @@ Aviation-style warnings to prevent crashes.
 - **Sound:** "Sink Rate"
 - **Default:** <70m AGL, -7 m/s descent
 - **Use:** Prevents hard landings
+
+#### Stall Warning (NEW in v1.3.1)
+- **Triggers:** Loss of airspeed / energy decay
+- **Sound:** "STALL!" callout
+- **Modes:**
+  - **AUTO:** Detects energy decay (descent vs horizontal speed ratio)
+  - **MANUAL:** Simple minimum speed threshold
+- **Altitude Range:** Only active between min/max altitude (default: 100m-25000m)
+- **Smart:** Ignores high-pitch maneuvers (cobra, loops)
+- **Use:** Prevents aerodynamic stalls and crashes
 
 ### Smart Features
 - **Landing suppression** - Disables Pull-Up when gear out, slow, and low
@@ -318,6 +328,9 @@ A: Unlimited! Create as many as you need.
 
 **Q: Will terrain alarms work for all vessels?**  
 A: Yes, unless "Aircraft Only" filter is enabled.
+
+**Q: What's new in v1.3.1?**  
+A: Stall Warning system with altitude filtering, KerbVision compatibility fix, and improved "Hide on Exit" alarm behavior.
 
 ---
 
