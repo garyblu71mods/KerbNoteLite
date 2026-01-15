@@ -1,0 +1,94 @@
+====================================
+  KerbNoteLite v1.3.1 - Release
+====================================
+
+Thank you for downloading KerbNoteLite!
+
+INSTALLATION INSTRUCTIONS
+=========================
+
+OPTION 1: CKAN (Recommended)
+-----------------------------
+If you're using CKAN, this mod should install automatically.
+No manual steps required!
+
+
+OPTION 2: Manual Installation
+------------------------------
+
+IMPORTANT: If updating from a previous version:
+  1. Run cleanup_old_versions.bat FIRST
+  2. This removes old DLL files to prevent conflicts
+  3. Then proceed with installation
+
+Steps:
+  1. Extract this ZIP file
+  2. Copy the "GameData" folder to your KSP directory
+     (Merge with existing GameData folder)
+  3. Launch KSP
+
+
+MANUAL CLEANUP (if not using the script)
+-----------------------------------------
+
+Navigate to: KSP/GameData/KerbNoteLite/Plugins/
+
+Delete ALL old versions:
+  - KerbNote_V1.2.0.dll (delete)
+  - KerbNote_V1.3.0.dll (delete)
+  - etc.
+
+Keep ONLY:
+  - KerbNote_V1.3.1.dll (keep this!)
+
+
+WHAT'S NEW IN v1.3.1
+====================
+
+Added:
+  ✨ Stall Warning altitude settings UI
+  ✨ Tooltips for min/max altitude configuration
+
+Fixed:
+  🔧 KerbVision compatibility (grain noise now works)
+  🔧 Hide on Exit alarm no longer disappears immediately
+
+
+GETTING STARTED
+===============
+
+1. Launch KSP
+2. Look for KerbNote icon in toolbar
+3. Create notes, set alarms
+4. Configure advanced alarms via Global Alarm Panel
+
+
+DOCUMENTATION
+=============
+
+Full docs:  https://github.com/garyblu71mods/KerbNoteLite
+Bug reports: https://github.com/garyblu71mods/KerbNoteLite/issues
+
+
+REQUIREMENTS
+============
+
+KSP Version: 1.8.0 - 1.12.5
+Dependencies: None
+
+
+LICENSE
+=======
+
+MIT License - See LICENSE file
+
+
+CREDITS
+=======
+
+Created by: garyblu71mods
+
+Thank you for using KerbNoteLite! 🚀
+Happy flying, and don't forget to take notes!
+
+====================================

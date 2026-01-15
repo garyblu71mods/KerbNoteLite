@@ -1,0 +1,25 @@
+PLACEHOLDER - Replace with actual texture files
+
+Required texture files:
+=======================
+
+Core UI:
+- Background_window.png
+- NoteWindow.png
+- Button.png
+- ButtonHover.png
+- ButtonClick.png
+
+Tabs:
+- Tab.png
+- TabHover.png
+- TabClick.png
+- TabRed.png
+
+Alarm Bars:
+- Alarm_bar.png (vertical)
+- Alarm_bar_horizontal.png
+
+These files should be PNG format with transparency support.
+
+Once you add the actual textures, delete this PLACEHOLDER.txt file.
