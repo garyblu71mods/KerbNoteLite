@@ -1,10 +1,58 @@
 ﻿# KerbNoteLite
 
-**KerbNoteLite** is a comprehensive note-taking and advanced alarm system mod for Kerbal Space Program that helps you manage your missions with in-game notes, mini-notes, location-based alarms, terrain warnings, and resource monitoring.
+**KerbNoteLite v1.1.0** is a comprehensive note-taking and advanced alarm system mod for Kerbal Space Program that helps you manage your missions with in-game notes, mini-notes, location-based alarms, terrain warnings, and resource monitoring.
 
-[![Version](https://img.shields.io/badge/version-latest-blue.svg)](https://github.com/garyblu71mods/KerbNoteLite/releases)
-[![KSP Compatible](https://img.shields.io/badge/KSP-Compatible-green.svg)](https://kerbalspaceprogram.com)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/garyblu71mods/KerbNoteLite/releases/tag/v1.1.0)
+[![KSP Compatible](https://img.shields.io/badge/KSP-1.8--1.12.5-green.svg)](https://kerbalspaceprogram.com)
 [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
+[![CKAN](https://img.shields.io/badge/CKAN-Available-orange.svg)](https://github.com/KSP-CKAN/CKAN)
+
+---
+
+## 🆕 What's New in v1.1.0
+
+### ✨ Stall Warning Improvements
+- **New altitude settings UI** in Global Alarm Panel
+  - **Min altitude** (default: 100m) - prevents false alarms during landing
+  - **Max altitude** (default: 25000m) - prevents false alarms in space
+  - Tooltips explain each setting
+- Stall warnings now only trigger within configurable altitude range
+
+### 🔧 Compatibility Fixes
+- **KerbVision Compatibility**: Fixed InputLock interference
+  - Changed from `ControlTypes.All` to selective locking
+  - No longer blocks post-processing effects in other mods
+  - Grain noise and other visual effects work properly
+  - Applied to all UI panels (AlarmSelector, GlobalAlarmPanel, SettingWindow, SliderWindow)
+
+### 🐛 Bug Fixes
+- **Hide on Exit** now works correctly
+- MiniNote no longer disappears immediately after landing
+- Only hides when vessel actually exits the alarm condition
+- Prevents premature hiding during physics settling
+
+See [CHANGELOG.md](CHANGELOG.md) for full version history.
+
+---
+
+## 📥 Installation
+
+### Via CKAN (Recommended)
+1. Install [CKAN](https://github.com/KSP-CKAN/CKAN)
+2. Search for "KerbNoteLite"
+3. Click install
+4. Launch KSP
+
+### Manual Installation
+1. Download latest release from [Releases page](https://github.com/garyblu71mods/KerbNoteLite/releases)
+2. Extract the ZIP file
+3. Copy `GameData/KerbNoteLite/` folder into your KSP `GameData/` directory
+4. Launch KSP
+
+### Requirements
+- **KSP Version:** 1.8.0 - 1.12.5
+- **Dependencies:** None
+- **.NET Framework:** 4.8 (included with KSP)
 
 ---
 
@@ -77,8 +125,10 @@ Advanced terrain collision avoidance system with realistic aviation-inspired war
   - **MANUAL mode**: Simple minimum speed threshold
     - User sets minimum safe horizontal speed (default: 50 m/s)
     - Alarm when below threshold
-- Configurable minimum altitude (default: 100m)
-- Prevents false alarms during landing approach
+- **Altitude filtering** (NEW in v1.1.0):
+  - **Minimum altitude** (default: 100m) - prevents false alarms during landing approach
+  - **Maximum altitude** (default: 25000m) - prevents false alarms in space/high atmosphere
+  - Only triggers within configured altitude range
 - Dedicated "STALL!" audio warning (custom sound file supported)
 - Automatic fallback beep if sound file not present
 - See `STALL_SOUND_INSTALLATION.md` for audio file setup
@@ -298,14 +348,16 @@ The Global Alarm Panel provides centralized control for advanced alarm systems.
    - **Min Descent** (default: -7 m/s)
    - **Enable** checkbox
 7. Configure **Stall Warning**:
-   - **Enable** checkbox
-   - **Mode selection**:
-     - **AUTO**: Energy decay detection
-       - **Descent Ratio**: % threshold (default: 35%)
-       - Triggers when descent/horizontal speed ratio exceeds threshold
-     - **MANUAL**: Speed threshold
-       - **Min Speed**: Minimum safe horizontal speed (default: 50 m/s)
-   - **Min Altitude**: Don't alarm below this (default: 100m)
+- **Enable** checkbox
+- **Mode selection**:
+  - **AUTO**: Energy decay detection
+    - **Angle Limit**: Maximum angle threshold (default: 50°)
+    - Triggers when angle between nose and flight path exceeds limit
+  - **MANUAL**: Speed threshold
+    - **Min Speed**: Minimum safe horizontal speed (default: 50 m/s)
+- **Min Altitude**: Don't alarm below this AGL (default: 100m)
+- **Max Altitude**: Don't alarm above this ASL (default: 25000m) - NEW in v1.1.0
+- Tooltips available on hover for each setting
 8. Enable **Altitude Callouts** for automated altitude announcements
 9. Toggle **Aircraft Only** to restrict alarms to aircraft vessels
 10. Adjust **Volume** slider (0-100%) for all terrain sounds
