@@ -98,6 +98,7 @@
     <None Include="GITHUB_RELEASE_v1.3.0.md" />
     <None Include="GLOBAL_ALARMS_IMPLEMENTATION.md" />
     <None Include="KerbNoteLite.ckan" />
+    <None Include="KerbNoteLite.version" />
     <None Include="LICENSE" />
     <None Include="QUICKSTART.md" />
     <None Include="README.md" />

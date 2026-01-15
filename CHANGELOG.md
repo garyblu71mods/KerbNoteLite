@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2025-01-XX
+
+### Added
+- **Stall Warning System Improvements**
+  - Added UI for minimum and maximum altitude settings in GlobalAlarmPanel
+  - Stall warning now only triggers within configurable altitude range (default: 100m-25000m)
+  - New tooltips for altitude settings explaining their purpose
+
+### Fixed
+- **KerbVision Compatibility**: Changed InputLock from `ControlTypes.All` to selective locking (`UI | CAMERACONTROLS | KEYBOARDINPUT`)
+  - Prevents interference with post-processing effects in other mods (e.g., KerbVision grain noise)
+  - Applied to: AlarmSelector, GlobalAlarmPanel, SettingWindow, SliderWindow
+- **Hide on Exit Alarm Fix**: MiniNote no longer disappears immediately after landing
+  - Only hides when vessel actually exits alarm condition (different situation or body)
+  - Prevents premature hiding during physics settling after touchdown
+
+### Changed
+- StallMaxAltitudeASL field added to TerrainAlarmConfig for better altitude filtering
+
+---
+
 ## [Unreleased]
 
 ### Added
