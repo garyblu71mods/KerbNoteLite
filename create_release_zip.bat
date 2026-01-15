@@ -8,7 +8,7 @@ echo ============================================
 echo.
 
 REM Check if textures exist
-if not exist "GameData\KerbNoteLite\Textures\Background_window.png" (
+if not exist "GameData\KerbNoteLite\Textures\BackgroundWindow.png" (
     echo ERROR: Textures not found!
     echo.
     echo Please add texture files to GameData\KerbNoteLite\Textures\
