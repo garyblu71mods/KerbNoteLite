@@ -1,15 +1,15 @@
 ﻿# KerbNoteLite
 
-**KerbNoteLite v1.1.0** is a comprehensive note-taking and advanced alarm system mod for Kerbal Space Program that helps you manage your missions with in-game notes, mini-notes, location-based alarms, terrain warnings, and resource monitoring.
+**KerbNoteLite v1.3.1** is a comprehensive note-taking and advanced alarm system mod for Kerbal Space Program that helps you manage your missions with in-game notes, mini-notes, location-based alarms, terrain warnings, and resource monitoring.
 
-[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/garyblu71mods/KerbNoteLite/releases/tag/v1.1.0)
+[![Version](https://img.shields.io/badge/version-1.3.1-blue.svg)](https://github.com/garyblu71mods/KerbNoteLite/releases/tag/v1.3.1)
 [![KSP Compatible](https://img.shields.io/badge/KSP-1.8--1.12.5-green.svg)](https://kerbalspaceprogram.com)
 [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 [![CKAN](https://img.shields.io/badge/CKAN-Available-orange.svg)](https://github.com/KSP-CKAN/CKAN)
 
 ---
 
-## 🆕 What's New in v1.1.0
+## 🆕 What's New in v1.3.1
 
 ### ✨ Stall Warning Improvements
 - **New altitude settings UI** in Global Alarm Panel
@@ -46,8 +46,24 @@ See [CHANGELOG.md](CHANGELOG.md) for full version history.
 ### Manual Installation
 1. Download latest release from [Releases page](https://github.com/garyblu71mods/KerbNoteLite/releases)
 2. Extract the ZIP file
-3. Copy `GameData/KerbNoteLite/` folder into your KSP `GameData/` directory
-4. Launch KSP
+3. **IMPORTANT**: If updating, run `cleanup_old_versions.bat` (Windows) to remove old DLL files
+4. Copy `GameData/KerbNoteLite/` folder into your KSP `GameData/` directory
+5. Launch KSP
+
+#### 🧹 Cleaning Old Versions (Manual Updates Only)
+
+**Windows:**
+- Double-click `cleanup_old_versions.bat` in the extracted folder
+- Or run in PowerShell: `.\cleanup_old_versions.ps1`
+
+**Manual cleanup:**
+- Navigate to `KSP/GameData/KerbNoteLite/`
+- Delete all `KerbNote_V*.dll` files **except** the newest version
+- Keep only the highest version number
+
+**Why?** KerbNoteLite uses versioned DLL names (`KerbNote_V1.3.1.dll`). Old versions are not automatically removed and may cause conflicts.
+
+**CKAN users:** Update through CKAN normally - it handles cleanup automatically.
 
 ### Requirements
 - **KSP Version:** 1.8.0 - 1.12.5
